@@ -73,7 +73,7 @@ padding:30px;
 
 <!-- ТЕСТ -->
 <div id="test" class="center">
-  <h2 id="word"></h2>
+  <h2 id="testWord"></h2>
   <div id="answers"></div>
 </div>
 
@@ -119,10 +119,7 @@ const raw=[
 "ask|спрашивать|аск","read|читать|рид","write|писать|райт","describe|описывать|дискрáйб",
 "analyse|анализировать|энэлайз","think|думать|синк","wait|ждать|вэйт","buy|покупать|бай",
 "play|играть|плэй","want|хотеть|вонт","explain|объяснять|иксплэйн","study|учиться|стади",
-"work|работать|вёрк","take|брать|тэйк","arrive|прибывать|эрайв","interrupt|перебивать|интэрапт",
-"expensive|дорого|икспэнсив","cheap|дёшево|чип","strong|сильный|стронг","weak|слабый|уик",
-"creative|творческий|криэйтив","hardworking|трудолюбивый|хардворкинг",
-"patient|терпеливый|пэйшэнт","punctual|пунктуальный|панкчуал"
+"work|работать|вёрк","take|брать|тэйк","arrive|прибывать|эрайв","interrupt|перебивать|интэрапт"
 ];
 
 const words=raw.map(s=>{
@@ -132,8 +129,8 @@ return{en:a,ru:b,read:c,ok:0}
 
 let pool=[...words],errors=[],current,cardLang="en",flipped=false;
 
-const w=document.getElementById("word");
-const a=document.getElementById("answers");
+const testWord=document.getElementById("testWord");
+const answers=document.getElementById("answers");
 const front=document.getElementById("front");
 const back=document.getElementById("back");
 const card=document.getElementById("card");
@@ -153,18 +150,21 @@ renderInput();
 }
 
 function renderTest(){
-w.textContent=current.en;
-a.innerHTML="";
+testWord.textContent=current.en;
+answers.innerHTML="";
 let opts=[current.ru];
 while(opts.length<4){
 let x=rnd(words).ru;
-if(!opts.includes(x))opts.push(x)
+if(!opts.includes(x))opts.push(x);
 }
 opts.sort(()=>Math.random()-0.5).forEach(t=>{
 let b=document.createElement("button");
 b.textContent=t;
-b.onclick=()=>{t===current.ru?current.ok++:errors.push(current);pick()};
-a.appendChild(b);
+b.onclick=()=>{
+if(t===current.ru){current.ok++}else{errors.push(current)}
+pick();
+};
+answers.appendChild(b);
 });
 }
 
