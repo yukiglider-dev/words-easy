@@ -19,27 +19,39 @@ body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-conten
 button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
 .correct{background:#8bc34a;color:#fff}
 .wrong{background:#f44336;color:#fff}
-.cardWrap{perspective:1000px}
-.card{
-border:1px solid #ddd;border-radius:16px;
-min-height:120px;
-display:flex;align-items:center;justify-content:center;
-font-size:26px;cursor:pointer;
-transition:transform .6s;
-transform-style:preserve-3d;
-}
-.card.flip{transform:rotateY(180deg)}
+.center{text-align:center}
 
-.side{
-position:absolute;width:100%;backface-visibility:hidden;
-display:flex;align-items:center;justify-content:center;
-padding:30px;
+/* ===== КАРТОЧКА ===== */
+.cardWrap{perspective:1000px;display:flex;justify-content:center}
+.card{
+  width:100%;
+  max-width:320px;
+  min-height:140px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .6s ease;
+  cursor:pointer;
 }
-.back{transform:rotateY(180deg)}.controls{display:flex;gap:10px}
-.read{font-style:italic;color:#666;font-size:14px;margin-top:6px}
+.card.flipped{transform:rotateY(180deg)}
+.cardSide{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border:1px solid #ddd;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  background:#fff;
+}
+.cardBack{transform:rotateY(180deg)}
+
+.controls{display:flex;gap:10px;margin-top:10px}
+
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
-.center{text-align:center}
 </style>
 </head>
 
@@ -56,6 +68,7 @@ padding:30px;
 <div class="tabs">
   <button class="tab active" onclick="openTab('test',this)">Тест</button>
   <button class="tab" onclick="openTab('cards',this)">Карточки</button>
+  <button class="tab" onclick="openTab('repeat',this)">Повтор</button>
   <button class="tab" onclick="openTab('input',this)">Ввод</button>
   <button class="tab" onclick="openTab('dict',this)">Словарь</button>
 </div>
@@ -70,12 +83,23 @@ padding:30px;
 
 <!-- КАРТОЧКИ -->
 <div id="cards" class="hidden center">
-  <div id="card" class="card" onclick="flipCard()"></div>
-  <div id="cardRead" class="read hidden"></div>
+  <div class="cardWrap">
+    <div id="card" class="card" onclick="flipCard()">
+      <div class="cardSide" id="cardFront"></div>
+      <div class="cardSide cardBack" id="cardBack"></div>
+    </div>
+  </div>
   <div id="cardBtns" class="controls hidden">
     <button class="correct" onclick="cardYes()">Знаю</button>
     <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
+</div>
+
+<!-- ПОВТОР -->
+<div id="repeat" class="hidden center">
+  <h3 id="repeatWord"></h3>
+  <button class="correct" onclick="repeatYes()">Знаю</button>
+  <button class="wrong" onclick="repeatNo()">Не знаю</button>
 </div>
 
 <!-- ВВОД -->
