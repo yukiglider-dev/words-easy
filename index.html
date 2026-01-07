@@ -2,320 +2,265 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Words Easy</title>
 
 <style>
-:root{--bg:#ffd6e7;--card:#fff;--btn:#eee}
-body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-content:center;padding:20px}
-.app{width:540px;background:var(--card);border-radius:18px;padding:16px}
-.header{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px}
-.title{text-align:center;font-weight:bold;font-size:18px;grid-column:1/4}
-.palette{width:22px;height:22px;border-radius:50%;border:2px solid #aaa;cursor:pointer;background:linear-gradient(45deg,#ffd6e7,#cce8ff)}
-.langToggle{font-size:11px;padding:4px 6px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
-.tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
-.tab{flex:1;padding:8px;border-radius:10px;background:var(--btn);border:none;cursor:pointer;font-size:13px}
-.tab.active{background:#cce8ff;font-weight:bold}
-.hidden{display:none}
-button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
-.correct{background:#8bc34a;color:#fff}
-.wrong{background:#f44336;color:#fff}
-.center{text-align:center}
-
-.reading{
-  font-style:italic;
-  color:#666;
-  margin:6px 0;
-  font-size:14px;
+:root{
+  --bg:#f6e6ef;
+  --card:#fff;
+  --primary:#e75480;
 }
-
-/* ===== КАРТОЧКА ===== */
-.cardWrap{perspective:1000px;display:flex;justify-content:center}
-.card{
-  width:100%;
-  max-width:320px;
-  min-height:140px;
-  position:relative;
-  transform-style:preserve-3d;
-  transition:transform .6s ease;
-  cursor:pointer;
+[data-theme="blue"]{
+  --bg:#e6f2ff;
+  --primary:#4aa3df;
 }
-.card.flipped{transform:rotateY(180deg)}
-.cardSide{
-  position:absolute;
-  width:100%;
-  height:100%;
-  backface-visibility:hidden;
-  border:1px solid #ddd;
-  border-radius:16px;
+*{box-sizing:border-box;font-family:system-ui}
+body{
+  margin:0;
+  background:var(--bg);
   display:flex;
-  align-items:center;
   justify-content:center;
-  font-size:24px;
-  background:#fff;
 }
-.cardBack{transform:rotateY(180deg)}
-
-.controls{display:flex;gap:10px;margin-top:10px}
-
-.table{width:100%;border-collapse:collapse;font-size:14px}
-.table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
+.app{
+  width:100%;
+  max-width:420px;
+  padding:10px;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.tabs{
+  display:flex;
+  gap:5px;
+  margin:10px 0;
+}
+.tabs button{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  background:#ddd;
+}
+.tabs button.active{
+  background:var(--primary);
+  color:#fff;
+}
+.card{
+  background:var(--card);
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+.answers button,.action-btn{
+  width:100%;
+  margin-top:8px;
+  padding:10px;
+  border:none;
+  border-radius:12px;
+  transition:.3s;
+}
+.green{background:#8bc34a;color:#fff}
+.red{background:#f44336;color:#fff}
+table{width:100%;border-collapse:collapse}
+td,th{padding:6px;border-bottom:1px solid #ccc}
+.flip{perspective:1000px}
+.flip-inner{
+  transition:.6s;
+  transform-style:preserve-3d;
+}
+.flip.flipped .flip-inner{transform:rotateY(180deg)}
+.side{backface-visibility:hidden}
+.back{transform:rotateY(180deg)}
+.small{font-size:14px;opacity:.7;margin-top:6px}
+.example{font-style:italic;margin-top:10px}
 </style>
 </head>
 
 <body>
 <div class="app">
-
-<div class="header">
-  <div></div>
-  <div class="langToggle" onclick="toggleCardLang()" id="langBtn">EN</div>
-  <div class="palette" onclick="toggleTheme()"></div>
-  <div class="title">Words Easy</div>
-</div>
+<header>
+  <strong>Words Easy</strong>
+  <span onclick="toggleTheme()" style="cursor:pointer">🎨</span>
+</header>
 
 <div class="tabs">
-  <button class="tab active" onclick="openTab('test',this)">Тест</button>
-  <button class="tab" onclick="openTab('cards',this)">Карточки</button>
-  <button class="tab" onclick="openTab('repeat',this)">Повтор</button>
-  <button class="tab" onclick="openTab('input',this)">Ввод</button>
-  <button class="tab" onclick="openTab('dict',this)">Словарь</button>
+  <button onclick="tab('test')">Тест</button>
+  <button onclick="tab('cards')">Карточки</button>
+  <button onclick="tab('repeat')">Повтор</button>
+  <button onclick="tab('input')">Ввод</button>
+  <button onclick="tab('dict')">Словарь</button>
 </div>
 
-<!-- ТЕСТ -->
-<div id="test" class="center">
-  <h2 id="word"></h2>
-
-  <!-- 👁 ЧТЕНИЕ -->
-  <div id="reading" class="reading hidden"></div>
-  <button onclick="toggleReading()" id="readBtn">Показать чтение</button>
-
-  <div id="answers"></div>
-</div>
-
-<!-- КАРТОЧКИ -->
-<div id="cards" class="hidden center">
-  <div class="cardWrap">
-    <div id="card" class="card" onclick="flipCard()">
-      <div class="cardSide" id="cardFront"></div>
-      <div class="cardSide cardBack" id="cardBack"></div>
-    </div>
-  </div>
-  <div id="cardBtns" class="controls hidden">
-    <button class="correct" onclick="cardYes()">Знаю</button>
-    <button class="wrong" onclick="cardNo()">Не знаю</button>
-  </div>
-</div>
-
-<!-- ПОВТОР -->
-<div id="repeat" class="hidden center">
-  <h3 id="repeatWord"></h3>
-  <button class="correct" onclick="repeatYes()">Знаю</button>
-  <button class="wrong" onclick="repeatNo()">Не знаю</button>
-</div>
-
-<!-- ВВОД -->
-<div id="input" class="hidden">
-  <h3 id="inputRu"></h3>
-  <input id="inputEn" placeholder="Введи английское слово"
-    onkeydown="if(event.key==='Enter')checkInput()"
-    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-  <button onclick="checkInput()">Проверить</button>
-</div>
-
-<!-- СЛОВАРЬ -->
-<div id="dict" class="hidden"></div>
-
+<div id="content"></div>
 </div>
 
 <script>
-const raw = [
-"analyse|анализировать|энэлайз",
-"apologise|извиняться|эполоджайз",
-"arrive|прибывать|эрайв",
-"ask|спрашивать|аск",
-"at school|в школе|эт скул",
-"begin|начинать|бигин",
-"busy|занятый|бизи",
-"buy|покупать|бай",
-"cheap|дёшево|чип",
-"collect|коллекционировать|колэкт",
-"confuse|путать|кэнфьюз",
-"continue|продолжать|континью",
-"cosy|уютный|коузи",
-"creative|творческий|криэйтив",
-"describe|описывать|дискрáйб",
-"drink|пить|дринк",
-"eat|есть|ит",
-"enough|достаточно|инаф",
-"expensive|дорого|икспэнсив",
-"explain|объяснять|иксплэйн",
-"finish|заканчивать|финиш",
-"forget|забывать|фэгэт",
-"forgive|прощать|фэгив",
-"get back|добираться обратно|гэт бэк",
-"get here|добираться сюда|гэт хиэ",
-"get home|добираться домой|гэт хоум",
-"get there|добираться туда|гэт зэа",
-"get to|добираться до|гэт ту",
-"hardworking|трудолюбивый|хардворкинг",
-"he likes|ему нравится|хи лайкс",
-"he needs|ему нужно|хи нидз",
-"he’s rich|он богатый|хиз рич",
-"here|здесь|хиэ",
-"how many|сколько|хау мэни",
-"how much|сколько|хау мач",
-"how often|как часто|хау офн",
-"how regularly|как регулярно|хау рэгьюлэли",
-"I like|мне нравится|ай лайк",
-"I need|мне нужно|ай нид",
-"I’m busy|я занят|айм бизи",
-"impossible|невозможно|импосибл",
-"interrupt|перебивать|интэрапт",
-"it’s cosy|это уютно|итс коузи",
-"it’s enough|этого достаточно|итс инаф",
-"it’s impossible|это невозможно|итс импосибл",
-"it’s possible|это возможно|итс посибл",
-"know|знать|ноу",
-"patient|терпеливый|пэйшэнт",
-"play|играть|плэй",
-"poor|бедный|пуа",
-"possible|возможно|посибл",
-"punctual|пунктуальный|панкчуал",
-"read|читать|рид",
-"rich|богатый|рич",
-"she likes|ей нравится|ши лайкс",
-"she needs|ей нужно|ши нидз",
-"she’s poor|она бедная|шиз пуа",
-"sleep|спать|слиип",
-"start|начинать|старт",
-"strong|сильный|стронг",
-"study|учиться|стади",
-"take|брать|тэйк",
-"there|там|зэа",
-"they like|им нравится|зэй лайк",
-"they need|им нужно|зэй нид",
-"they’re right|они правы|зэй райт",
-"think|думать|синк",
-"understand|понимать|андэстэнд",
-"use|пользоваться|юз",
-"wait|ждать|вэйт",
-"weak|слабый|уик",
-"we like|нам нравится|уи лайк",
-"we need|нам нужно|уи нид",
-"we’re right|мы правы|уи райт",
-"what|что|вот",
-"when|когда|уэн",
-"where|где / куда|уэа",
-"who|кто / кого|ху",
-"why|почему|вай",
-"work|работать|вёрк",
-"write|писать|райт",
-"you like|тебе / вам нравится|ю лайк",
-"you need|тебе / вам нужно|ю нид",
-"you’re right|ты / вы правы|йо райт"
+const baseWords=[
+{en:"here",ru:"здесь",tr:"хиэ",ex:"Come here."},
+{en:"there",ru:"там",tr:"зэа",ex:"I live there."},
+{en:"eat",ru:"есть",tr:"ит",ex:"I eat breakfast."},
+{en:"drink",ru:"пить",tr:"дринк",ex:"Drink water."},
+{en:"sleep",ru:"спать",tr:"слип",ex:"I sleep well."},
+{en:"read",ru:"читать",tr:"рид",ex:"Read books."},
+{en:"write",ru:"писать",tr:"райт",ex:"Write a letter."},
+{en:"work",ru:"работать",tr:"вёрк",ex:"I work here."},
+{en:"study",ru:"учиться",tr:"стади",ex:"Study English."},
+{en:"busy",ru:"занятый",tr:"бизи",ex:"I am busy."}
 ];
 
+let words=JSON.parse(localStorage.getItem("words"))||
+baseWords.map(w=>({...w,ok:0,fail:0,streak:0,learned:false}));
 
-const words=raw.map(s=>{
-  const[a,b,c]=s.split('|');
-  return{en:a,ru:b,read:c,ok:0,errors:0}
-});
+function save(){localStorage.setItem("words",JSON.stringify(words))}
 
-let pool=[...words],errors=[],current,flipped=false,cardLang='en';
-let showReading=false;
+let tabName="test";
 
-const w=document.getElementById('word'),
-a=document.getElementById('answers'),
-r=document.getElementById('reading'),
-rb=document.getElementById('readBtn'),
-cf=document.getElementById('cardFront'),
-cbk=document.getElementById('cardBack'),
-card=document.getElementById('card'),
-btns=document.getElementById('cardBtns'),
-ir=document.getElementById('inputRu'),
-ie=document.getElementById('inputEn'),
-d=document.getElementById('dict'),
-rw=document.getElementById('repeatWord'),
-langBtn=document.getElementById('langBtn');
-
-function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function activeWords(){
+ return words.filter(w=>!w.learned);
+}
 
 function pick(){
-  current=rnd(pool);
-  showReading=false;
-  r.classList.add('hidden');
-  rb.textContent='Показать чтение';
-  renderTest();renderCard();renderInput();
+ return activeWords()
+ .sort((a,b)=>(b.fail-b.ok)-(a.fail-a.ok))[0];
 }
 
-function renderTest(){
-  w.textContent=current.en;
-  r.textContent=current.read;
-  a.innerHTML='';
-  let opts=[current.ru];
-  while(opts.length<4){
-    let x=rnd(words).ru;if(!opts.includes(x))opts.push(x)
-  }
-  opts.sort(()=>Math.random()-0.5).forEach(t=>{
-    let b=document.createElement('button');
-    b.textContent=t;
-    b.onclick=()=>{t===current.ru?current.ok++:(current.errors++,errors.push(current));pick()};
-    a.appendChild(b)
-  })
+function tab(t){
+ tabName=t;
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+ [...document.querySelectorAll(".tabs button")]
+  .find(b=>b.textContent.toLowerCase().includes(t))
+  .classList.add("active");
+ render();
 }
 
-function toggleReading(){
-  showReading=!showReading;
-  r.classList.toggle('hidden',!showReading);
-  rb.textContent=showReading?'Скрыть чтение':'Показать чтение';
+function render(){
+ const c=document.getElementById("content");
+ const w=pick();
+
+ if(tabName==="test"){
+  if(!w){c.innerHTML="<div class='card'>Все слова выучены ⭐</div>";return}
+  const opts=[w.ru,...activeWords().sort(()=>.5-Math.random()).slice(0,3).map(x=>x.ru)]
+  .sort(()=>.5-Math.random());
+
+  c.innerHTML=`<div class="card">
+    <h2>${w.en}</h2>
+    <button onclick="toggleTr(this)">Показать чтение</button>
+    <div class="small" style="display:none">${w.tr}</div>
+    <div class="answers">
+      ${opts.map(o=>`<button onclick="answer(this,'${o}','${w.ru}')">${o}</button>`).join("")}
+    </div>
+  </div>`;
+ }
+
+ if(tabName==="cards"){
+  if(!w){c.innerHTML="<div class='card'>Все слова выучены ⭐</div>";return}
+  c.innerHTML=`<div class="flip" onclick="this.classList.toggle('flipped')">
+    <div class="flip-inner card">
+      <div class="side"><h2>${w.en}</h2></div>
+      <div class="side back">
+        <h2>${w.ru}</h2>
+        <div class="example">${w.ex||""}</div>
+        <button class="green action-btn" onclick="know(event)">Знаю</button>
+        <button class="red action-btn" onclick="dont(event)">Не знаю</button>
+      </div>
+    </div>
+  </div>`;
+ }
+
+ if(tabName==="repeat"){
+  const hard=activeWords().filter(x=>x.fail>0);
+  if(!hard.length){c.innerHTML="<div class='card'>Ошибок нет 🎉</div>";return}
+  c.innerHTML=`<div class="card">
+    <h2>${hard[0].en}</h2>
+    <button class="green" onclick="know()">Знаю</button>
+    <button class="red" onclick="dont()">Не знаю</button>
+  </div>`;
+ }
+
+ if(tabName==="input"){
+  if(!w){c.innerHTML="<div class='card'>Все слова выучены ⭐</div>";return}
+  c.innerHTML=`<div class="card">
+    <h3>${w.ru}</h3>
+    <input id="inp" style="width:100%;padding:10px;border-radius:10px">
+    <button onclick="check('${w.en}')">Проверить</button>
+  </div>`;
+ }
+
+ if(tabName==="dict"){
+  c.innerHTML=`<div class="card"><table>
+    <tr><th>#</th><th>EN</th><th>RU</th><th>Чтение</th></tr>
+    ${words.sort((a,b)=>a.en.localeCompare(b.en))
+      .map((x,i)=>`<tr>
+        <td>${i+1}</td>
+        <td>${x.en}${x.learned?" ⭐":""}</td>
+        <td>${x.ru}</td>
+        <td>${x.tr}</td>
+      </tr>`).join("")}
+  </table></div>`;
+ }
 }
 
-/* остальной код без изменений */
-function renderCard(){flipped=false;card.classList.remove('flipped');cf.textContent=cardLang==='en'?current.en:current.ru;cbk.textContent=cardLang==='en'?current.ru:current.en;btns.classList.add('hidden')}
-function flipCard(){flipped=!flipped;card.classList.toggle('flipped');btns.classList.remove('hidden')}
-function cardYes(){current.ok++;pick()}
-function cardNo(){current.errors++;errors.push(current);pick()}
-function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов для повтора'}
-function repeatYes(){errors=errors.filter(w=>w!==current);pick()}
-function repeatNo(){pick()}
-function toggleCardLang(){cardLang=cardLang==='en'?'ru':'en';langBtn.textContent=cardLang.toUpperCase();renderCard()}
-function renderInput(){ir.textContent=current.ru;ie.value=''}
-  function renderDict(){
-  d.innerHTML = `
-    <table class="table">
-      <tr>
-        <th>#</th>
-        <th>EN</th>
-        <th>RU</th>
-        <th>Чтение</th>
-      </tr>
-    </table>
-  `;
-  const t = d.querySelector('table');
+function answer(btn,a,r){
+ const w=words.find(x=>x.ru===r);
+ const buttons=btn.parentElement.querySelectorAll("button");
+ buttons.forEach(b=>b.disabled=true);
 
-  words.forEach((w,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${i+1}</td>
-      <td>${w.en}</td>
-      <td>${w.ru}</td>
-      <td>${w.read}</td>
-    `;
-    t.appendChild(tr);
-  });
+ if(a===r){
+  btn.classList.add("green");
+  w.ok++; w.streak++;
+  if(w.streak>=3) w.learned=true;
+ }else{
+  btn.classList.add("red");
+  w.fail++; w.streak=0;
+ }
+
+ save();
+ setTimeout(render,700);
 }
 
-function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:(current.errors++,errors.push(current));pick()}
-function openTab(id,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  ['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  if(id === 'dict') renderDict();
-  if(id==='repeat')renderRepeat();
+function toggleTr(b){
+ const d=b.nextElementSibling;
+ d.style.display=d.style.display==="none"?"block":"none";
+ b.textContent=d.style.display==="none"?"Показать чтение":"Скрыть";
 }
-let pink=true;
-function toggleTheme(){pink=!pink;document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff')}
-pick();
+
+function know(e){
+ if(e)e.stopPropagation();
+ const w=pick();
+ w.ok++; w.streak++;
+ if(w.streak>=3) w.learned=true;
+ save(); render();
+}
+
+function dont(e){
+ if(e)e.stopPropagation();
+ const w=pick();
+ w.fail++; w.streak=0;
+ save(); render();
+}
+
+function check(en){
+ const v=document.getElementById("inp").value.trim().toLowerCase();
+ const w=words.find(x=>x.en===en);
+ if(v===en){
+  w.ok++; w.streak++;
+  if(w.streak>=3) w.learned=true;
+ }else{
+  w.fail++; w.streak=0;
+ }
+ save(); render();
+}
+
+function toggleTheme(){
+ document.body.dataset.theme=
+  document.body.dataset.theme==="blue"?"":"blue";
+}
+
+tab("test");
 </script>
 </body>
 </html>
