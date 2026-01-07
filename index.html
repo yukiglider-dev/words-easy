@@ -19,8 +19,23 @@ body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-conten
 button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
 .correct{background:#8bc34a;color:#fff}
 .wrong{background:#f44336;color:#fff}
-.card{border:1px solid #ddd;border-radius:16px;padding:40px;text-align:center;font-size:24px;cursor:pointer;min-height:100px;user-select:none}
-.controls{display:flex;gap:10px}
+.cardWrap{perspective:1000px}
+.card{
+border:1px solid #ddd;border-radius:16px;
+min-height:120px;
+display:flex;align-items:center;justify-content:center;
+font-size:26px;cursor:pointer;
+transition:transform .6s;
+transform-style:preserve-3d;
+}
+.card.flip{transform:rotateY(180deg)}
+
+.side{
+position:absolute;width:100%;backface-visibility:hidden;
+display:flex;align-items:center;justify-content:center;
+padding:30px;
+}
+.back{transform:rotateY(180deg)}.controls{display:flex;gap:10px}
 .read{font-style:italic;color:#666;font-size:14px;margin-top:6px}
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
@@ -57,7 +72,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 <div id="cards" class="hidden center">
   <div id="card" class="card" onclick="flipCard()"></div>
   <div id="cardRead" class="read hidden"></div>
-  <button onclick="toggleRead('card')">Показать чтение</button>
   <div id="cardBtns" class="controls hidden">
     <button class="correct" onclick="cardYes()">Знаю</button>
     <button class="wrong" onclick="cardNo()">Не знаю</button>
@@ -79,31 +93,93 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <script>
-const raw=[
-'here|здесь|хиэ','there|там|зэа','at school|в школе|эт скул',
-'understand|понимать|андэстэнд','know|знать|ноу','eat|есть|ит',
-'drink|пить|дринк','sleep|спать|слиип','ask|спрашивать|аск',
-'read|читать|рид','write|писать|райт','describe|описывать|дискрáйб',
-'analyse|анализировать|энэлайз','think|думать|синк','wait|ждать|вэйт',
-'buy|покупать|бай','play|играть|плэй','want|хотеть|вонт',
-'explain|объяснять|иксплэйн','study|учиться|стади','work|работать|вёрк',
-'take|брать|тэйк','arrive|прибывать|эрайв','interrupt|перебивать|интэрапт',
-
-'I need|мне нужно|ай нид','you need|тебе нужно|ю нид','we need|нам нужно|уи нид',
-'they need|им нужно|зэй нид','he needs|ему нужно|хи нидз','she needs|ей нужно|ши нидз',
-
-'I like|мне нравится|ай лайк','you like|тебе нравится|ю лайк','we like|нам нравится|уи лайк',
-'they like|им нравится|зэй лайк','he likes|ему нравится|хи лайкс','she likes|ей нравится|ши лайкс',
-
-'use|пользоваться|юз','collect|коллекционировать|колэкт','confuse|путать|кэнфьюз',
-'apologise|извиняться|эполоджайз','forgive|прощать|фэгив','forget|забывать|фэгэт',
-
-'start|начинать|старт','begin|начинать|бигин','continue|продолжать|континью',
-'finish|заканчивать|финиш',
-
-'busy|занятый|бизи','cosy|уютный|коузи','enough|достаточно|инаф',
-'rich|богатый|рич','poor|бедный|пуа','possible|возможно|посибл','impossible|невозможно|импосибл'
+const raw = [
+"analyse|анализировать|энэлайз",
+"apologise|извиняться|эполоджайз",
+"arrive|прибывать|эрайв",
+"ask|спрашивать|аск",
+"at school|в школе|эт скул",
+"begin|начинать|бигин",
+"busy|занятый|бизи",
+"buy|покупать|бай",
+"cheap|дёшево|чип",
+"collect|коллекционировать|колэкт",
+"confuse|путать|кэнфьюз",
+"continue|продолжать|континью",
+"cosy|уютный|коузи",
+"creative|творческий|криэйтив",
+"describe|описывать|дискрáйб",
+"drink|пить|дринк",
+"eat|есть|ит",
+"enough|достаточно|инаф",
+"expensive|дорого|икспэнсив",
+"explain|объяснять|иксплэйн",
+"finish|заканчивать|финиш",
+"forget|забывать|фэгэт",
+"forgive|прощать|фэгив",
+"get back|добираться обратно|гэт бэк",
+"get here|добираться сюда|гэт хиэ",
+"get home|добираться домой|гэт хоум",
+"get there|добираться туда|гэт зэа",
+"get to|добираться до|гэт ту",
+"hardworking|трудолюбивый|хардворкинг",
+"he likes|ему нравится|хи лайкс",
+"he needs|ему нужно|хи нидз",
+"he’s rich|он богатый|хиз рич",
+"here|здесь|хиэ",
+"how many|сколько|хау мэни",
+"how much|сколько|хау мач",
+"how often|как часто|хау офн",
+"how regularly|как регулярно|хау рэгьюлэли",
+"I like|мне нравится|ай лайк",
+"I need|мне нужно|ай нид",
+"I’m busy|я занят|айм бизи",
+"impossible|невозможно|импосибл",
+"interrupt|перебивать|интэрапт",
+"it’s cosy|это уютно|итс коузи",
+"it’s enough|этого достаточно|итс инаф",
+"it’s impossible|это невозможно|итс импосибл",
+"it’s possible|это возможно|итс посибл",
+"know|знать|ноу",
+"patient|терпеливый|пэйшэнт",
+"play|играть|плэй",
+"poor|бедный|пуа",
+"possible|возможно|посибл",
+"punctual|пунктуальный|панкчуал",
+"read|читать|рид",
+"rich|богатый|рич",
+"she likes|ей нравится|ши лайкс",
+"she needs|ей нужно|ши нидз",
+"she’s poor|она бедная|шиз пуа",
+"sleep|спать|слиип",
+"start|начинать|старт",
+"strong|сильный|стронг",
+"study|учиться|стади",
+"take|брать|тэйк",
+"there|там|зэа",
+"they like|им нравится|зэй лайк",
+"they need|им нужно|зэй нид",
+"they’re right|они правы|зэй райт",
+"think|думать|синк",
+"understand|понимать|андэстэнд",
+"use|пользоваться|юз",
+"wait|ждать|вэйт",
+"weak|слабый|уик",
+"we like|нам нравится|уи лайк",
+"we need|нам нужно|уи нид",
+"we’re right|мы правы|уи райт",
+"what|что|вот",
+"when|когда|уэн",
+"where|где / куда|уэа",
+"who|кто / кого|ху",
+"why|почему|вай",
+"work|работать|вёрк",
+"write|писать|райт",
+"you like|тебе / вам нравится|ю лайк",
+"you need|тебе / вам нужно|ю нид",
+"you’re right|ты / вы правы|йо райт"
 ];
+
 
 const words=raw.map(s=>{
   const[a,b,c]=s.split('|');
