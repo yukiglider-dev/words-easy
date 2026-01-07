@@ -214,23 +214,18 @@ const raw = [
 "you’re right|ты / вы правы|йо райт"
 ];
 
-
+/* ================== ЗАГРУЗКА ПРОГРЕССА ================== */
 const saved = JSON.parse(localStorage.getItem('words-progress') || 'null');
 
 const words = raw.map((s,i)=>{
   const [en,ru,read] = s.split('|');
-
-  if(saved && saved[i]){
-    return saved[i];
-  }
-
-  return { en, ru, read, streak:0, errors:0 };
+  return saved?.[i] || { en, ru, read, streak:0, errors:0 };
 });
 
-
-let pool = words.filter(w=>w.streak < 3);
-let errors = [];
+/* ================== СОСТОЯНИЕ ================== */
+let pool = [];
 let current = null;
+let errors = [];
 let cardLang = 'en';
 
 /* ================== DOM ================== */
@@ -238,22 +233,27 @@ const w  = document.getElementById('word');
 const a  = document.getElementById('answers');
 const r  = document.getElementById('reading');
 const rb = document.getElementById('readBtn');
-
 const cf = document.getElementById('cardFront');
 const cb = document.getElementById('cardBack');
 const card = document.getElementById('card');
 const btns = document.getElementById('cardBtns');
-
 const ir = document.getElementById('inputRu');
 const ie = document.getElementById('inputEn');
 const rw = document.getElementById('repeatWord');
 
-/* ================== ОБЩЕЕ ================== */
+/* ================== УТИЛИТЫ ================== */
 function rnd(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
+function saveProgress(){
+  localStorage.setItem('words-progress', JSON.stringify(words));
+}
+
+/* ================== ВЫБОР СЛОВА ================== */
 function pick(){
+  pool = words.filter(w=>w.streak < 3);
+
   if(pool.length === 0){
     w.textContent = '🎉 Все слова выучены';
     a.innerHTML = '';
@@ -287,32 +287,11 @@ function renderTest(){
     btn.textContent = text;
 
     btn.onclick = ()=>{
-      saveProgress();
-
       [...a.children].forEach(b=>b.disabled=true);
-if(text === current.ru){
-  btn.classList.add('correct');
-  current.streak++;
-  if(current.streak >= 3){
-    pool = pool.filter(w=>w!==current);
-  }
-}else{
-  btn.classList.add('wrong');
-  current.streak = 0;
-  current.errors++;
-  errors.push(current);
-}
-
-saveProgress();
-setTimeout(pick,600);
 
       if(text === current.ru){
         btn.classList.add('correct');
         current.streak++;
-
-        if(current.streak >= 3){
-          pool = pool.filter(w=>w!==current);
-        }
       }else{
         btn.classList.add('wrong');
         current.streak = 0;
@@ -320,6 +299,7 @@ setTimeout(pick,600);
         errors.push(current);
       }
 
+      saveProgress();
       setTimeout(pick,600);
     };
 
@@ -336,7 +316,6 @@ function toggleReading(){
 
 /* ================== КАРТОЧКИ ================== */
 function renderCard(){
-  if(!current) return;
   card.classList.remove('flipped');
   cf.textContent = cardLang==='en'?current.en:current.ru;
   cb.textContent = cardLang==='en'?current.ru:current.en;
@@ -350,10 +329,7 @@ function flipCard(){
 
 function cardYes(){
   current.streak++;
-  if(current.streak>=3){
-    pool = pool.filter(w=>w!==current);
-  }saveProgress();
-
+  saveProgress();
   pick();
 }
 
@@ -361,13 +337,31 @@ function cardNo(){
   current.streak = 0;
   current.errors++;
   errors.push(current);
-  pick();saveProgress();
-
+  saveProgress();
+  pick();
 }
 
 function toggleCardLang(){
   cardLang = cardLang==='en'?'ru':'en';
   renderCard();
+}
+
+/* ================== ВВОД ================== */
+function renderInput(){
+  ir.textContent = current.ru;
+  ie.value = '';
+}
+
+function checkInput(){
+  if(ie.value.toLowerCase() === current.en.toLowerCase()){
+    current.streak++;
+  }else{
+    current.streak = 0;
+    current.errors++;
+    errors.push(current);
+  }
+  saveProgress();
+  pick();
 }
 
 /* ================== ПОВТОР ================== */
@@ -377,38 +371,9 @@ function renderRepeat(){
     : 'Нет слов для повтора';
 }
 
-function repeatYes(){
-  errors = errors.filter(w=>w!==current);
-  pick();
-}
+function repeatYes(){ pick(); }
+function repeatNo(){ pick(); }
 
-function repeatNo(){
-  pick();
-}
-
-/* ================== ВВОД ================== */
-function renderInput(){
-  ir.textContent = current.ru;
-  ie.value = '';
-}
-function saveProgress(){
-  localStorage.setItem('words-progress', JSON.stringify(words));
-}
-
-function checkInput(){
-  if(ie.value.toLowerCase() === current.en.toLowerCase()){
-    current.streak++;
-    if(current.streak>=3){
-      pool = pool.filter(w=>w!==current);
-    }
-  }else{
-    current.streak = 0;
-    current.errors++;
-    errors.push(current);
-  }saveProgress();
-
-  pick();
-}
 /* ================== СЛОВАРЬ ================== */
 function renderDict(){
   const d = document.getElementById('dict');
@@ -416,30 +381,23 @@ function renderDict(){
 
   const table = document.createElement('table');
   table.className = 'table';
+  table.innerHTML = `
+    <tr>
+      <th>№</th><th>EN</th><th>RU</th><th>Чтение</th><th>✔</th><th>✖</th>
+    </tr>
+  `;
 
- table.innerHTML = `
-  <tr>
-    <th>№</th>
-    <th>EN</th>
-    <th>RU</th>
-    <th>Чтение</th>
-    <th>✔</th>
-    <th>✖</th>
-  </tr>
-`;
-
-
-words.forEach((w,i)=>{
-    const tr = document.createElement('tr');
-   tr.innerHTML = `
-  <td>${i+1}</td>
-  <td>${w.en}</td>
-  <td>${w.ru}</td>
-  <td>${w.read}</td>
-  <td>${w.streak}</td>
-  <td>${w.errors}</td>
-`;
-    table.appendChild(tr);
+  words.forEach((w,i)=>{
+    table.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${w.en}</td>
+        <td>${w.ru}</td>
+        <td>${w.read}</td>
+        <td>${w.streak}</td>
+        <td>${w.errors}</td>
+      </tr>
+    `;
   });
 
   d.appendChild(table);
@@ -454,9 +412,8 @@ function openTab(id,btn){
     .forEach(x=>document.getElementById(x).classList.add('hidden'));
 
   document.getElementById(id).classList.remove('hidden');
-
-if(id==='repeat') renderRepeat();
-if(id==='dict') renderDict();
+  if(id==='repeat') renderRepeat();
+  if(id==='dict') renderDict();
 }
 
 /* ================== ТЕМА ================== */
