@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
+  <button onclick="showReading()">👂 Показать чтение</button>
+<p id="reading" style="font-style: italic;"></p>
 <head>
 <meta charset="UTF-8">
 <title>Words Easy</title>
@@ -57,12 +59,55 @@
 </div>
 
 <script>
-let words = JSON.parse(localStorage.getItem("words")) || {
-  apple: "яблоко",
-  house: "дом",
-  book: "книга",
-  car: "машина"
+let words = JSON.parse(localStorage.getItem("words")) || 
+{let currentWord = "";
+
+function showReading() {
+  if (!currentWord) return;
+  document.getElementById("reading").innerText =
+    "Чтение: " + words[currentWord].read;
+}
+
+  "I": { ru: "я", read: "ай" },
+  "you": { ru: "ты / вы", read: "ю" },
+  "we": { ru: "мы", read: "ви" },
+  "they": { ru: "они", read: "зэй" },
+  "he": { ru: "он", read: "хи" },
+  "she": { ru: "она", read: "ши" },
+  "it": { ru: "это", read: "ит" },
+
+  "here": { ru: "здесь", read: "хиэ" },
+  "there": { ru: "там", read: "зэа" },
+  "at school": { ru: "в школе", read: "эт скул" },
+
+  "understand": { ru: "понимать", read: "андэстэнд" },
+  "know": { ru: "знать", read: "ноу" },
+  "eat": { ru: "есть", read: "ит" },
+  "drink": { ru: "пить", read: "дринк" },
+  "sleep": { ru: "спать", read: "слип" },
+  "ask": { ru: "спрашивать", read: "аск" },
+  "read": { ru: "читать", read: "рид" },
+  "write": { ru: "писать", read: "райт" },
+  "think": { ru: "думать", read: "синк" },
+  "wait": { ru: "ждать", read: "вэйт" },
+  "buy": { ru: "покупать", read: "бай" },
+  "play": { ru: "играть", read: "плэй" },
+  "want": { ru: "хотеть", read: "вонт" },
+  "study": { ru: "учиться", read: "стади" },
+  "work": { ru: "работать", read: "вёрк" },
+
+  "busy": { ru: "занятый", read: "бизи" },
+  "cosy": { ru: "уютный", read: "коузи" },
+  "rich": { ru: "богатый", read: "рич" },
+  "poor": { ru: "бедный", read: "пуа" },
+
+  "I'm busy": { ru: "я занят", read: "айм бизи" },
+  "you're right": { ru: "ты прав", read: "йо райт" },
+  "why": { ru: "почему", read: "уай" },
+  "where": { ru: "где", read: "уэа" },
+  "what": { ru: "что", read: "уот" }
 };
+
 
 let stats = JSON.parse(localStorage.getItem("stats")) || {
   correct: 0,
@@ -97,7 +142,9 @@ function nextQuestion() {
 
   if (mode === "en-ru") {
     questionText = `Переведи: ${randomKey}`;
-    rightAnswer = words[randomKey];
+    rightAnswer = words[randomKey].ru;
+currentWord = randomKey;
+document.getElementById("reading").innerText = "";
     answers = Object.values(words);
   } else {
     questionText = `Переведи: ${words[randomKey]}`;
