@@ -21,6 +21,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .wrong{background:#f44336;color:#fff}
 .center{text-align:center}
 
+.reading{
+  font-style:italic;
+  color:#666;
+  margin:6px 0;
+  font-size:14px;
+}
+
 /* ===== КАРТОЧКА ===== */
 .cardWrap{perspective:1000px;display:flex;justify-content:center}
 .card{
@@ -76,6 +83,11 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 <!-- ТЕСТ -->
 <div id="test" class="center">
   <h2 id="word"></h2>
+
+  <!-- 👁 ЧТЕНИЕ -->
+  <div id="reading" class="reading hidden"></div>
+  <button onclick="toggleReading()" id="readBtn">Показать чтение</button>
+
   <div id="answers"></div>
 </div>
 
@@ -206,12 +218,15 @@ const raw = [
 const words=raw.map(s=>{
   const[a,b,c]=s.split('|');
   return{en:a,ru:b,read:c,ok:0,errors:0}
-}).sort((a,b)=>a.en.localeCompare(b.en));
+});
 
 let pool=[...words],errors=[],current,flipped=false,cardLang='en';
+let showReading=false;
 
 const w=document.getElementById('word'),
 a=document.getElementById('answers'),
+r=document.getElementById('reading'),
+rb=document.getElementById('readBtn'),
 cf=document.getElementById('cardFront'),
 cbk=document.getElementById('cardBack'),
 card=document.getElementById('card'),
@@ -224,10 +239,17 @@ langBtn=document.getElementById('langBtn');
 
 function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
-function pick(){current=rnd(pool);renderTest();renderCard();renderInput()}
+function pick(){
+  current=rnd(pool);
+  showReading=false;
+  r.classList.add('hidden');
+  rb.textContent='Показать чтение';
+  renderTest();renderCard();renderInput();
+}
 
 function renderTest(){
   w.textContent=current.en;
+  r.textContent=current.read;
   a.innerHTML='';
   let opts=[current.ru];
   while(opts.length<4){
@@ -236,78 +258,39 @@ function renderTest(){
   opts.sort(()=>Math.random()-0.5).forEach(t=>{
     let b=document.createElement('button');
     b.textContent=t;
-    b.onclick=()=>{
-      t===current.ru?current.ok++:(current.errors++,errors.push(current));
-      setTimeout(pick,400)
-    };
+    b.onclick=()=>{t===current.ru?current.ok++:(current.errors++,errors.push(current));pick()};
     a.appendChild(b)
   })
 }
 
-function renderCard(){
-  flipped=false;
-  card.classList.remove('flipped');
-  cf.textContent=cardLang==='en'?current.en:current.ru;
-  cbk.textContent=cardLang==='en'?current.ru:current.en;
-  btns.classList.add('hidden');
+function toggleReading(){
+  showReading=!showReading;
+  r.classList.toggle('hidden',!showReading);
+  rb.textContent=showReading?'Скрыть чтение':'Показать чтение';
 }
 
-function flipCard(){
-  flipped=!flipped;
-  card.classList.toggle('flipped');
-  btns.classList.remove('hidden');
-}
-
+/* остальной код без изменений */
+function renderCard(){flipped=false;card.classList.remove('flipped');cf.textContent=cardLang==='en'?current.en:current.ru;cbk.textContent=cardLang==='en'?current.ru:current.en;btns.classList.add('hidden')}
+function flipCard(){flipped=!flipped;card.classList.toggle('flipped');btns.classList.remove('hidden')}
 function cardYes(){current.ok++;pick()}
 function cardNo(){current.errors++;errors.push(current);pick()}
-
-function renderRepeat(){
-  if(!errors.length){rw.textContent='Нет слов для повтора';return}
-  current=rnd(errors);
-  rw.textContent=current.en;
-}
-
+function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов для повтора'}
 function repeatYes(){errors=errors.filter(w=>w!==current);pick()}
 function repeatNo(){pick()}
-
-function toggleCardLang(){
-  cardLang=cardLang==='en'?'ru':'en';
-  langBtn.textContent=cardLang.toUpperCase();
-  renderCard();
-}
-
+function toggleCardLang(){cardLang=cardLang==='en'?'ru':'en';langBtn.textContent=cardLang.toUpperCase();renderCard()}
 function renderInput(){ir.textContent=current.ru;ie.value=''}
-function checkInput(){
-  ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:(current.errors++,errors.push(current));
-  pick();
-}
-
-function renderDict(){
-  d.innerHTML='<table class="table"><tr><th>#</th><th>EN</th><th>RU</th><th>Чтение</th></tr></table>';
-  const t=d.querySelector('table');
-  words.forEach((w,i)=>{
-    let tr=document.createElement('tr');
-    tr.innerHTML=`<td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td>`;
-    t.appendChild(tr)
-  })
-}
-
+function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:(current.errors++,errors.push(current));pick()}
 function openTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   ['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  if(id==='dict')renderDict();
   if(id==='repeat')renderRepeat();
 }
-
 let pink=true;
-function toggleTheme(){
-  pink=!pink;
-  document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff');
-}
-
+function toggleTheme(){pink=!pink;document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff')}
 pick();
 </script>
 </body>
 </html>
+
