@@ -8,7 +8,7 @@
 :root{
   --bg:#ffe6ef;
   --accent:#ff9fc9;
-  --card:#fff;
+  --card:#ffffff;
   --ok:#b9fbc0;
   --bad:#ffb3b3;
 }
@@ -71,8 +71,8 @@ button{
   cursor:pointer;
 }
 .answers{
-  display:grid;
-  grid-template-columns:1fr;
+  display:flex;
+  flex-direction:column;
   gap:10px;
   margin-top:10px;
 }
@@ -83,6 +83,11 @@ button{
 .correct{background:var(--ok)!important}
 .wrong{background:var(--bad)!important}
 .hidden{display:none}
+.reading{
+  margin-top:8px;
+  font-style:italic;
+  color:#666;
+}
 .stat{
   text-align:center;
   margin-top:8px;
@@ -90,7 +95,7 @@ button{
 }
 .dict-row{
   border-bottom:1px solid #eee;
-  padding:6px 0;
+  padding:8px 0;
   font-size:14px;
 }
 .star{color:gold}
@@ -119,6 +124,8 @@ button{
   <h3 id="question"></h3>
   <div id="answers" class="answers"></div>
   <input id="input" class="hidden" placeholder="Напиши перевод">
+  <div id="reading" class="reading hidden"></div>
+  <button onclick="showReading()">👁 Показать чтение</button>
 </div>
 
 <button onclick="toggleDict()">📖 Словарь</button>
@@ -185,8 +192,10 @@ let stats={}, learned=[], errors=[], current="", streak=0;
 Object.keys(words).forEach(w=>stats[w]={ok:0,streak:0});
 
 function nextWord(){
-  answers.innerHTML=""; input.value="";
+  answers.innerHTML="";
+  input.value="";
   input.classList.add("hidden");
+  reading.classList.add("hidden");
 
   let pool = errors.length? errors : Object.keys(words);
   current = pool[Math.floor(Math.random()*pool.length)];
@@ -215,10 +224,15 @@ function nextWord(){
   }
 
   if(mode.value==="cards"){
-    answers.innerHTML=`<button onclick="answers.innerText='${words[current][0]}'">Показать перевод</button>`;
+    answers.innerHTML=`<button onclick="answers.innerHTML='<div>${words[current][0]}</div>'">Показать перевод</button>`;
   }
 
   updateUI();
+}
+
+function showReading(){
+  reading.innerText="Чтение: "+words[current][1];
+  reading.classList.remove("hidden");
 }
 
 function check(val,btn){
@@ -239,9 +253,9 @@ function toggleDict(){
   dict.classList.toggle("hidden");
   dict.innerHTML=Object.keys(words).map(w=>`
     <div class="dict-row">
-      <b>${w}</b> — ${words[w][0]}
-      ${learned.includes(w)?"⭐":""}
-      ✔ ${stats[w].ok}
+      <b>${w}</b><br>
+      ${words[w][0]} — <i>${words[w][1]}</i><br>
+      ✔ ${stats[w].ok} ${learned.includes(w)?"⭐":""}
     </div>
   `).join("");
 }
