@@ -215,15 +215,6 @@ const raw = [
 ];
 
 
-<script>
-/* ================== ДАННЫЕ ================== */
-const raw = [
-  "analyse|анализировать|энэлайз",
-  "apologise|извиняться|эполоджайз",
-  "arrive|прибывать|эрайв",
-  "ask|спрашивать|аск"
-];
-
 const words = raw.map(s=>{
   const [en,ru,read] = s.split('|');
   return { en, ru, read, streak:0, errors:0 };
