@@ -72,12 +72,17 @@ padding:30px;
 </div>
 
 <!-- ТЕСТ -->
+  <div id="testRead" class="read hidden"></div>
+<button onclick="toggleRead('test')" style="margin-bottom:10px">
+  Показать чтение
+</button>
 <div id="test" class="center">
   <h2 id="testWord"></h2>
   <div id="answers"></div>
 </div>
 
 <!-- КАРТОЧКИ -->
+  <button onclick="toggleRead('card')">Показать чтение</button>
 <div id="cards" class="hidden center">
   <div class="cardWrap" onclick="flipCard()">
     <div id="card" class="card">
@@ -203,7 +208,14 @@ const raw = [
 
 const words=raw.map(s=>{
 const[a,b,c]=s.split("|");
-return{en:a,ru:b,read:c,ok:0}
+return {
+  en:a,
+  ru:b,
+  read:c,
+  ok:0,
+  streak:0,
+  learned:false
+}
 }).sort((a,b)=>a.en.localeCompare(b.en));
 
 let pool=[...words],errors=[],current,cardLang="en",flipped=false;
@@ -221,7 +233,14 @@ const langBtn=document.getElementById("langBtn");
 
 function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
-function pick(){
+function pick(){function pick(){
+  let available = pool.filter(w => !w.learned || Math.random() < 0.3);
+  current = rnd(available.length ? available : pool);
+  renderTest();
+  renderCard();
+  renderInput();
+}
+
 current=rnd(pool);
 renderTest();
 renderCard();
@@ -240,11 +259,23 @@ opts.sort(()=>Math.random()-0.5).forEach(t=>{
 let b=document.createElement("button");
 b.textContent=t;
 b.onclick=()=>{
-if(t===current.ru){current.ok++}else{errors.push(current)}
+if(t === current.ru){
+  current.ok++;
+  current.streak++;
+  if(current.streak >= 3){
+    current.learned = true;
+  }
+}else{
+  current.streak = 0;
+  errors.push(current);
+}
+
 pick();
 };
 answers.appendChild(b);
 });
+document.getElementById('testRead').textContent = current.read;
+document.getElementById('testRead').classList.add('hidden');
 }
 
 function renderCard(){
@@ -270,11 +301,24 @@ renderCard();
 
 function renderInput(){ir.textContent=current.ru;ie.value=""}
 function checkInput(){
+  if(ie.value.toLowerCase() === current.en.toLowerCase()){
+  current.ok++;
+  current.streak++;
+  if(current.streak >= 3){
+    current.learned = true;
+  }
+}else{
+  current.streak = 0;
+  errors.push(current);
+}
+pick();
+
 ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:errors.push(current);
 pick();
 }
 
-function renderDict(){
+function renderDict(){<td>${w.learned ? '⭐' : w.ok}</td>
+
 let html="<table class='table'><tr><th>#</th><th>English</th><th>Русский</th><th>Транскрипция</th></tr>";
 words.forEach((w,i)=>{
 html+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td></tr>`;
@@ -300,9 +344,23 @@ function repeatYes(){errors.shift();pick()}
 function repeatNo(){pick()}
 
 let pink=true;
+  
 function toggleTheme(){
 pink=!pink;
 document.documentElement.style.setProperty("--bg",pink?"#ffd6e7":"#cce8ff");
+}
+function toggleRead(type){
+  let el, btn = event.target;
+  if(type === 'card'){
+    el = cr;
+  } else {
+    el = document.getElementById('testRead');
+  }
+
+  el.classList.toggle('hidden');
+  btn.textContent = el.classList.contains('hidden')
+    ? 'Показать чтение'
+    : 'Скрыть чтение';
 }
 
 pick();
