@@ -5,156 +5,51 @@
 <title>Words Easy</title>
 
 <style>
-:root{
---bg:#ffd6e7;
---card:#fff;
---btn:#eee;
-}
+:root{--bg:#ffd6e7;--card:#fff;--btn:#eee}
+body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-content:center;padding:20px}
+.app{width:540px;background:var(--card);border-radius:18px;padding:16px}
 
-body{
-margin:0;
-font-family:Arial;
-background:var(--bg);
-display:flex;
-justify-content:center;
-padding:20px;
-}
+.header{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px}
+.title{text-align:center;font-weight:bold;font-size:18px;grid-column:1/4}
 
-.app{
-width:540px;
-background:var(--card);
-border-radius:18px;
-padding:16px;
-}
+.palette{width:22px;height:22px;border-radius:50%;border:2px solid #aaa;cursor:pointer;
+background:linear-gradient(45deg,#ffd6e7,#cce8ff)}
 
-.header{
-display:grid;
-grid-template-columns:1fr auto auto;
-align-items:center;
-gap:8px;
-}
+.langToggle{font-size:11px;padding:4px 6px;border-radius:8px;border:1px solid #ccc;
+background:#fff;cursor:pointer}
 
-.title{
-grid-column:1/4;
-text-align:center;
-font-weight:bold;
-font-size:18px;
-}
-
-.palette{
-width:22px;
-height:22px;
-border-radius:50%;
-border:2px solid #aaa;
-cursor:pointer;
-background:linear-gradient(45deg,#ffd6e7,#cce8ff)
-}
-
-.langToggle{
-font-size:11px;
-padding:4px 6px;
-border-radius:8px;
-border:1px solid #ccc;
-cursor:pointer;
-background:#fff;
-}
-
-.tabs{
-display:flex;
-gap:6px;
-margin:12px 0;
-flex-wrap:wrap;
-}
-
-.tab{
-flex:1;
-padding:8px;
-border-radius:10px;
-background:var(--btn);
-border:none;
-cursor:pointer;
-font-size:13px;
-}
-
-.tab.active{
-background:#cce8ff;
-font-weight:bold;
-}
+.tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
+.tab{flex:1;padding:8px;border-radius:10px;background:var(--btn);border:none;cursor:pointer;font-size:13px}
+.tab.active{background:#cce8ff;font-weight:bold}
 
 .hidden{display:none}
-
-button{
-width:100%;
-padding:10px;
-margin:6px 0;
-border:none;
-border-radius:12px;
-cursor:pointer;
-background:var(--btn);
-}
-
+button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
 .correct{background:#8bc34a;color:#fff}
 .wrong{background:#f44336;color:#fff}
 
-.center{text-align:center}
-
-/* CARD */
-.cardWrap{
-perspective:1000px;
-}
-
+.cardWrap{perspective:1000px}
 .card{
-width:100%;
+border:1px solid #ddd;border-radius:16px;
 min-height:120px;
-border-radius:16px;
-border:1px solid #ddd;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
-cursor:pointer;
-user-select:none;
+display:flex;align-items:center;justify-content:center;
+font-size:26px;cursor:pointer;
 transition:transform .6s;
 transform-style:preserve-3d;
 }
+.card.flip{transform:rotateY(180deg)}
 
-.card.flip{
-transform:rotateY(180deg);
+.side{
+position:absolute;width:100%;backface-visibility:hidden;
+display:flex;align-items:center;justify-content:center;
+padding:30px;
 }
+.back{transform:rotateY(180deg)}
 
-.cardSide{
-position:absolute;
-backface-visibility:hidden;
-}
+.controls{display:flex;gap:10px}
 
-.cardBack{
-transform:rotateY(180deg);
-}
-
-.context{
-margin-top:10px;
-font-size:14px;
-color:#555;
-}
-
-.controls{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
-/* TABLE */
-.table{
-width:100%;
-border-collapse:collapse;
-font-size:14px;
-}
-
-.table th,.table td{
-border-bottom:1px solid #ddd;
-padding:6px;
-text-align:left;
-}
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
+.center{text-align:center}
 </style>
 </head>
 
@@ -162,203 +57,179 @@ text-align:left;
 <div class="app">
 
 <div class="header">
-<div></div>
-<div class="langToggle" onclick="toggleLang()" id="langBtn">EN</div>
-<div class="palette" onclick="toggleTheme()"></div>
-<div class="title">Words Easy</div>
+  <div></div>
+  <div class="langToggle" id="langBtn" onclick="toggleCardLang()">EN</div>
+  <div class="palette" onclick="toggleTheme()"></div>
+  <div class="title">Words Easy</div>
 </div>
 
 <div class="tabs">
-<button class="tab active" onclick="openTab('test',this)">Тест</button>
-<button class="tab" onclick="openTab('cards',this)">Карточки</button>
-<button class="tab" onclick="openTab('repeat',this)">Повтор</button>
-<button class="tab" onclick="openTab('input',this)">Ввод</button>
-<button class="tab" onclick="openTab('dict',this)">Словарь</button>
+  <button class="tab active" onclick="openTab('test',this)">Тест</button>
+  <button class="tab" onclick="openTab('cards',this)">Карточки</button>
+  <button class="tab" onclick="openTab('repeat',this)">Повтор</button>
+  <button class="tab" onclick="openTab('input',this)">Ввод</button>
+  <button class="tab" onclick="openTab('dict',this)">Словарь</button>
 </div>
 
-<!-- TEST -->
+<!-- ТЕСТ -->
 <div id="test" class="center">
-<h2 id="testWord"></h2>
-<div id="answers"></div>
+  <h2 id="word"></h2>
+  <div id="answers"></div>
 </div>
 
-<!-- CARDS -->
+<!-- КАРТОЧКИ -->
 <div id="cards" class="hidden center">
-<div class="cardWrap">
-<div class="card" id="card" onclick="flipCard()">
-<div class="cardSide" id="cardFront"></div>
-<div class="cardSide cardBack" id="cardBack"></div>
-</div>
-</div>
-<div class="context" id="cardContext"></div>
-
-<div class="controls hidden" id="cardBtns">
-<button class="correct" onclick="know()">Знаю</button>
-<button class="wrong" onclick="dontKnow()">Не знаю</button>
-</div>
+  <div class="cardWrap" onclick="flipCard()">
+    <div id="card" class="card">
+      <div class="side front" id="front"></div>
+      <div class="side back" id="back"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="correct" onclick="cardYes()">Знаю</button>
+    <button class="wrong" onclick="cardNo()">Не знаю</button>
+  </div>
 </div>
 
-<!-- REPEAT -->
+<!-- ПОВТОР -->
 <div id="repeat" class="hidden center">
-<h3 id="repeatWord"></h3>
-<button class="correct" onclick="know()">Знаю</button>
-<button class="wrong" onclick="dontKnow()">Не знаю</button>
+  <h3 id="repeatWord"></h3>
+  <button class="correct" onclick="repeatYes()">Знаю</button>
+  <button class="wrong" onclick="repeatNo()">Не знаю</button>
 </div>
 
-<!-- INPUT -->
+<!-- ВВОД -->
 <div id="input" class="hidden">
-<h3 id="inputRu"></h3>
-<input id="inputEn" placeholder="Введи английское слово"
-onkeydown="if(event.key==='Enter')checkInput()"
-style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-<button onclick="checkInput()">Проверить</button>
+  <h3 id="inputRu"></h3>
+  <input id="inputEn" placeholder="Введи английское слово"
+  onkeydown="if(event.key==='Enter')checkInput()"
+  style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
+  <button onclick="checkInput()">Проверить</button>
 </div>
 
-<!-- DICT -->
+<!-- СЛОВАРЬ -->
 <div id="dict" class="hidden"></div>
 
 </div>
 
 <script>
 const raw=[
-'here|здесь|хиэ|I am here',
-'there|там|зэа|She is there',
-'buy|покупать|бай|I buy food'
+"here|здесь|хиэ","there|там|зэа","at school|в школе|эт скул",
+"understand|понимать|андэстэнд","know|знать|ноу","eat|есть|ит","drink|пить|дринк","sleep|спать|слиип",
+"ask|спрашивать|аск","read|читать|рид","write|писать|райт","describe|описывать|дискрáйб",
+"analyse|анализировать|энэлайз","think|думать|синк","wait|ждать|вэйт","buy|покупать|бай",
+"play|играть|плэй","want|хотеть|вонт","explain|объяснять|иксплэйн","study|учиться|стади",
+"work|работать|вёрк","take|брать|тэйк","arrive|прибывать|эрайв","interrupt|перебивать|интэрапт",
+"expensive|дорого|икспэнсив","cheap|дёшево|чип","strong|сильный|стронг","weak|слабый|уик",
+"creative|творческий|криэйтив","hardworking|трудолюбивый|хардворкинг",
+"patient|терпеливый|пэйшэнт","punctual|пунктуальный|панкчуал"
 ];
 
-let words=JSON.parse(localStorage.getItem('words')) || raw.map(s=>{
-const [en,ru,read,ex]=s.split('|');
-return {en,ru,read,example:ex||'',ok:0,err:0};
-});
+const words=raw.map(s=>{
+const[a,b,c]=s.split("|");
+return{en:a,ru:b,read:c,ok:0}
+}).sort((a,b)=>a.en.localeCompare(b.en));
 
-let errors=JSON.parse(localStorage.getItem('errors'))||[];
-let current=null;
-let flipped=false;
-let lang='en';
+let pool=[...words],errors=[],current,cardLang="en",flipped=false;
 
-function save(){
-localStorage.setItem('words',JSON.stringify(words));
-localStorage.setItem('errors',JSON.stringify(errors));
-}
+const w=document.getElementById("word");
+const a=document.getElementById("answers");
+const front=document.getElementById("front");
+const back=document.getElementById("back");
+const card=document.getElementById("card");
+const ir=document.getElementById("inputRu");
+const ie=document.getElementById("inputEn");
+const d=document.getElementById("dict");
+const rb=document.getElementById("repeatWord");
+const langBtn=document.getElementById("langBtn");
 
-function smartPool(){
-let e=words.filter(w=>w.err>0);
-let low=words.filter(w=>w.ok<2 && w.err===0);
-let rest=words.filter(w=>w.ok>=2);
-return [...e,...low,...rest];
-}
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
 function pick(){
-const pool=smartPool();
-current=pool[Math.floor(Math.random()*pool.length)];
-renderAll();
-}
-
-function renderAll(){
+current=rnd(pool);
 renderTest();
 renderCard();
 renderInput();
 }
 
 function renderTest(){
-testWord.textContent=current.en;
-answers.innerHTML='';
+w.textContent=current.en;
+a.innerHTML="";
 let opts=[current.ru];
 while(opts.length<4){
-let r=words[Math.floor(Math.random()*words.length)].ru;
-if(!opts.includes(r))opts.push(r);
+let x=rnd(words).ru;
+if(!opts.includes(x))opts.push(x)
 }
-opts.sort(()=>Math.random()-0.5);
-opts.forEach(t=>{
-let b=document.createElement('button');
+opts.sort(()=>Math.random()-0.5).forEach(t=>{
+let b=document.createElement("button");
 b.textContent=t;
-b.onclick=()=>{
-if(t===current.ru){current.ok++}
-else{current.err++;errors.push(current)}
-save();pick();
-};
-answers.appendChild(b);
+b.onclick=()=>{t===current.ru?current.ok++:errors.push(current);pick()};
+a.appendChild(b);
 });
 }
 
 function renderCard(){
 flipped=false;
-card.classList.remove('flip');
-cardFront.textContent=lang==='en'?current.en:current.ru;
-cardBack.textContent=lang==='en'?current.ru:current.en;
-cardContext.textContent='';
-cardBtns.classList.add('hidden');
+card.classList.remove("flip");
+front.textContent=cardLang==="en"?current.en:current.ru;
+back.textContent=cardLang==="en"?current.ru:current.en;
 }
 
 function flipCard(){
 flipped=!flipped;
-card.classList.toggle('flip');
-cardContext.textContent=current.example;
-cardBtns.classList.remove('hidden');
+card.classList.toggle("flip",flipped);
 }
 
-function know(){
-current.ok++;
-errors=errors.filter(w=>w!==current);
-save();pick();
+function cardYes(){pool=pool.filter(x=>x!==current);pick()}
+function cardNo(){errors.push(current);pick()}
+
+function toggleCardLang(){
+cardLang=cardLang==="en"?"ru":"en";
+langBtn.textContent=cardLang.toUpperCase();
+renderCard();
 }
 
-function dontKnow(){
-current.err++;
-errors.push(current);
-save();pick();
-}
-
-function renderInput(){
-inputRu.textContent=current.ru;
-inputEn.value='';
-}
-
+function renderInput(){ir.textContent=current.ru;ie.value=""}
 function checkInput(){
-if(inputEn.value.toLowerCase()===current.en.toLowerCase()){
-current.ok++;
-}else{
-current.err++;errors.push(current);
-}
-save();pick();
+ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:errors.push(current);
+pick();
 }
 
 function renderDict(){
-let html='<table class="table"><tr><th>#</th><th>EN</th><th>RU</th><th>Транскрипция</th><th>Контекст</th></tr>';
-words.sort((a,b)=>a.en.localeCompare(b.en)).forEach((w,i)=>{
-html+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td><td>${w.example}</td></tr>`;
+let html="<table class='table'><tr><th>#</th><th>English</th><th>Русский</th><th>Транскрипция</th></tr>";
+words.forEach((w,i)=>{
+html+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td></tr>`;
 });
-html+='</table>';
-dict.innerHTML=html;
+html+="</table>";
+d.innerHTML=html;
 }
 
 function openTab(id,btn){
-document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-btn.classList.add('active');
-['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-if(id==='dict')renderDict();
-if(id==='repeat')repeatWord.textContent=current.en;
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+btn.classList.add("active");
+["test","cards","repeat","input","dict"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+if(id==="dict")renderDict();
+if(id==="repeat")renderRepeat();
 }
 
-function toggleLang(){
-lang=lang==='en'?'ru':'en';
-langBtn.textContent=lang.toUpperCase();
-renderCard();
+function renderRepeat(){
+rb.textContent=errors.length?rnd(errors).en:"Нет слов для повтора";
 }
+
+function repeatYes(){errors.shift();pick()}
+function repeatNo(){pick()}
 
 let pink=true;
 function toggleTheme(){
 pink=!pink;
-document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff');
+document.documentElement.style.setProperty("--bg",pink?"#ffd6e7":"#cce8ff");
 }
 
 pick();
 </script>
 </body>
 </html>
-
-
 
 
 
