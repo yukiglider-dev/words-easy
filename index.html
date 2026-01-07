@@ -5,209 +5,252 @@
 <title>Words Easy</title>
 
 <style>
+:root {
+  --bg: #ffe6f0;
+  --card: #ffffff;
+  --accent: #ff9acb;
+  --correct: #9dffb0;
+  --wrong: #ff9a9a;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background: #cceeff;
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
+  background: var(--bg);
+  margin: 0;
+  padding: 15px;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 15px;
+  margin: 10px 0;
 }
 
-select, button {
+.progress {
+  height: 12px;
+  background: #ffd1e6;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress div {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.5s;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 15px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  animation: fade 0.4s;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+button, input, select {
   width: 100%;
   padding: 12px;
-  margin: 6px 0;
+  margin-top: 8px;
   border-radius: 14px;
   border: none;
   font-size: 16px;
 }
 
 button {
-  background: white;
+  background: var(--accent);
+  color: white;
   cursor: pointer;
 }
 
 .answers button {
-  display: block;
-  margin-top: 8px;
+  background: #fff;
+  color: #000;
 }
 
-.correct {
-  background: #7CFC98;
-}
+.correct { background: var(--correct) !important; }
+.wrong { background: var(--wrong) !important; }
 
-.wrong {
-  background: #FF7F7F;
-}
+.hidden { display: none; }
 
-.card {
-  background: rgba(255,255,255,0.85);
-  padding: 15px;
-  border-radius: 16px;
-  margin-top: 12px;
-}
-
-#reading {
+.small {
+  font-size: 14px;
   text-align: center;
-  font-style: italic;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
-.hidden {
-  display: none;
-}
-
-.word-row {
-  border-bottom: 1px solid #aaa;
+.dictionary-row {
+  border-bottom: 1px solid #ddd;
   padding: 6px 0;
+}
+
+.badge {
+  background: gold;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📘 Words Easy</h1>
+<h1>🌸 Words Easy</h1>
+
+<div class="progress"><div id="progressBar"></div></div>
+<div class="small" id="streak"></div>
 
 <select id="mode">
-  <option value="en-ru">ENG → RU</option>
-  <option value="ru-en">RU → ENG</option>
+  <option value="test">🎯 Тест</option>
+  <option value="cards">🃏 Карточки</option>
+  <option value="input">⌨️ Ввод</option>
 </select>
 
-<div class="card">
+<div class="card" id="game">
   <h3 id="question"></h3>
-  <div class="answers" id="answers"></div>
+  <div id="answers" class="answers"></div>
+  <input id="textInput" class="hidden" placeholder="Введи ответ">
+  <button onclick="speak()">🔊 Озвучить</button>
   <button onclick="showReading()">👂 Показать чтение</button>
-  <p id="reading"></p>
+  <div class="small" id="reading"></div>
 </div>
 
-<button onclick="toggleDictionary()">📖 Словарь</button>
+<button onclick="toggleDict()">📖 Словарь</button>
 
-<div id="dictionary" class="card hidden"></div>
+<div id="dict" class="card hidden"></div>
 
 <script>
 const words = {
-  "I": { ru:"я", read:"ай" },
-  "you": { ru:"ты / вы", read:"ю" },
-  "we": { ru:"мы", read:"ви" },
-  "they": { ru:"они", read:"зэй" },
-  "he": { ru:"он", read:"хи" },
-  "she": { ru:"она", read:"ши" },
-  "it": { ru:"это", read:"ит" },
-
-  "understand": { ru:"понимать", read:"андэстэнд" },
-  "know": { ru:"знать", read:"ноу" },
-  "eat": { ru:"есть", read:"ит" },
-  "drink": { ru:"пить", read:"дринк" },
-  "sleep": { ru:"спать", read:"слип" },
-
-  "busy": { ru:"занятый", read:"бизи" },
-  "rich": { ru:"богатый", read:"рич" },
-  "poor": { ru:"бедный", read:"пуа" },
-
-  "I need": { ru:"мне нужно", read:"ай нид" },
-  "we like": { ru:"нам нравится", read:"ви лайк" },
-  "you're right": { ru:"ты прав", read:"йо райт" }
+  "I": ["я","ай"], "you":["ты","ю"], "we":["мы","ви"], "they":["они","зэй"],
+  "he":["он","хи"], "she":["она","ши"], "it":["это","ит"],
+  "eat":["есть","ит"], "drink":["пить","дринк"], "sleep":["спать","слип"],
+  "busy":["занятый","бизи"], "rich":["богатый","рич"], "poor":["бедный","пуа"]
 };
 
-let stats = {};
-let errors = [];
+let stats = JSON.parse(localStorage.getItem("stats")) || {};
+let errors = JSON.parse(localStorage.getItem("errors")) || [];
+let learned = JSON.parse(localStorage.getItem("learned")) || [];
+let streak = JSON.parse(localStorage.getItem("streak")) || {day:null,count:0};
 
-Object.keys(words).forEach(w => {
-  stats[w] = { ok:0, bad:0 };
+Object.keys(words).forEach(w=>{
+  if(!stats[w]) stats[w]={ok:0,bad:0};
 });
 
-let currentWord = "";
-let correctAnswer = "";
-let locked = false;
+let current = "";
 
-function nextQuestion() {
-  locked = false;
-  reading.innerText = "";
-
-  const list = errors.length ? errors : Object.keys(words);
-  currentWord = list[Math.floor(Math.random() * list.length)];
-  const mode = modeSelect.value;
-
-  let answersPool;
-
-  if (mode === "en-ru") {
-    question.innerText = "Переведи: " + currentWord;
-    correctAnswer = words[currentWord].ru;
-    answersPool = Object.values(words).map(w => w.ru);
-  } else {
-    question.innerText = "Переведи: " + words[currentWord].ru;
-    correctAnswer = currentWord;
-    answersPool = Object.keys(words);
-  }
-
-  let variants = answersPool
-    .filter(a => a !== correctAnswer)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-
-  variants.push(correctAnswer);
-  variants.sort(() => Math.random() - 0.5);
-
-  answersDiv.innerHTML = "";
-  variants.forEach(v => {
-    const btn = document.createElement("button");
-    btn.innerText = v;
-    btn.onclick = () => checkAnswer(btn, v);
-    answersDiv.appendChild(btn);
-  });
+function save() {
+  localStorage.setItem("stats",JSON.stringify(stats));
+  localStorage.setItem("errors",JSON.stringify(errors));
+  localStorage.setItem("learned",JSON.stringify(learned));
+  localStorage.setItem("streak",JSON.stringify(streak));
 }
 
-function checkAnswer(btn, ans) {
-  if (locked) return;
-  locked = true;
+function updateStreak() {
+  const today = new Date().toDateString();
+  if(streak.day!==today){
+    if(streak.day && (new Date(today)-new Date(streak.day))===86400000){
+      streak.count++;
+    } else streak.count=1;
+    streak.day=today;
+  }
+  streakEl.innerText = "🔥 Серия: "+streak.count+" дней";
+  save();
+}
 
-  if (ans === correctAnswer) {
-    btn.classList.add("correct");
-    stats[currentWord].ok++;
-    errors = errors.filter(w => w !== currentWord);
-  } else {
-    btn.classList.add("wrong");
-    stats[currentWord].bad++;
-    if (!errors.includes(currentWord)) errors.push(currentWord);
+function next() {
+  reading.innerText="";
+  answers.innerHTML="";
+  textInput.classList.add("hidden");
 
-    [...answersDiv.children].forEach(b => {
-      if (b.innerText === correctAnswer) {
-        b.classList.add("correct");
-      }
+  const pool = errors.length?errors:Object.keys(words);
+  current = pool[Math.floor(Math.random()*pool.length)];
+
+  question.innerText = current;
+  if(mode.value==="test"){
+    let opts = Object.values(words).map(v=>v[0]).filter(v=>v!==words[current][0]);
+    opts = opts.sort(()=>Math.random()-0.5).slice(0,3);
+    opts.push(words[current][0]);
+    opts.sort(()=>Math.random()-0.5);
+    opts.forEach(o=>{
+      const b=document.createElement("button");
+      b.innerText=o;
+      b.onclick=()=>check(o,b);
+      answers.appendChild(b);
     });
   }
-
-  setTimeout(nextQuestion, 1200);
+  if(mode.value==="cards"){
+    answers.innerHTML="<button onclick='flip()'>Показать</button>";
+  }
+  if(mode.value==="input"){
+    textInput.classList.remove("hidden");
+    textInput.value="";
+    textInput.onkeydown=e=>{if(e.key==="Enter")check(textInput.value)};
+  }
+  updateProgress();
 }
 
-function showReading() {
-  reading.innerText = "Чтение: " + words[currentWord].read;
+function check(ans,btn){
+  if(ans===words[current][0]){
+    stats[current].ok++;
+    if(stats[current].ok>=3 && !learned.includes(current)) learned.push(current);
+    errors=errors.filter(e=>e!==current);
+    if(btn) btn.classList.add("correct");
+  } else {
+    stats[current].bad++;
+    if(!errors.includes(current)) errors.push(current);
+    if(btn) btn.classList.add("wrong");
+  }
+  save();
+  setTimeout(next,900);
 }
 
-function toggleDictionary() {
-  dictionary.classList.toggle("hidden");
-  dictionary.innerHTML = Object.keys(words).map(w =>
-    `<div class="word-row">
-      <b>${w}</b> — ${words[w].ru} (${words[w].read})  
-      ✅ ${stats[w].ok} ❌ ${stats[w].bad}
-    </div>`
-  ).join("");
+function flip(){
+  answers.innerHTML="<div>"+words[current][0]+"</div>";
 }
 
-const question = document.getElementById("question");
-const answersDiv = document.getElementById("answers");
-const reading = document.getElementById("reading");
-const dictionary = document.getElementById("dictionary");
-const modeSelect = document.getElementById("mode");
+function speak(){
+  speechSynthesis.speak(new SpeechSynthesisUtterance(current));
+}
 
-nextQuestion();
+function showReading(){
+  reading.innerText="Чтение: "+words[current][1];
+}
+
+function toggleDict(){
+  dict.classList.toggle("hidden");
+  dict.innerHTML=Object.keys(words).map(w=>`
+    <div class="dictionary-row">
+      <b>${w}</b> — ${words[w][0]} (${words[w][1]})
+      ${learned.includes(w)?"<span class='badge'>⭐</span>":""}
+      ✅${stats[w].ok} ❌${stats[w].bad}
+    </div>
+  `).join("");
+}
+
+function updateProgress(){
+  const total=Object.keys(words).length;
+  progressBar.style.width=(learned.length/total*100)+"%";
+}
+
+const question=document.getElementById("question");
+const answers=document.getElementById("answers");
+const reading=document.getElementById("reading");
+const dict=document.getElementById("dict");
+const mode=document.getElementById("mode");
+const progressBar=document.getElementById("progressBar");
+const textInput=document.getElementById("textInput");
+const streakEl=document.getElementById("streak");
+
+updateStreak();
+next();
 </script>
 
 </body>
 </html>
+
 
