@@ -378,6 +378,38 @@ function checkInput(){
   }
   pick();
 }
+/* ================== СЛОВАРЬ ================== */
+function renderDict(){
+  const d = document.getElementById('dict');
+  d.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.className = 'table';
+
+  table.innerHTML = `
+    <tr>
+      <th>EN</th>
+      <th>RU</th>
+      <th>Чтение</th>
+      <th>✔</th>
+      <th>✖</th>
+    </tr>
+  `;
+
+  words.forEach(w=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${w.en}</td>
+      <td>${w.ru}</td>
+      <td>${w.read}</td>
+      <td>${w.streak}</td>
+      <td>${w.errors}</td>
+    `;
+    table.appendChild(tr);
+  });
+
+  d.appendChild(table);
+}
 
 /* ================== ВКЛАДКИ ================== */
 function openTab(id,btn){
