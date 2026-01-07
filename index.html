@@ -1,140 +1,70 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Words Easy</title>
-
-<style>
-:root{
-  --bg:#ffe6ef;
-  --accent:#ff9fc9;
-  --card:#ffffff;
-  --ok:#b9fbc0;
-  --bad:#ffb3b3;
-}
-body.blue{
-  --bg:#dff3ff;
-  --accent:#7ecbff;
-}
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:var(--bg);
-}
-.container{
-  max-width:420px;
-  margin:0 auto;
-  padding:15px;
-}
-h1{text-align:center}
-.toggle{
-  position:fixed;
-  top:10px;
-  right:10px;
-}
-.toggle button{
-  border:none;
-  border-radius:50%;
-  padding:8px;
-  background:var(--accent);
-  cursor:pointer;
-}
-.progress{
-  height:10px;
-  background:#eee;
-  border-radius:10px;
-  overflow:hidden;
-}
-.progress div{
-  height:100%;
-  width:0%;
-  background:var(--accent);
-}
-.card{
-  background:var(--card);
-  border-radius:18px;
-  padding:15px;
-  margin-top:15px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-select,input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-}
-button{
-  background:var(--accent);
-  color:white;
-  cursor:pointer;
-}
-.answers{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-top:10px;
-}
-.answers button{
-  background:white;
-  color:black;
-}
-.correct{background:var(--ok)!important}
-.wrong{background:var(--bad)!important}
-.hidden{display:none}
-.reading{
-  margin-top:8px;
-  font-style:italic;
-  color:#666;
-}
-.stat{
-  text-align:center;
-  margin-top:8px;
-  font-size:14px;
-}
-.dict-row{
-  border-bottom:1px solid #eee;
-  padding:8px 0;
-  font-size:14px;
-}
-.star{color:gold}
-</style>
+  <meta charset="UTF-8" />
+  <title>Words Easy</title>
+  <style>
+    :root{
+      --bg:pink;
+      --card:#fff;
+      --btn:#e0e0e0;
+    }
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:var(--bg);
+      display:flex;
+      justify-content:center;
+      padding-top:40px;
+    }
+    .app{
+      width:420px;
+      background:var(--card);
+      border-radius:16px;
+      padding:20px;
+    }
+    button{
+      padding:10px;
+      border-radius:10px;
+      border:none;
+      margin:5px 0;
+      cursor:pointer;
+      background:var(--btn);
+      width:100%;
+    }
+    button.correct{background:#8bc34a;color:#fff;}
+    button.wrong{background:#f44336;color:#fff;}
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .answers button{margin:6px 0;}
+    .reading{margin-top:10px;font-style:italic;}
+    .hidden{display:none;}
+    .dict-row{border-bottom:1px solid #ddd;padding:6px 0;}
+  </style>
 </head>
-
 <body>
+<div class="app">
+  <div class="top">
+    <strong>Words Easy</strong>
+    <button onclick="toggleTheme()">🌈</button>
+  </div>
 
-<div class="toggle">
-  <button onclick="toggleTheme()">🎨</button>
-</div>
+  <div id="card">
+    <h2 id="word"></h2>
+    <button onclick="toggleReading()">Показать чтение</button>
+    <div id="reading" class="reading hidden"></div>
+    <div class="answers" id="answers"></div>
+  </div>
 
-<div class="container">
-<h1>Words Easy</h1>
-
-<div class="progress"><div id="bar"></div></div>
-<div class="stat">🔥 Серия: <span id="streak">0</span></div>
-
-<select id="mode" onchange="nextWord()">
-  <option value="test">🎯 Тест</option>
-  <option value="input">⌨️ Ввод</option>
-  <option value="cards">🃏 Карточки</option>
-</select>
-
-<div class="card">
-  <h3 id="question"></h3>
-  <div id="answers" class="answers"></div>
-  <input id="input" class="hidden" placeholder="Напиши перевод">
-  <div id="reading" class="reading hidden"></div>
-  <button onclick="showReading()">👁 Показать чтение</button>
-</div>
-
-<button onclick="toggleDict()">📖 Словарь</button>
-<div id="dict" class="card hidden"></div>
-
+  <button onclick="showDict()">Словарь</button>
+  <div id="dict" class="hidden"></div>
 </div>
 
 <script>
-const words = {
+const words=[
 "here":["здесь","хиэ"],"there":["там","зэа"],"at school":["в школе","эт скул"],
 
 "understand":["понимать","андэстэнд"],"know":["знать","ноу"],"eat":["есть","ит"],
@@ -187,88 +117,61 @@ const words = {
 "creative":["творческий","криэйтив"],"hardworking":["трудолюбивый","хардвёркинг"],
 "patient":["терпеливый","пэйшент"],"punctual":["пунктуальный","панкчуал"]
 };
+];
+let current;
 
-let stats={}, learned=[], errors=[], current="", streak=0;
-Object.keys(words).forEach(w=>stats[w]={ok:0,streak:0});
+function pickWord(){
+  const pool=words.filter(w=>!w.learned||Math.random()<0.3);
+  current=pool[Math.floor(Math.random()*pool.length)];
+  render();
+}
 
-function nextWord(){
-  answers.innerHTML="";
-  input.value="";
-  input.classList.add("hidden");
-  reading.classList.add("hidden");
+function render(){
+  word.textContent=current.en;
+  reading.textContent=current.read;
+  reading.classList.add('hidden');
+  answers.innerHTML='';
+  const opts=[current.ru,...words.filter(w=>w!==current).sort(()=>0.5-Math.random()).slice(0,3).map(w=>w.ru)];
+  opts.sort(()=>0.5-Math.random()).forEach(t=>{
+    const b=document.createElement('button');
+    b.textContent=t;
+    b.onclick=()=>check(b,t);
+    answers.appendChild(b);
+  });
+}
 
-  let pool = errors.length? errors : Object.keys(words);
-  current = pool[Math.floor(Math.random()*pool.length)];
-  question.innerText="Переведи: "+current;
-
-  if(mode.value==="test"){
-    let opts=[words[current][0]];
-    while(opts.length<4){
-      let r=Object.keys(words)[Math.floor(Math.random()*Object.keys(words).length)];
-      if(!opts.includes(words[r][0])) opts.push(words[r][0]);
-    }
-    opts.sort(()=>Math.random()-0.5);
-    opts.forEach(o=>{
-      let b=document.createElement("button");
-      b.innerText=o;
-      b.onclick=()=>check(o,b);
-      answers.appendChild(b);
-    });
+function check(btn,text){
+  if(text===current.ru){
+    btn.classList.add('correct');
+    current.ok++;current.streak++;
+    if(current.streak>=3) current.learned=true;
+  }else{
+    btn.classList.add('wrong');
+    current.streak=0;current.errors++;
   }
-
-  if(mode.value==="input"){
-    input.classList.remove("hidden");
-    input.onkeydown=e=>{
-      if(e.key==="Enter") check(input.value);
-    }
-  }
-
-  if(mode.value==="cards"){
-    answers.innerHTML=`<button onclick="answers.innerHTML='<div>${words[current][0]}</div>'">Показать перевод</button>`;
-  }
-
-  updateUI();
+  setTimeout(pickWord,800);
 }
 
-function showReading(){
-  reading.innerText="Чтение: "+words[current][1];
-  reading.classList.remove("hidden");
+function toggleReading(){reading.classList.toggle('hidden');}
+
+function showDict(){
+  dict.innerHTML='';
+  dict.classList.toggle('hidden');
+  words.forEach(w=>{
+    const d=document.createElement('div');
+    d.className='dict-row';
+    d.textContent=`${w.en} — ${w.ru} — ${w.read} ✔${w.ok} ${w.learned?'⭐':''}`;
+    dict.appendChild(d);
+  });
 }
 
-function check(val,btn){
-  if(val.trim().toLowerCase()===words[current][0]){
-    stats[current].ok++; stats[current].streak++; streak++;
-    if(stats[current].streak>=3 && !learned.includes(current)) learned.push(current);
-    errors=errors.filter(e=>e!==current);
-    if(btn) btn.classList.add("correct");
-  } else {
-    stats[current].streak=0; streak=0;
-    if(!errors.includes(current)) errors.push(current);
-    if(btn) btn.classList.add("wrong");
-  }
-  setTimeout(nextWord,900);
+let pink=true;
+function toggleTheme(){
+  pink=!pink;
+  document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff');
 }
 
-function toggleDict(){
-  dict.classList.toggle("hidden");
-  dict.innerHTML=Object.keys(words).map(w=>`
-    <div class="dict-row">
-      <b>${w}</b><br>
-      ${words[w][0]} — <i>${words[w][1]}</i><br>
-      ✔ ${stats[w].ok} ${learned.includes(w)?"⭐":""}
-    </div>
-  `).join("");
-}
-
-function updateUI(){
-  streakSpan.innerText=streak;
-  bar.style.width=(learned.length/Object.keys(words).length*100)+"%";
-}
-function toggleTheme(){document.body.classList.toggle("blue");}
-
-const streakSpan=document.getElementById("streak");
-nextWord();
+pickWord();
 </script>
-
 </body>
 </html>
