@@ -215,68 +215,96 @@ const raw = [
 ];
 
 
+<script>
+/* ================== ДАННЫЕ ================== */
+const raw = [
+  "analyse|анализировать|энэлайз",
+  "apologise|извиняться|эполоджайз",
+  "arrive|прибывать|эрайв",
+  "ask|спрашивать|аск"
+];
+
 const words = raw.map(s=>{
-  const[a,b,c]=s.split('|');
-  return{en:a,ru:b,read:c,ok:0,errors:0,streak:0}
+  const [en,ru,read] = s.split('|');
+  return { en, ru, read, streak:0, errors:0 };
 });
 
-let pool=[...words],errors=[],current;
+let pool = [...words];
+let errors = [];
+let current = null;
+let cardLang = 'en';
 
-const w=document.getElementById('word'),
-a=document.getElementById('answers'),
-r=document.getElementById('reading'),
-rb=document.getElementById('readBtn');
+/* ================== DOM ================== */
+const w  = document.getElementById('word');
+const a  = document.getElementById('answers');
+const r  = document.getElementById('reading');
+const rb = document.getElementById('readBtn');
 
-function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
+const cf = document.getElementById('cardFront');
+const cb = document.getElementById('cardBack');
+const card = document.getElementById('card');
+const btns = document.getElementById('cardBtns');
 
-function pick(){
-  if(!pool.length){
-    w.textContent='Все слова выучены ⭐';
-    a.innerHTML='';
-    r.classList.add('hidden');
-    rb.classList.add('hidden');
-    return;
-  }
-  current=rnd(pool);
-  r.classList.add('hidden');
-  rb.textContent='Показать чтение';
-  renderTest();
+const ir = document.getElementById('inputRu');
+const ie = document.getElementById('inputEn');
+const rw = document.getElementById('repeatWord');
+
+/* ================== ОБЩЕЕ ================== */
+function rnd(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function renderTest(){
-  w.textContent=current.en;
-  r.textContent=current.read;
-  a.innerHTML='';
+function pick(){
+  if(pool.length === 0){
+    w.textContent = '🎉 Все слова выучены';
+    a.innerHTML = '';
+    rb.style.display = 'none';
+    r.classList.add('hidden');
+    return;
+  }
 
-  let opts=[current.ru];
-  while(opts.length<4){
-    let x=rnd(words).ru;
+  current = rnd(pool);
+  renderTest();
+  renderCard();
+  renderInput();
+}
+
+/* ================== ТЕСТ ================== */
+function renderTest(){
+  w.textContent = current.en;
+  r.textContent = current.read;
+  r.classList.add('hidden');
+  rb.textContent = 'Показать чтение';
+  a.innerHTML = '';
+
+  let opts = [current.ru];
+  while(opts.length < 4){
+    const x = rnd(words).ru;
     if(!opts.includes(x)) opts.push(x);
   }
 
   opts.sort(()=>Math.random()-0.5).forEach(text=>{
-    const btn=document.createElement('button');
-    btn.textContent=text;
+    const btn = document.createElement('button');
+    btn.textContent = text;
 
-    btn.onclick=()=>{
+    btn.onclick = ()=>{
       [...a.children].forEach(b=>b.disabled=true);
 
-      if(text===current.ru){
+      if(text === current.ru){
         btn.classList.add('correct');
-        current.ok++;
         current.streak++;
 
-        if(current.streak>=3){
-          pool=pool.filter(w=>w!==current);
+        if(current.streak >= 3){
+          pool = pool.filter(w=>w!==current);
         }
       }else{
         btn.classList.add('wrong');
+        current.streak = 0;
         current.errors++;
-        current.streak=0;
         errors.push(current);
       }
 
-      setTimeout(pick,700);
+      setTimeout(pick,600);
     };
 
     a.appendChild(btn);
@@ -285,21 +313,103 @@ function renderTest(){
 
 function toggleReading(){
   r.classList.toggle('hidden');
-  rb.textContent=r.classList.contains('hidden')
-    ?'Показать чтение'
-    :'Скрыть чтение';
+  rb.textContent = r.classList.contains('hidden')
+    ? 'Показать чтение'
+    : 'Скрыть чтение';
 }
 
+/* ================== КАРТОЧКИ ================== */
+function renderCard(){
+  if(!current) return;
+  card.classList.remove('flipped');
+  cf.textContent = cardLang==='en'?current.en:current.ru;
+  cb.textContent = cardLang==='en'?current.ru:current.en;
+  btns.classList.add('hidden');
+}
+
+function flipCard(){
+  card.classList.toggle('flipped');
+  btns.classList.remove('hidden');
+}
+
+function cardYes(){
+  current.streak++;
+  if(current.streak>=3){
+    pool = pool.filter(w=>w!==current);
+  }
+  pick();
+}
+
+function cardNo(){
+  current.streak = 0;
+  current.errors++;
+  errors.push(current);
+  pick();
+}
+
+function toggleCardLang(){
+  cardLang = cardLang==='en'?'ru':'en';
+  renderCard();
+}
+
+/* ================== ПОВТОР ================== */
+function renderRepeat(){
+  rw.textContent = errors.length
+    ? rnd(errors).en
+    : 'Нет слов для повтора';
+}
+
+function repeatYes(){
+  errors = errors.filter(w=>w!==current);
+  pick();
+}
+
+function repeatNo(){
+  pick();
+}
+
+/* ================== ВВОД ================== */
+function renderInput(){
+  ir.textContent = current.ru;
+  ie.value = '';
+}
+
+function checkInput(){
+  if(ie.value.toLowerCase() === current.en.toLowerCase()){
+    current.streak++;
+    if(current.streak>=3){
+      pool = pool.filter(w=>w!==current);
+    }
+  }else{
+    current.streak = 0;
+    current.errors++;
+    errors.push(current);
+  }
+  pick();
+}
+
+/* ================== ВКЛАДКИ ================== */
+function openTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+
+  ['test','cards','repeat','input','dict']
+    .forEach(x=>document.getElementById(x).classList.add('hidden'));
+
+  document.getElementById(id).classList.remove('hidden');
+
+  if(id==='repeat') renderRepeat();
+}
+
+/* ================== ТЕМА ================== */
+let pink=true;
+function toggleTheme(){
+  pink=!pink;
+  document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff');
+}
+
+/* ================== СТАРТ ================== */
 pick();
-  // ===== заглушки, чтобы интерфейс не ломал тест =====
-function openTab(){ }
-function toggleCardLang(){ }
-function flipCard(){ }
-function cardYes(){ }
-function cardNo(){ }
-function repeatYes(){ }
-function repeatNo(){ }
-function checkInput(){ }
 </script>
 </body>
 </html>
