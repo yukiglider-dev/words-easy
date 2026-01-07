@@ -5,29 +5,22 @@
 <title>Words Easy</title>
 
 <style>
-:root {
-  --bg: #cceeff;
-  --text: #000;
-  --card: #ffffff;
-}
-.dark {
-  --bg: #1e1e1e;
-  --text: #ffffff;
-  --card: #2c2c2c;
-}
-
 body {
   font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: #cceeff;
   padding: 20px;
   max-width: 600px;
   margin: auto;
 }
 
-button, select {
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+select, button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 6px 0;
   border-radius: 14px;
   border: none;
@@ -35,35 +28,50 @@ button, select {
 }
 
 button {
-  background: var(--card);
+  background: white;
   cursor: pointer;
 }
 
-.correct { background: #7CFC98; }
-.wrong { background: #FF7F7F; }
+.answers button {
+  display: block;
+  margin-top: 8px;
+}
+
+.correct {
+  background: #7CFC98;
+}
+
+.wrong {
+  background: #FF7F7F;
+}
 
 .card {
-  background: var(--card);
+  background: rgba(255,255,255,0.85);
   padding: 15px;
-  border-radius: 14px;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+#reading {
+  text-align: center;
+  font-style: italic;
   margin-top: 10px;
 }
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 
 .word-row {
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid #aaa;
   padding: 6px 0;
-  font-size: 14px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📘 Words Easy</h2>
-
-<button onclick="toggleTheme()">🌗 Светлая / Тёмная тема</button>
+<h1>📘 Words Easy</h1>
 
 <select id="mode">
   <option value="en-ru">ENG → RU</option>
@@ -72,14 +80,9 @@ button {
 
 <div class="card">
   <h3 id="question"></h3>
-  <div id="answers"></div>
+  <div class="answers" id="answers"></div>
   <button onclick="showReading()">👂 Показать чтение</button>
   <p id="reading"></p>
-</div>
-
-<div class="card">
-  ✅ <span id="correct">0</span> |
-  ❌ <span id="wrong">0</span>
 </div>
 
 <button onclick="toggleDictionary()">📖 Словарь</button>
@@ -87,122 +90,98 @@ button {
 <div id="dictionary" class="card hidden"></div>
 
 <script>
-const baseWords = {
-"I": ["я","ай"],"you":["ты / вы","ю"],"we":["мы","ви"],"they":["они","зэй"],
-"he":["он","хи"],"she":["она","ши"],"it":["это","ит"],
-"here":["здесь","хиэ"],"there":["там","зэа"],"at school":["в школе","эт скул"],
+const words = {
+  "I": { ru:"я", read:"ай" },
+  "you": { ru:"ты / вы", read:"ю" },
+  "we": { ru:"мы", read:"ви" },
+  "they": { ru:"они", read:"зэй" },
+  "he": { ru:"он", read:"хи" },
+  "she": { ru:"она", read:"ши" },
+  "it": { ru:"это", read:"ит" },
 
-"understand":["понимать","андэстэнд"],"know":["знать","ноу"],"eat":["есть","ит"],
-"drink":["пить","дринк"],"sleep":["спать","слип"],"ask":["спрашивать","аск"],
-"read":["читать","рид"],"write":["писать","райт"],"describe":["описывать","дискрáйб"],
-"analyse":["анализировать","энэлайз"],"think":["думать","синк"],"wait":["ждать","вэйт"],
-"buy":["покупать","бай"],"play":["играть","плэй"],"want":["хотеть","вонт"],
-"explain":["объяснять","иксплэйн"],"study":["учиться","стади"],"work":["работать","вёрк"],
-"take":["брать","тэйк"],"arrive":["прибывать","эрайв"],"interrupt":["перебивать","интэрапт"],
+  "understand": { ru:"понимать", read:"андэстэнд" },
+  "know": { ru:"знать", read:"ноу" },
+  "eat": { ru:"есть", read:"ит" },
+  "drink": { ru:"пить", read:"дринк" },
+  "sleep": { ru:"спать", read:"слип" },
 
-"I need":["мне нужно","ай нид"],"you need":["тебе нужно","ю нид"],
-"we need":["нам нужно","ви нид"],"they need":["им нужно","зэй нид"],
-"he needs":["ему нужно","хи нидз"],"she needs":["ей нужно","ши нидз"],
+  "busy": { ru:"занятый", read:"бизи" },
+  "rich": { ru:"богатый", read:"рич" },
+  "poor": { ru:"бедный", read:"пуа" },
 
-"I like":["мне нравится","ай лайк"],"you like":["тебе нравится","ю лайк"],
-"we like":["нам нравится","ви лайк"],"they like":["им нравится","зэй лайк"],
-"he likes":["ему нравится","хи лайкс"],"she likes":["ей нравится","ши лайкс"],
-
-"use":["пользоваться","юз"],"collect":["коллекционировать","кэлэкт"],
-"confuse":["путать","конфьюз"],"apologise":["извиняться","эполоджайз"],
-"forgive":["прощать","фогив"],"forget":["забывать","фогэт"],
-
-"start":["начинать","старт"],"begin":["начинать","бигин"],
-"continue":["продолжать","континью"],"finish":["заканчивать","финиш"],
-
-"busy":["занятый","бизи"],"cosy":["уютный","коузи"],"enough":["достаточно","инаф"],
-"rich":["богатый","рич"],"poor":["бедный","пуа"],
-"possible":["возможно","поссибл"],"impossible":["невозможно","импоссибл"],
-
-"I'm busy":["я занят","айм бизи"],"it's cosy":["это уютно","итс коузи"],
-"it's enough":["этого достаточно","итс инаф"],
-"he's rich":["он богат","хиз рич"],"she's poor":["она бедная","шиз пуа"],
-"it's possible":["это возможно","итс поссибл"],
-"it's impossible":["это невозможно","итс импоссибл"],
-
-"you're right":["ты прав","йо райт"],"we're right":["мы правы","вир райт"],
-"they're right":["они правы","зэйр райт"],
-
-"why":["почему","уай"],"who":["кто","ху"],"where":["где","уэа"],
-"what":["что","уот"],"when":["когда","уэн"],
-"how often":["как часто","хау офэн"],"how regularly":["как регулярно","хау рэгьюлэли"],
-"how many":["сколько","хау мэни"],"how much":["сколько","хау мач"],
-
-"get to":["добираться","гет ту"],"get home":["домой","гет хоум"],
-"get there":["туда","гет зэа"],"get here":["сюда","гет хиэ"],
-"get back":["обратно","гет бэк"],
-
-"expensive":["дорого","икспэнсив"],"cheap":["дёшево","чип"],
-"strong":["сильный","стронг"],"weak":["слабый","уик"],
-"creative":["творческий","криэйтив"],"hardworking":["трудолюбивый","хардвёркинг"],
-"patient":["терпеливый","пэйшент"],"punctual":["пунктуальный","панкчуал"]
+  "I need": { ru:"мне нужно", read:"ай нид" },
+  "we like": { ru:"нам нравится", read:"ви лайк" },
+  "you're right": { ru:"ты прав", read:"йо райт" }
 };
 
-let words = JSON.parse(localStorage.getItem("words")) || {};
-let stats = JSON.parse(localStorage.getItem("stats")) || {};
-let errorsQueue = JSON.parse(localStorage.getItem("errors")) || [];
-let theme = localStorage.getItem("theme") || "light";
+let stats = {};
+let errors = [];
 
-if (theme === "dark") document.body.classList.add("dark");
+Object.keys(words).forEach(w => {
+  stats[w] = { ok:0, bad:0 };
+});
 
-for (let w in baseWords) {
-  if (!words[w]) {
-    words[w] = { ru: baseWords[w][0], read: baseWords[w][1] };
-    stats[w] = { ok: 0, bad: 0 };
-  }
-}
-
-let currentWord = "", correctAnswer = "";
+let currentWord = "";
+let correctAnswer = "";
+let locked = false;
 
 function nextQuestion() {
-  document.getElementById("reading").innerText = "";
+  locked = false;
+  reading.innerText = "";
 
-  const list = errorsQueue.length ? errorsQueue : Object.keys(words);
+  const list = errors.length ? errors : Object.keys(words);
   currentWord = list[Math.floor(Math.random() * list.length)];
   const mode = modeSelect.value;
 
-  let answers = Object.keys(words);
+  let answersPool;
+
   if (mode === "en-ru") {
     question.innerText = "Переведи: " + currentWord;
     correctAnswer = words[currentWord].ru;
-    answers = answers.map(w => words[w].ru);
+    answersPool = Object.values(words).map(w => w.ru);
   } else {
     question.innerText = "Переведи: " + words[currentWord].ru;
     correctAnswer = currentWord;
+    answersPool = Object.keys(words);
   }
 
-  const variants = answers.filter(a => a !== correctAnswer)
-    .sort(() => Math.random() - 0.5).slice(0, 3);
+  let variants = answersPool
+    .filter(a => a !== correctAnswer)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
   variants.push(correctAnswer);
   variants.sort(() => Math.random() - 0.5);
 
   answersDiv.innerHTML = "";
   variants.forEach(v => {
-    const b = document.createElement("button");
-    b.innerText = v;
-    b.onclick = () => checkAnswer(b, v);
-    answersDiv.appendChild(b);
+    const btn = document.createElement("button");
+    btn.innerText = v;
+    btn.onclick = () => checkAnswer(btn, v);
+    answersDiv.appendChild(btn);
   });
 }
 
 function checkAnswer(btn, ans) {
+  if (locked) return;
+  locked = true;
+
   if (ans === correctAnswer) {
     btn.classList.add("correct");
     stats[currentWord].ok++;
-    errorsQueue = errorsQueue.filter(w => w !== currentWord);
+    errors = errors.filter(w => w !== currentWord);
   } else {
     btn.classList.add("wrong");
     stats[currentWord].bad++;
-    if (!errorsQueue.includes(currentWord)) errorsQueue.push(currentWord);
+    if (!errors.includes(currentWord)) errors.push(currentWord);
+
+    [...answersDiv.children].forEach(b => {
+      if (b.innerText === correctAnswer) {
+        b.classList.add("correct");
+      }
+    });
   }
 
-  save();
-  updateStats();
   setTimeout(nextQuestion, 1200);
 }
 
@@ -214,36 +193,18 @@ function toggleDictionary() {
   dictionary.classList.toggle("hidden");
   dictionary.innerHTML = Object.keys(words).map(w =>
     `<div class="word-row">
-     <b>${w}</b> — ${words[w].ru} (${words[w].read})
-     ✅ ${stats[w].ok} ❌ ${stats[w].bad}
-     </div>`).join("");
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme",
-    document.body.classList.contains("dark") ? "dark" : "light");
-}
-
-function save() {
-  localStorage.setItem("stats", JSON.stringify(stats));
-  localStorage.setItem("errors", JSON.stringify(errorsQueue));
-}
-
-function updateStats() {
-  correct.innerText = Object.values(stats).reduce((a,b)=>a+b.ok,0);
-  wrong.innerText = Object.values(stats).reduce((a,b)=>a+b.bad,0);
+      <b>${w}</b> — ${words[w].ru} (${words[w].read})  
+      ✅ ${stats[w].ok} ❌ ${stats[w].bad}
+    </div>`
+  ).join("");
 }
 
 const question = document.getElementById("question");
 const answersDiv = document.getElementById("answers");
-const correct = document.getElementById("correct");
-const wrong = document.getElementById("wrong");
 const reading = document.getElementById("reading");
 const dictionary = document.getElementById("dictionary");
 const modeSelect = document.getElementById("mode");
 
-updateStats();
 nextQuestion();
 </script>
 
