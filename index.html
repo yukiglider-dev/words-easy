@@ -279,12 +279,38 @@ function repeatYes(){errors=errors.filter(w=>w!==current);pick()}
 function repeatNo(){pick()}
 function toggleCardLang(){cardLang=cardLang==='en'?'ru':'en';langBtn.textContent=cardLang.toUpperCase();renderCard()}
 function renderInput(){ir.textContent=current.ru;ie.value=''}
+  function renderDict(){
+  d.innerHTML = `
+    <table class="table">
+      <tr>
+        <th>#</th>
+        <th>EN</th>
+        <th>RU</th>
+        <th>Чтение</th>
+      </tr>
+    </table>
+  `;
+  const t = d.querySelector('table');
+
+  words.forEach((w,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${w.en}</td>
+      <td>${w.ru}</td>
+      <td>${w.read}</td>
+    `;
+    t.appendChild(tr);
+  });
+}
+
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:(current.errors++,errors.push(current));pick()}
 function openTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   ['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  if(id === 'dict') renderDict();
   if(id==='repeat')renderRepeat();
 }
 let pink=true;
