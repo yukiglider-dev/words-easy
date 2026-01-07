@@ -386,25 +386,28 @@ function renderDict(){
   const table = document.createElement('table');
   table.className = 'table';
 
-  table.innerHTML = `
-    <tr>
-      <th>EN</th>
-      <th>RU</th>
-      <th>Чтение</th>
-      <th>✔</th>
-      <th>✖</th>
-    </tr>
-  `;
+ table.innerHTML = `
+  <tr>
+    <th>№</th>
+    <th>EN</th>
+    <th>RU</th>
+    <th>Чтение</th>
+    <th>✔</th>
+    <th>✖</th>
+  </tr>
+`;
 
-  words.forEach(w=>{
+
+words.forEach((w,i)=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${w.en}</td>
-      <td>${w.ru}</td>
-      <td>${w.read}</td>
-      <td>${w.streak}</td>
-      <td>${w.errors}</td>
-    `;
+   tr.innerHTML = `
+  <td>${i+1}</td>
+  <td>${w.en}</td>
+  <td>${w.ru}</td>
+  <td>${w.read}</td>
+  <td>${w.streak}</td>
+  <td>${w.errors}</td>
+`;
     table.appendChild(tr);
   });
 
