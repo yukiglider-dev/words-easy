@@ -1,63 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Words Easy</title>
-  <style>
-    :root{
-      --bg:pink;
-      --card:#fff;
-      --btn:#e0e0e0;
-    }
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      background:var(--bg);
-      display:flex;
-      justify-content:center;
-      padding-top:40px;
-    }
-    .app{
-      width:420px;
-      background:var(--card);
-      border-radius:16px;
-      padding:20px;
-    }
-    button{
-      padding:10px;
-      border-radius:10px;
-      border:none;
-      margin:5px 0;
-      cursor:pointer;
-      background:var(--btn);
-      width:100%;
-    }
-    button.correct{background:#8bc34a;color:#fff;}
-    button.wrong{background:#f44336;color:#fff;}
-    .top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    .answers button{margin:6px 0;}
-    .reading{margin-top:10px;font-style:italic;}
-    .hidden{display:none;}
-    .dict-row{border-bottom:1px solid #ddd;padding:6px 0;}
-  </style>
+<meta charset="UTF-8">
+<title>Words Easy</title>
+<style>
+:root{
+  --bg:#ffd6e7;
+  --card:#ffffff;
+  --btn:#eeeeee;
+}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  display:flex;
+  justify-content:center;
+  padding-top:40px;
+}
+.app{
+  width:420px;
+  background:var(--card);
+  border-radius:16px;
+  padding:20px;
+}
+button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:var(--btn);
+}
+.correct{background:#8bc34a;color:#fff;}
+.wrong{background:#f44336;color:#fff;}
+.hidden{display:none;}
+.reading{font-style:italic;margin-top:8px;}
+.dict-row{border-bottom:1px solid #ddd;padding:6px 0;}
+.top{display:flex;justify-content:space-between;align-items:center;}
+</style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <strong>Words Easy</strong>
+    <b>Words Easy</b>
     <button onclick="toggleTheme()">🌈</button>
   </div>
 
-  <div id="card">
-    <h2 id="word"></h2>
-    <button onclick="toggleReading()">Показать чтение</button>
-    <div id="reading" class="reading hidden"></div>
-    <div class="answers" id="answers"></div>
-  </div>
+  <h2 id="word"></h2>
+  <button onclick="toggleReading()">Показать чтение</button>
+  <div id="reading" class="reading hidden"></div>
+
+  <div id="answers"></div>
 
   <button onclick="showDict()">Словарь</button>
   <div id="dict" class="hidden"></div>
@@ -65,103 +59,68 @@
 
 <script>
 const words=[
-"here":["здесь","хиэ"],"there":["там","зэа"],"at school":["в школе","эт скул"],
-
-"understand":["понимать","андэстэнд"],"know":["знать","ноу"],"eat":["есть","ит"],
-"drink":["пить","дринк"],"sleep":["спать","слип"],"ask":["спрашивать","аск"],
-"read":["читать","рид"],"write":["писать","райт"],"describe":["описывать","дискрáйб"],
-"analyse":["анализировать","энэлайз"],"think":["думать","синк"],"wait":["ждать","вэйт"],
-"buy":["покупать","бай"],"play":["играть","плэй"],"want":["хотеть","вонт"],
-"explain":["объяснять","иксплэйн"],"study":["учиться","стади"],"work":["работать","вёрк"],
-"take":["брать","тэйк"],"arrive":["прибывать","эрайв"],"interrupt":["перебивать","интэрапт"],
-
-"I need":["мне нужно","ай нид"],"you need":["тебе нужно","ю нид"],
-"we need":["нам нужно","ви нид"],"they need":["им нужно","зэй нид"],
-"he needs":["ему нужно","хи нидз"],"she needs":["ей нужно","ши нидз"],
-
-"I like":["мне нравится","ай лайк"],"you like":["тебе нравится","ю лайк"],
-"we like":["нам нравится","ви лайк"],"they like":["им нравится","зэй лайк"],
-"he likes":["ему нравится","хи лайкс"],"she likes":["ей нравится","ши лайкс"],
-
-"use":["пользоваться","юз"],"collect":["коллекционировать","кэлэкт"],
-"confuse":["путать","конфьюз"],"apologise":["извиняться","эполоджайз"],
-"forgive":["прощать","фогив"],"forget":["забывать","фогэт"],
-
-"start":["начинать","старт"],"begin":["начинать","бигин"],
-"continue":["продолжать","континью"],"finish":["заканчивать","финиш"],
-
-"busy":["занятый","бизи"],"cosy":["уютный","коузи"],"enough":["достаточно","инаф"],
-"rich":["богатый","рич"],"poor":["бедный","пуа"],
-"possible":["возможно","поссибл"],"impossible":["невозможно","импоссибл"],
-
-"I'm busy":["я занят","айм бизи"],"it's cosy":["это уютно","итс коузи"],
-"it's enough":["этого достаточно","итс инаф"],
-"he's rich":["он богат","хиз рич"],"she's poor":["она бедная","шиз пуа"],
-"it's possible":["это возможно","итс поссибл"],
-"it's impossible":["это невозможно","итс импоссибл"],
-
-"you're right":["ты прав","йо райт"],"we're right":["мы правы","вир райт"],
-"they're right":["они правы","зэйр райт"],
-
-"why":["почему","уай"],"who":["кто","ху"],"where":["где","уэа"],
-"what":["что","уот"],"when":["когда","уэн"],
-"how often":["как часто","хау офэн"],"how regularly":["как регулярно","хау рэгьюлэли"],
-"how many":["сколько","хау мэни"],"how much":["сколько","хау мач"],
-
-"get to":["добираться","гет ту"],"get home":["домой","гет хоум"],
-"get there":["туда","гет зэа"],"get here":["сюда","гет хиэ"],
-"get back":["обратно","гет бэк"],
-
-"expensive":["дорого","икспэнсив"],"cheap":["дёшево","чип"],
-"strong":["сильный","стронг"],"weak":["слабый","уик"],
-"creative":["творческий","криэйтив"],"hardworking":["трудолюбивый","хардвёркинг"],
-"patient":["терпеливый","пэйшент"],"punctual":["пунктуальный","панкчуал"]
-};
+ {en:'here',ru:'здесь',read:'хиэ',ok:0,streak:0,learned:false},
+ {en:'go',ru:'идти',read:'гоу',ok:0,streak:0,learned:false},
+ {en:'I am',ru:'я есть',read:'ай эм',ok:0,streak:0,learned:false},
+ {en:'big',ru:'большой',read:'биг',ok:0,streak:0,learned:false}
 ];
-let current;
+let current=null;
+
+const wordEl=document.getElementById('word');
+const readingEl=document.getElementById('reading');
+const answersEl=document.getElementById('answers');
+const dictEl=document.getElementById('dict');
 
 function pickWord(){
-  const pool=words.filter(w=>!w.learned||Math.random()<0.3);
-  current=pool[Math.floor(Math.random()*pool.length)];
+  current=words[Math.floor(Math.random()*words.length)];
   render();
 }
 
 function render(){
-  word.textContent=current.en;
-  reading.textContent=current.read;
-  reading.classList.add('hidden');
-  answers.innerHTML='';
-  const opts=[current.ru,...words.filter(w=>w!==current).sort(()=>0.5-Math.random()).slice(0,3).map(w=>w.ru)];
-  opts.sort(()=>0.5-Math.random()).forEach(t=>{
+  wordEl.textContent=current.en;
+  readingEl.textContent=current.read;
+  readingEl.classList.add('hidden');
+  answersEl.innerHTML='';
+
+  let options=[current.ru];
+  while(options.length<4){
+    const r=words[Math.floor(Math.random()*words.length)].ru;
+    if(!options.includes(r)) options.push(r);
+  }
+  options.sort(()=>Math.random()-0.5);
+
+  options.forEach(opt=>{
     const b=document.createElement('button');
-    b.textContent=t;
-    b.onclick=()=>check(b,t);
-    answers.appendChild(b);
+    b.textContent=opt;
+    b.onclick=()=>check(b,opt);
+    answersEl.appendChild(b);
   });
 }
 
 function check(btn,text){
   if(text===current.ru){
     btn.classList.add('correct');
-    current.ok++;current.streak++;
+    current.ok++; current.streak++;
     if(current.streak>=3) current.learned=true;
   }else{
     btn.classList.add('wrong');
-    current.streak=0;current.errors++;
+    current.streak=0;
   }
   setTimeout(pickWord,800);
 }
 
-function toggleReading(){reading.classList.toggle('hidden');}
+function toggleReading(){
+  readingEl.classList.toggle('hidden');
+}
 
 function showDict(){
-  dict.innerHTML='';
-  dict.classList.toggle('hidden');
+  dictEl.classList.toggle('hidden');
+  dictEl.innerHTML='';
   words.forEach(w=>{
     const d=document.createElement('div');
     d.className='dict-row';
     d.textContent=`${w.en} — ${w.ru} — ${w.read} ✔${w.ok} ${w.learned?'⭐':''}`;
-    dict.appendChild(d);
+    dictEl.appendChild(d);
   });
 }
 
