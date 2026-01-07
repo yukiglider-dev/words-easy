@@ -215,12 +215,20 @@ const raw = [
 ];
 
 
-const words = raw.map(s=>{
+const saved = JSON.parse(localStorage.getItem('words-progress') || 'null');
+
+const words = raw.map((s,i)=>{
   const [en,ru,read] = s.split('|');
+
+  if(saved && saved[i]){
+    return saved[i];
+  }
+
   return { en, ru, read, streak:0, errors:0 };
 });
 
-let pool = [...words];
+
+let pool = words.filter(w=>w.streak < 3);
 let errors = [];
 let current = null;
 let cardLang = 'en';
@@ -279,7 +287,24 @@ function renderTest(){
     btn.textContent = text;
 
     btn.onclick = ()=>{
+      saveProgress();
+
       [...a.children].forEach(b=>b.disabled=true);
+if(text === current.ru){
+  btn.classList.add('correct');
+  current.streak++;
+  if(current.streak >= 3){
+    pool = pool.filter(w=>w!==current);
+  }
+}else{
+  btn.classList.add('wrong');
+  current.streak = 0;
+  current.errors++;
+  errors.push(current);
+}
+
+saveProgress();
+setTimeout(pick,600);
 
       if(text === current.ru){
         btn.classList.add('correct');
@@ -327,7 +352,8 @@ function cardYes(){
   current.streak++;
   if(current.streak>=3){
     pool = pool.filter(w=>w!==current);
-  }
+  }saveProgress();
+
   pick();
 }
 
@@ -335,7 +361,8 @@ function cardNo(){
   current.streak = 0;
   current.errors++;
   errors.push(current);
-  pick();
+  pick();saveProgress();
+
 }
 
 function toggleCardLang(){
@@ -364,6 +391,9 @@ function renderInput(){
   ir.textContent = current.ru;
   ie.value = '';
 }
+function saveProgress(){
+  localStorage.setItem('words-progress', JSON.stringify(words));
+}
 
 function checkInput(){
   if(ie.value.toLowerCase() === current.en.toLowerCase()){
@@ -375,7 +405,8 @@ function checkInput(){
     current.streak = 0;
     current.errors++;
     errors.push(current);
-  }
+  }saveProgress();
+
   pick();
 }
 /* ================== СЛОВАРЬ ================== */
