@@ -76,8 +76,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 <!-- ТЕСТ -->
 <div id="test" class="center">
   <h2 id="word"></h2>
-  <div id="testRead" class="read hidden"></div>
-  <button onclick="toggleRead('test')">Показать чтение</button>
   <div id="answers"></div>
 </div>
 
@@ -117,123 +115,36 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <script>
-const raw = [
-"analyse|анализировать|энэлайз",
-"apologise|извиняться|эполоджайз",
-"arrive|прибывать|эрайв",
-"ask|спрашивать|аск",
-"at school|в школе|эт скул",
-"begin|начинать|бигин",
-"busy|занятый|бизи",
-"buy|покупать|бай",
-"cheap|дёшево|чип",
-"collect|коллекционировать|колэкт",
-"confuse|путать|кэнфьюз",
-"continue|продолжать|континью",
-"cosy|уютный|коузи",
-"creative|творческий|криэйтив",
-"describe|описывать|дискрáйб",
-"drink|пить|дринк",
-"eat|есть|ит",
-"enough|достаточно|инаф",
-"expensive|дорого|икспэнсив",
-"explain|объяснять|иксплэйн",
-"finish|заканчивать|финиш",
-"forget|забывать|фэгэт",
-"forgive|прощать|фэгив",
-"get back|добираться обратно|гэт бэк",
-"get here|добираться сюда|гэт хиэ",
-"get home|добираться домой|гэт хоум",
-"get there|добираться туда|гэт зэа",
-"get to|добираться до|гэт ту",
-"hardworking|трудолюбивый|хардворкинг",
-"he likes|ему нравится|хи лайкс",
-"he needs|ему нужно|хи нидз",
-"he’s rich|он богатый|хиз рич",
-"here|здесь|хиэ",
-"how many|сколько|хау мэни",
-"how much|сколько|хау мач",
-"how often|как часто|хау офн",
-"how regularly|как регулярно|хау рэгьюлэли",
-"I like|мне нравится|ай лайк",
-"I need|мне нужно|ай нид",
-"I’m busy|я занят|айм бизи",
-"impossible|невозможно|импосибл",
-"interrupt|перебивать|интэрапт",
-"it’s cosy|это уютно|итс коузи",
-"it’s enough|этого достаточно|итс инаф",
-"it’s impossible|это невозможно|итс импосибл",
-"it’s possible|это возможно|итс посибл",
-"know|знать|ноу",
-"patient|терпеливый|пэйшэнт",
-"play|играть|плэй",
-"poor|бедный|пуа",
-"possible|возможно|посибл",
-"punctual|пунктуальный|панкчуал",
-"read|читать|рид",
-"rich|богатый|рич",
-"she likes|ей нравится|ши лайкс",
-"she needs|ей нужно|ши нидз",
-"she’s poor|она бедная|шиз пуа",
-"sleep|спать|слиип",
-"start|начинать|старт",
-"strong|сильный|стронг",
-"study|учиться|стади",
-"take|брать|тэйк",
-"there|там|зэа",
-"they like|им нравится|зэй лайк",
-"they need|им нужно|зэй нид",
-"they’re right|они правы|зэй райт",
-"think|думать|синк",
-"understand|понимать|андэстэнд",
-"use|пользоваться|юз",
-"wait|ждать|вэйт",
-"weak|слабый|уик",
-"we like|нам нравится|уи лайк",
-"we need|нам нужно|уи нид",
-"we’re right|мы правы|уи райт",
-"what|что|вот",
-"when|когда|уэн",
-"where|где / куда|уэа",
-"who|кто / кого|ху",
-"why|почему|вай",
-"work|работать|вёрк",
-"write|писать|райт",
-"you like|тебе / вам нравится|ю лайк",
-"you need|тебе / вам нужно|ю нид",
-"you’re right|ты / вы правы|йо райт"
+const raw=[
+'here|здесь|хиэ','there|там|зэа','at school|в школе|эт скул','analyse|анализировать|энэлайз','apologise|извиняться|эполоджайз','arrive|прибывать|эрайв','ask|спрашивать|аск','begin|начинать|бигин','busy|занятый|бизи','buy|покупать|бай','cheap|дёшево|чип','collect|коллекционировать|колэкт','confuse|путать|кэнфьюз','continue|продолжать|континью','cosy|уютный|коузи','creative|творческий|криэйтив','describe|описывать|дискрáйб','drink|пить|дринк','eat|есть|ит','enough|достаточно|инаф','expensive|дорого|икспэнсив','explain|объяснять|иксплэйн','finish|заканчивать|финиш','forget|забывать|фэгэт','forgive|прощать|фэгив','get back|добираться обратно|гэт бэк','get here|добираться сюда|гэт хиэ','get home|добираться домой|гэт хоум','get there|добираться туда|гэт зэа','get to|добираться до|гэт ту','hardworking|трудолюбивый|хардворкинг','he likes|ему нравится|хи лайкс','he needs|ему нужно|хи нидз','he’s rich|он богатый|хиз рич','how many|сколько|хау мэни','how much|сколько|хау мач','how often|как часто|хау офн','how regularly|как регулярно|хау рэгьюлэли','I like|мне нравится|ай лайк','I need|мне нужно|ай нид','I’m busy|я занят|айм бизи','impossible|невозможно|импосибл','interrupt|перебивать|интэрапт','it’s cosy|это уютно|итс коузи','it’s enough|этого достаточно|итс инаф','it’s impossible|это невозможно|итс импосибл','it’s possible|это возможно|итс посибл','know|знать|ноу','patient|терпеливый|пэйшэнт','play|играть|плэй','poor|бедный|пуа','possible|возможно|посибл','punctual|пунктуальный|панкчуал','read|читать|рид','rich|богатый|рич','she likes|ей нравится|ши лайкс','she needs|ей нужно|ши нидз','she’s poor|она бедная|шиз пуа','sleep|спать|слиип','start|начинать|старт','strong|сильный|стронг','study|учиться|стади','take|брать|тэйк','they like|им нравится|зэй лайк','they need|им нужно|зэй нид','they’re right|они правы|зэй райт','think|думать|синк','understand|понимать|андэстэнд','use|пользоваться|юз','wait|ждать|вэйт','weak|слабый|уик','we like|нам нравится|уи лайк','we need|нам нужно|уи нид','we’re right|мы правы|уи райт','what|что|вот','when|когда|уэн','where|где|уэа','who|кто|ху','why|почему|вай','work|работать|вёрк','write|писать|райт','you like|тебе нравится|ю лайк','you need|тебе нужно|ю нид','you’re right|ты прав|йо райт'
 ];
 
 
 const words=raw.map(s=>{
   const[a,b,c]=s.split('|');
-  return{en:a,ru:b,read:c,ok:0,streak:0,learned:false}
+  return{en:a,ru:b,read:c,ok:0,errors:0}
 }).sort((a,b)=>a.en.localeCompare(b.en));
 
-let pool=[...words],errors=[],current,side=0,cardLang='en';
+let pool=[...words],errors=[],current,flipped=false,cardLang='en';
 
 const w=document.getElementById('word'),
 a=document.getElementById('answers'),
-c=document.getElementById('card'),
-cr=document.getElementById('cardRead'),
-cb=document.getElementById('cardBtns'),
+cf=document.getElementById('cardFront'),
+cbk=document.getElementById('cardBack'),
+card=document.getElementById('card'),
+btns=document.getElementById('cardBtns'),
 ir=document.getElementById('inputRu'),
 ie=document.getElementById('inputEn'),
 d=document.getElementById('dict'),
+rw=document.getElementById('repeatWord'),
 langBtn=document.getElementById('langBtn');
 
 function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
-function pick(){
-  let available=pool.filter(w=>!w.learned||Math.random()<0.3);
-  current=rnd(available.length?available:pool);
-  renderTest();renderCard();renderInput();
-}
+function pick(){current=rnd(pool);renderTest();renderCard();renderInput()}
 
 function renderTest(){
   w.textContent=current.en;
-  document.getElementById('testRead').textContent=current.read;
-  document.getElementById('testRead').classList.add('hidden');
   a.innerHTML='';
   let opts=[current.ru];
   while(opts.length<4){
@@ -243,41 +154,38 @@ function renderTest(){
     let b=document.createElement('button');
     b.textContent=t;
     b.onclick=()=>{
-      if(t===current.ru){
-        current.ok++;current.streak++;
-        if(current.streak>=3)current.learned=true;
-      }else{
-        current.streak=0;errors.push(current);
-      }
-      setTimeout(pick,400);
+      t===current.ru?current.ok++:(current.errors++,errors.push(current));
+      setTimeout(pick,400)
     };
     a.appendChild(b)
   })
 }
 
 function renderCard(){
-  side=0;
-  c.textContent=cardLang==='en'?current.en:current.ru;
-  cr.textContent=current.read;
-  cr.classList.add('hidden');
-  cb.classList.add('hidden');
+  flipped=false;
+  card.classList.remove('flipped');
+  cf.textContent=cardLang==='en'?current.en:current.ru;
+  cbk.textContent=cardLang==='en'?current.ru:current.en;
+  btns.classList.add('hidden');
 }
 
 function flipCard(){
-  side=1-side;
-  c.textContent=side?(cardLang==='en'?current.ru:current.en):(cardLang==='en'?current.en:current.ru);
-  cb.classList.remove('hidden');
+  flipped=!flipped;
+  card.classList.toggle('flipped');
+  btns.classList.remove('hidden');
 }
 
-function cardYes(){
-  current.ok++;current.streak++;
-  if(current.streak>=3)current.learned=true;
-  pick();
+function cardYes(){current.ok++;pick()}
+function cardNo(){current.errors++;errors.push(current);pick()}
+
+function renderRepeat(){
+  if(!errors.length){rw.textContent='Нет слов для повтора';return}
+  current=rnd(errors);
+  rw.textContent=current.en;
 }
 
-function cardNo(){
-  current.streak=0;errors.push(current);pick();
-}
+function repeatYes(){errors=errors.filter(w=>w!==current);pick()}
+function repeatNo(){pick()}
 
 function toggleCardLang(){
   cardLang=cardLang==='en'?'ru':'en';
@@ -286,39 +194,28 @@ function toggleCardLang(){
 }
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
-
 function checkInput(){
-  if(ie.value.toLowerCase()===current.en.toLowerCase()){
-    current.ok++;current.streak++;
-    if(current.streak>=3)current.learned=true;
-  }else{
-    current.streak=0;errors.push(current);
-  }
+  ie.value.toLowerCase()===current.en.toLowerCase()?current.ok++:(current.errors++,errors.push(current));
   pick();
 }
 
 function renderDict(){
-  d.innerHTML='<table class="table"><tr><th>#</th><th>EN</th><th>RU</th><th>Чтение</th><th>✔</th></tr></table>';
+  d.innerHTML='<table class="table"><tr><th>#</th><th>EN</th><th>RU</th><th>Чтение</th></tr></table>';
   const t=d.querySelector('table');
   words.forEach((w,i)=>{
     let tr=document.createElement('tr');
-    tr.innerHTML=`<td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td><td>${w.learned?'⭐':w.ok}</td>`;
+    tr.innerHTML=`<td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.read}</td>`;
     t.appendChild(tr)
   })
-}
-
-function toggleRead(type){
-  let el=type==='card'?cr:document.getElementById('testRead');
-  el.classList.toggle('hidden');
-  event.target.textContent=el.classList.contains('hidden')?'Показать чтение':'Скрыть чтение';
 }
 
 function openTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['test','cards','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  ['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
+  if(id==='repeat')renderRepeat();
 }
 
 let pink=true;
