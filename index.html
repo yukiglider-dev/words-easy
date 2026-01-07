@@ -2,212 +2,186 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>English Trainer</title>
+<title>Words Easy</title>
+
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background:#111;
-  color:#fff;
+body{
+  font-family:Arial;
+  background:#f2f2f2;
   margin:0;
   padding:20px;
 }
-button {
-  padding:10px 15px;
-  margin:5px;
+.app{
+  max-width:520px;
+  margin:auto;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+}
+button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:10px;
   cursor:pointer;
 }
-.hidden { display:none; }
-.good { background:#2ecc71; }
-.bad { background:#e74c3c; }
-
-.card {
-  border:1px solid #555;
-  padding:30px;
-  font-size:26px;
-  margin:20px 0;
-  text-align:center;
-}
-
-.reading {
-  opacity:.7;
-  margin-top:10px;
+.correct{background:#4caf50;color:#fff}
+.wrong{background:#f44336;color:#fff}
+.hidden{display:none}
+.center{text-align:center}
+.reading{opacity:.7;font-style:italic}
+.example{
+  margin:8px 0;
+  font-size:15px;
+  color:#333;
 }
 </style>
 </head>
+
 <body>
+<div class="app">
 
-<h1>English Trainer</h1>
+<h2 class="center">Words Easy</h2>
 
-<button onclick="mode='cards';render()">Карточки</button>
 <button onclick="mode='test';render()">Тест</button>
+<button onclick="mode='cards';render()">Карточки</button>
 
 <hr>
 
-<div id="cards" class="hidden">
-  <div class="card" id="card"></div>
+<!-- TEST -->
+<div id="test" class="center hidden">
+  <h2 id="word"></h2>
+  <div id="reading" class="reading"></div>
+  <div id="example" class="example"></div>
+  <div id="answers"></div>
+</div>
+
+<!-- CARDS -->
+<div id="cards" class="center hidden">
+  <div style="font-size:26px;margin:20px" id="card"></div>
   <button onclick="flip()">Перевернуть</button>
   <button onclick="nextCard()">Дальше</button>
 </div>
 
-<div id="test" class="hidden">
-  <h2 id="word"></h2>
-  <div id="transcription" class="reading"></div>
-  <div id="example" class="reading"></div>
-  <div id="answers"></div>
 </div>
 
 <script>
-/* ================== ДАННЫЕ ================== */
-
+/* ===== СЛОВА ===== */
 const raw = [
-"here|здесь|хиэ|I am here now.",
-"there|там|зэа|She is there.",
-"at school|в школе|эт скул|My sister is at school.",
-
-"understand|понимать|андэстэнд|I understand you.",
-"know|знать|ноу|I know this word.",
+"work|работать|вёрк|I work every day.",
+"study|учиться|стади|I study English.",
 "eat|есть|ит|I eat breakfast.",
 "drink|пить|дринк|I drink water.",
 "sleep|спать|слиип|I want to sleep.",
-"ask|спрашивать|аск|I ask a question.",
 "read|читать|рид|I read books.",
-"write|писать|райт|I write every day.",
-"describe|описывать|дискрáйб|Describe this picture.",
-"analyse|анализировать|энэлайз|We analyse the text.",
-"think|думать|синк|I think about it.",
-"wait|ждать|вэйт|Please wait.",
-"buy|покупать|бай|I buy food.",
+"write|писать|райт|I write messages.",
 "play|играть|плэй|I play football.",
-"want|хотеть|вонт|I want coffee.",
-"explain|объяснять|иксплэйн|Explain this rule.",
-"study|учиться|стади|I study English.",
-"work|работать|вёрк|I work hard.",
-"take|брать|тэйк|Take this book.",
+"buy|покупать|бай|I buy food.",
+"think|думать|синк|I think about it.",
+"understand|понимать|андэстэнд|I understand you.",
+"know|знать|ноу|I know the answer.",
 "arrive|прибывать|эрайв|We arrive early.",
-"interrupt|перебивать|интэрапт|Don’t interrupt me.",
-
-"I need|мне нужно|ай нид|I need help.",
-"you need|тебе нужно|ю нид|You need practice.",
-"we need|нам нужно|уи нид|We need time.",
-"they need|им нужно|зэй нид|They need rest.",
-"he needs|ему нужно|хи нидз|He needs money.",
-"she needs|ей нужно|ши нидз|She needs help.",
-
-"I like|мне нравится|ай лайк|I like music.",
-"you like|тебе нравится|ю лайк|You like tea.",
-"we like|нам нравится|уи лайк|We like it.",
-"they like|им нравится|зэй лайк|They like English.",
-"he likes|ему нравится|хи лайкс|He likes coffee.",
-"she likes|ей нравится|ши лайкс|She likes books."
+"wait|ждать|вэйт|Please wait here.",
+"ask|спрашивать|аск|I ask a question.",
+"explain|объяснять|иксплэйн|Explain this rule.",
+"take|брать|тэйк|Take this book.",
+"want|хотеть|вонт|I want coffee.",
+"work hard|много работать|вёрк хард|I work hard every day."
 ];
 
-/* ================== ЛОГИКА ================== */
-
-const saved = JSON.parse(localStorage.getItem('words')||'[]');
+const saved = JSON.parse(localStorage.getItem('progress')||'[]');
 
 let words = raw.map((s,i)=>{
-  const [en,ru,read,example]=s.split('|');
-  return saved[i] || {en,ru,read,example,streak:0};
+  const [en,ru,read,ex]=s.split('|');
+  return saved[i] || {en,ru,read,ex,streak:0};
 });
 
-let mode='cards';
+let mode='test';
 let index=0;
 let flipped=false;
 
-const card=document.getElementById('card');
-const wordEl=document.getElementById('word');
-const trEl=document.getElementById('transcription');
-const exEl=document.getElementById('example');
-const ansEl=document.getElementById('answers');
+const wEl=document.getElementById('word');
+const rEl=document.getElementById('reading');
+const eEl=document.getElementById('example');
+const aEl=document.getElementById('answers');
+const cEl=document.getElementById('card');
 
 function save(){
-  localStorage.setItem('words',JSON.stringify(words));
+  localStorage.setItem('progress',JSON.stringify(words));
 }
 
-function nextIndex(){
-  const pool = words.filter(w=>w.streak<3);
+function pick(){
+  const pool=words.filter(w=>w.streak<3);
   if(!pool.length){
-    alert('Все слова выучены 🎉');
+    alert('🎉 Все слова выучены');
     return null;
   }
   return words.indexOf(pool[Math.floor(Math.random()*pool.length)]);
 }
 
-/* ================== КАРТОЧКИ ================== */
-
-function renderCard(){
-  const w=words[index];
-  card.textContent = flipped ? w.example : w.en;
-}
-
-function flip(){
-  flipped=!flipped;
-  renderCard();
-}
-
-function nextCard(){
-  index = nextIndex();
-  if(index!==null){
-    flipped=false;
-    renderCard();
-  }
-}
-
-/* ================== ТЕСТ ================== */
-
+/* ===== TEST ===== */
 function renderTest(){
-  index = nextIndex();
+  index=pick();
   if(index===null) return;
 
   const w=words[index];
-  wordEl.textContent=w.en;
-  trEl.textContent=w.read;
-  exEl.textContent=w.example;
+  wEl.textContent=w.en;
+  rEl.textContent=w.read;
+  eEl.textContent=w.ex;
 
-  ansEl.innerHTML='';
-  const opts = [w.ru];
-
+  aEl.innerHTML='';
+  let opts=[w.ru];
   while(opts.length<4){
-    const r=words[Math.floor(Math.random()*words.length)].ru;
+    let r=words[Math.floor(Math.random()*words.length)].ru;
     if(!opts.includes(r)) opts.push(r);
   }
-
   opts.sort(()=>Math.random()-0.5);
 
-  opts.forEach(o=>{
+  opts.forEach(t=>{
     const b=document.createElement('button');
-    b.textContent=o;
+    b.textContent=t;
     b.onclick=()=>{
-      if(o===w.ru){
-        b.classList.add('good');
+      if(t===w.ru){
+        b.classList.add('correct');
         w.streak++;
-      } else {
-        b.classList.add('bad');
+      }else{
+        b.classList.add('wrong');
+        w.streak=0;
       }
       save();
-      setTimeout(renderTest,700);
+      setTimeout(renderTest,600);
     };
-    ansEl.appendChild(b);
+    aEl.appendChild(b);
   });
 }
 
-/* ================== РЕНДЕР ================== */
+/* ===== CARDS ===== */
+function renderCard(){
+  const w=words[index];
+  cEl.textContent=flipped ? `${w.ru}\n${w.ex}` : w.en;
+}
+function flip(){flipped=!flipped;renderCard()}
+function nextCard(){
+  index=pick();
+  flipped=false;
+  renderCard();
+}
 
+/* ===== MAIN RENDER ===== */
 function render(){
-  document.getElementById('cards').classList.toggle('hidden',mode!=='cards');
   document.getElementById('test').classList.toggle('hidden',mode!=='test');
+  document.getElementById('cards').classList.toggle('hidden',mode!=='cards');
 
-  if(mode==='cards'){
-    index=nextIndex();
-    flipped=false;
+  if(mode==='test') renderTest();
+  else{
+    index=pick();
     renderCard();
-  } else {
-    renderTest();
   }
 }
 
 render();
 </script>
-
 </body>
 </html>
+
