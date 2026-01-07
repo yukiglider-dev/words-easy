@@ -30,7 +30,9 @@ body {
   padding:15px;
 }
 
-h1 { text-align:center; }
+h1 {
+  text-align:center;
+}
 
 .theme {
   position:fixed;
@@ -42,7 +44,7 @@ h1 { text-align:center; }
   border:none;
   border-radius:20px;
   background:var(--accent);
-  color:#fff;
+  color:white;
   cursor:pointer;
 }
 
@@ -79,13 +81,13 @@ select,button,input {
 
 button {
   background:var(--accent);
-  color:#fff;
+  color:white;
   cursor:pointer;
 }
 
 .answers button {
-  background:#fff;
-  color:#000;
+  background:white;
+  color:black;
 }
 
 .correct { background:var(--ok)!important; }
@@ -121,7 +123,7 @@ button {
 
 <div class="progress"><div id="bar"></div></div>
 
-<select id="mode">
+<select id="mode" onchange="next()">
   <option value="test">🎯 Тест</option>
   <option value="cards">🃏 Карточки</option>
   <option value="input">⌨️ Ввод</option>
@@ -141,7 +143,7 @@ button {
 </div>
 
 <script>
-const baseWords = {
+const words = {
 "I": ["я","ай"],"you":["ты / вы","ю"],"we":["мы","ви"],"they":["они","зэй"],
 "he":["он","хи"],"she":["она","ши"],"it":["это","ит"],
 "here":["здесь","хиэ"],"there":["там","зэа"],"at school":["в школе","эт скул"],
@@ -198,34 +200,32 @@ const baseWords = {
 };
 
 
-let stats = JSON.parse(localStorage.stats||"{}");
-let learned = JSON.parse(localStorage.learned||"[]");
-let errors = JSON.parse(localStorage.errors||"[]");
+let stats = {};
+let learned = [];
+let errors = [];
+let current = "";
 
 Object.keys(words).forEach(w=>{
-  if(!stats[w]) stats[w]={ok:0,streak:0};
+  stats[w]={ok:0,streak:0};
 });
-
-let current="";
 
 function next(){
   reading.innerText="";
   answers.innerHTML="";
   input.classList.add("hidden");
 
-  let pool = errors.length ? errors : Object.keys(words);
-  pool = pool.filter(w=>!learned.includes(w) || Math.random()<0.4);
-
+  const pool = errors.length ? errors : Object.keys(words);
   current = pool[Math.floor(Math.random()*pool.length)];
-  question.innerText=current;
+  question.innerText = "Переведи: " + current;
 
   if(mode.value==="test"){
     let opts = Object.values(words).map(v=>v[0]).filter(v=>v!==words[current][0]);
     opts = opts.sort(()=>Math.random()-0.5).slice(0,3);
     opts.push(words[current][0]);
     opts.sort(()=>Math.random()-0.5);
+
     opts.forEach(o=>{
-      let b=document.createElement("button");
+      const b=document.createElement("button");
       b.innerText=o;
       b.onclick=()=>check(o,b);
       answers.appendChild(b);
@@ -233,13 +233,16 @@ function next(){
   }
 
   if(mode.value==="cards"){
-    answers.innerHTML="<button onclick='flip()'>Показать</button>";
+    answers.innerHTML =
+      `<button onclick="flip()">Показать перевод</button>`;
   }
 
   if(mode.value==="input"){
     input.classList.remove("hidden");
     input.value="";
-    input.onkeydown=e=>{ if(e.key==="Enter") check(input.value); };
+    input.onkeydown=e=>{
+      if(e.key==="Enter") check(input.value);
+    };
   }
 
   updateBar();
@@ -249,48 +252,50 @@ function check(ans,btn){
   if(ans.trim().toLowerCase()===words[current][0]){
     stats[current].streak++;
     stats[current].ok++;
-    if(stats[current].streak>=3 && !learned.includes(current))
+    if(stats[current].streak>=3 && !learned.includes(current)){
       learned.push(current);
-    errors=errors.filter(e=>e!==current);
+    }
+    errors = errors.filter(e=>e!==current);
     if(btn) btn.classList.add("correct");
   } else {
     stats[current].streak=0;
     if(!errors.includes(current)) errors.push(current);
     if(btn) btn.classList.add("wrong");
   }
-  save();
   setTimeout(next,900);
 }
 
-function flip(){ answers.innerHTML=words[current][0]; }
-function showRead(){ reading.innerText="Чтение: "+words[current][1]; }
+function flip(){
+  answers.innerHTML = words[current][0];
+}
+
+function showRead(){
+  reading.innerText = "Чтение: " + words[current][1];
+}
 
 function toggleDict(){
   dict.classList.toggle("hidden");
-  dict.innerHTML=Object.keys(words).map(w=>`
+  dict.innerHTML = Object.keys(words).map(w=>`
     <div class="dict-row">
       <b>${w}</b> — ${words[w][0]} (${words[w][1]})
-      ${learned.includes(w)?"<span class='star'>⭐</span>":""}
+      ${learned.includes(w) ? "<span class='star'>⭐</span>" : ""}
       ✔ ${stats[w].ok}
-    </div>`).join("");
+    </div>
+  `).join("");
 }
 
 function updateBar(){
-  bar.style.width=(learned.length/Object.keys(words).length*100)+"%";
-}
-
-function save(){
-  localStorage.stats=JSON.stringify(stats);
-  localStorage.learned=JSON.stringify(learned);
-  localStorage.errors=JSON.stringify(errors);
+  bar.style.width =
+    (learned.length / Object.keys(words).length * 100) + "%";
 }
 
 function toggleTheme(){
   document.body.classList.toggle("blue");
 }
 
-next();
+next(); // 🔥 СТАРТ ИГРЫ
 </script>
 
 </body>
 </html>
+
