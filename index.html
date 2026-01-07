@@ -254,6 +254,8 @@ function rnd(arr){
 }
 
 function pick(){
+  pool = words.filter(w => w.streak < 3);
+
   if(pool.length === 0){
     w.textContent = '🎉 Все слова выучены';
     a.innerHTML = '';
@@ -267,6 +269,7 @@ function pick(){
   renderCard();
   renderInput();
 }
+
 
 /* ================== ТЕСТ ================== */
 function renderTest(){
@@ -293,9 +296,6 @@ function renderTest(){
 if(text === current.ru){
   btn.classList.add('correct');
   current.streak++;
-  if(current.streak >= 3){
-    pool = pool.filter(w=>w!==current);
-  }
 }else{
   btn.classList.add('wrong');
   current.streak = 0;
@@ -306,12 +306,12 @@ if(text === current.ru){
 saveProgress();
 setTimeout(pick,600);
 
+
       if(text === current.ru){
         btn.classList.add('correct');
         current.streak++;
 
         if(current.streak >= 3){
-          pool = pool.filter(w=>w!==current);
         }
       }else{
         btn.classList.add('wrong');
@@ -350,18 +350,20 @@ function flipCard(){
 
 function cardYes(){
   current.streak++;
-  if(current.streak>=3){
-    pool = pool.filter(w=>w!==current);
-  }saveProgress();
-
+  saveProgress();
   pick();
+}
+
 }
 
 function cardNo(){
   current.streak = 0;
   current.errors++;
   errors.push(current);
-  pick();saveProgress();
+  saveProgress();
+  pick();
+}
+
 
 }
 
@@ -398,15 +400,12 @@ function saveProgress(){
 function checkInput(){
   if(ie.value.toLowerCase() === current.en.toLowerCase()){
     current.streak++;
-    if(current.streak>=3){
-      pool = pool.filter(w=>w!==current);
-    }
   }else{
     current.streak = 0;
     current.errors++;
     errors.push(current);
-  }saveProgress();
-
+  }
+  saveProgress();
   pick();
 }
 /* ================== СЛОВАРЬ ================== */
