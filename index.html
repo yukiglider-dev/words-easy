@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Words Easy</title>
-<button onclick="resetProgress()">🔄 Сбросить прогресс</button>
 
 <style>
 :root{--bg:#ffd6e7;--card:#fff;--btn:#eee}
@@ -29,7 +28,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   font-size:14px;
 }
 
-/* ===== КАРТОЧКА ===== */
 .cardWrap{perspective:1000px;display:flex;justify-content:center}
 .card{
   width:100%;
@@ -60,6 +58,16 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
+
+.progress{
+  margin:8px 0;
+  font-size:14px;
+  color:#444;
+}
+.reset{
+  background:#ff9800;
+  color:#fff;
+}
 </style>
 </head>
 
@@ -68,10 +76,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 <div class="header">
   <div></div>
-  <div class="langToggle" onclick="toggleCardLang()" id="langBtn">EN</div>
+  <div class="langToggle" onclick="toggleCardLang()">EN</div>
   <div class="palette" onclick="toggleTheme()"></div>
   <div class="title">Words Easy</div>
 </div>
+
+<div class="progress" id="progress"></div>
+<button class="reset" onclick="resetProgress()">Сбросить прогресс</button>
 
 <div class="tabs">
   <button class="tab active" onclick="openTab('test',this)">Тест</button>
@@ -81,20 +92,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button class="tab" onclick="openTab('dict',this)">Словарь</button>
 </div>
 
-<!-- ТЕСТ -->
 <div id="test" class="center">
-  <div id="progressInfo" style="font-size:12px;color:#666;margin-bottom:6px"></div>
   <h2 id="word"></h2>
-
-
-  <!-- 👁 ЧТЕНИЕ -->
   <div id="reading" class="reading hidden"></div>
   <button onclick="toggleReading()" id="readBtn">Показать чтение</button>
-
   <div id="answers"></div>
 </div>
 
-<!-- КАРТОЧКИ -->
 <div id="cards" class="hidden center">
   <div class="cardWrap">
     <div id="card" class="card" onclick="flipCard()">
@@ -108,14 +112,12 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
 
-<!-- ПОВТОР -->
 <div id="repeat" class="hidden center">
   <h3 id="repeatWord"></h3>
   <button class="correct" onclick="repeatYes()">Знаю</button>
   <button class="wrong" onclick="repeatNo()">Не знаю</button>
 </div>
 
-<!-- ВВОД -->
 <div id="input" class="hidden">
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
@@ -124,7 +126,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button onclick="checkInput()">Проверить</button>
 </div>
 
-<!-- СЛОВАРЬ -->
 <div id="dict" class="hidden"></div>
 
 </div>
@@ -217,236 +218,121 @@ const raw = [
 "you’re right|ты / вы правы|йо райт"
 ];
 
-/* ================== ЗАГРУЗКА ПРОГРЕССА ================== */
-const saved = JSON.parse(localStorage.getItem('words-progress') || 'null');
+
+const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
 
 const words = raw.map((s,i)=>{
-  const [en,ru,read] = s.split('|');
-  return saved?.[i] || { en, ru, read, streak:0, errors:0 };
+  const [en,ru,read]=s.split('|');
+  return saved?.[i] || {en,ru,read,streak:0,errors:0};
 });
 
-/* ================== СОСТОЯНИЕ ================== */
-let pool = [];
-let current = null;
-let errors = [];
-let cardLang = 'en';
+let current=null, errors=[], cardLang='en';
 
-/* ================== DOM ================== */
-const w  = document.getElementById('word');
-const a  = document.getElementById('answers');
-const r  = document.getElementById('reading');
-const rb = document.getElementById('readBtn');
-const cf = document.getElementById('cardFront');
-const cb = document.getElementById('cardBack');
-const card = document.getElementById('card');
-const btns = document.getElementById('cardBtns');
-const ir = document.getElementById('inputRu');
-const ie = document.getElementById('inputEn');
-const rw = document.getElementById('repeatWord');
+const w=document.getElementById('word');
+const a=document.getElementById('answers');
+const r=document.getElementById('reading');
+const rb=document.getElementById('readBtn');
+const cf=document.getElementById('cardFront');
+const cb=document.getElementById('cardBack');
+const card=document.getElementById('card');
+const btns=document.getElementById('cardBtns');
+const ir=document.getElementById('inputRu');
+const ie=document.getElementById('inputEn');
+const rw=document.getElementById('repeatWord');
+const prog=document.getElementById('progress');
 
-/* ================== УТИЛИТЫ ================== */
-function rnd(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
-}
-function updateProgressInfo(){
-  const left = words.filter(w=>w.streak < 3).length;
-  document.getElementById('progressInfo').textContent =
-    `Осталось слов: ${left} из ${words.length}`;
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function save(){localStorage.setItem('words-progress',JSON.stringify(words))}
+
+function updateProgress(){
+  const left=words.filter(w=>w.streak<3).length;
+  prog.textContent=`Осталось слов: ${left} / ${words.length}`;
 }
 
-function saveProgress(){
-  localStorage.setItem('words-progress', JSON.stringify(words));
-}
-
-/* ================== ВЫБОР СЛОВА ================== */
 function pick(){
-  pool = words.filter(w=>w.streak < 3);
-  updateProgressInfo();
-
-
-  if(pool.length === 0){
-    w.textContent = '🎉 Все слова выучены';
-    a.innerHTML = '';
-    rb.style.display = 'none';
-    r.classList.add('hidden');
-    return;
-  }
-
-  current = rnd(pool);
-  renderTest();
-  renderCard();
-  renderInput();
+  const pool=words.filter(w=>w.streak<3);
+  updateProgress();
+  if(!pool.length){w.textContent='🎉 Все слова выучены';a.innerHTML='';return}
+  current=rnd(pool);
+  renderTest();renderCard();renderInput();
 }
 
-/* ================== ТЕСТ ================== */
 function renderTest(){
-  w.textContent = current.en;
-  r.textContent = current.read;
+  w.textContent=current.en;
+  r.textContent=current.read;
   r.classList.add('hidden');
-  rb.textContent = 'Показать чтение';
-  a.innerHTML = '';
-
-  let opts = [current.ru];
-  while(opts.length < 4){
-    const x = rnd(words).ru;
-    if(!opts.includes(x)) opts.push(x);
+  a.innerHTML='';
+  let opts=[current.ru];
+  while(opts.length<4){
+    const x=rnd(words).ru;
+    if(!opts.includes(x))opts.push(x);
   }
-
-  opts.sort(()=>Math.random()-0.5).forEach(text=>{
-    const btn = document.createElement('button');
-    btn.textContent = text;
-
-    btn.onclick = ()=>{
-      [...a.children].forEach(b=>b.disabled=true);
-
-      if(text === current.ru){
-        btn.classList.add('correct');
-        current.streak++;
-      }else{
-        btn.classList.add('wrong');
-        current.streak = 0;
-        current.errors++;
-        errors.push(current);
-      }
-
-      saveProgress();
-      setTimeout(pick,600);
+  opts.sort(()=>Math.random()-0.5).forEach(t=>{
+    const b=document.createElement('button');
+    b.textContent=t;
+    b.onclick=()=>{
+      [...a.children].forEach(x=>x.disabled=true);
+      if(t===current.ru){b.classList.add('correct');current.streak++}
+      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
+      save();setTimeout(pick,600);
     };
-
-    a.appendChild(btn);
+    a.appendChild(b);
   });
 }
 
-function toggleReading(){
-  r.classList.toggle('hidden');
-  rb.textContent = r.classList.contains('hidden')
-    ? 'Показать чтение'
-    : 'Скрыть чтение';
-}
+function toggleReading(){r.classList.toggle('hidden')}
 
-/* ================== КАРТОЧКИ ================== */
 function renderCard(){
   card.classList.remove('flipped');
-  cf.textContent = cardLang==='en'?current.en:current.ru;
-  cb.textContent = cardLang==='en'?current.ru:current.en;
+  cf.textContent=cardLang==='en'?current.en:current.ru;
+  cb.textContent=cardLang==='en'?current.ru:current.en;
   btns.classList.add('hidden');
 }
+function flipCard(){card.classList.toggle('flipped');btns.classList.remove('hidden')}
+function cardYes(){current.streak++;save();pick()}
+function cardNo(){current.streak=0;current.errors++;errors.push(current);save();pick()}
+function toggleCardLang(){cardLang=cardLang==='en'?'ru':'en';renderCard()}
 
-function flipCard(){
-  card.classList.toggle('flipped');
-  btns.classList.remove('hidden');
-}
-
-function cardYes(){
-  current.streak++;
-  saveProgress();
-  pick();
-}
-
-function cardNo(){
-  current.streak = 0;
-  current.errors++;
-  errors.push(current);
-  saveProgress();
-  pick();
-}
-
-function toggleCardLang(){
-  cardLang = cardLang==='en'?'ru':'en';
-  renderCard();
-}
-
-/* ================== ВВОД ================== */
-function renderInput(){
-  ir.textContent = current.ru;
-  ie.value = '';
-}
-
+function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){
-  if(ie.value.toLowerCase() === current.en.toLowerCase()){
-    current.streak++;
-  }else{
-    current.streak = 0;
-    current.errors++;
-    errors.push(current);
-  }
-  saveProgress();
-  pick();
+  if(ie.value.toLowerCase()===current.en.toLowerCase())current.streak++;
+  else{current.streak=0;current.errors++;errors.push(current)}
+  save();pick();
 }
 
-/* ================== ПОВТОР ================== */
-function renderRepeat(){
-  rw.textContent = errors.length
-    ? rnd(errors).en
-    : 'Нет слов для повтора';
-}
+function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов'}
+function repeatYes(){pick()} function repeatNo(){pick()}
 
-function repeatYes(){ pick(); }
-function repeatNo(){ pick(); }
-
-/* ================== СЛОВАРЬ ================== */
 function renderDict(){
-  const d = document.getElementById('dict');
-  d.innerHTML = '';
-
-  const table = document.createElement('table');
-  table.className = 'table';
-  table.innerHTML = `
-    <tr>
-      <th>№</th><th>EN</th><th>RU</th><th>Чтение</th><th>✔</th><th>✖</th>
-    </tr>
-  `;
-
-  words.forEach((w,i)=>{
-    table.innerHTML += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${w.en}</td>
-        <td>${w.ru}</td>
-        <td>${w.read}</td>
-        <td>${w.streak}</td>
-        <td>${w.errors}</td>
-      </tr>
-    `;
-  });
-
-  d.appendChild(table);
+  const d=document.getElementById('dict');d.innerHTML='';
+  const t=document.createElement('table');t.className='table';
+  t.innerHTML='<tr><th>№</th><th>EN</th><th>RU</th><th>✔</th><th>✖</th></tr>';
+  words.forEach((w,i)=>t.innerHTML+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.streak}</td><td>${w.errors}</td></tr>`);
+  d.appendChild(t);
 }
 
-/* ================== ВКЛАДКИ ================== */
-function openTab(id,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-
-  ['test','cards','repeat','input','dict']
-    .forEach(x=>document.getElementById(x).classList.add('hidden'));
-
+function openTab(id,b){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  ['test','cards','repeat','input','dict'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  if(id==='repeat') renderRepeat();
-  if(id==='dict') renderDict();
+  if(id==='dict')renderDict();
+  if(id==='repeat')renderRepeat();
 }
 
-/* ================== ТЕМА ================== */
-let pink=true;
 function toggleTheme(){
-  pink=!pink;
-  document.documentElement.style.setProperty('--bg',pink?'#ffd6e7':'#cce8ff');
+  document.documentElement.style.setProperty('--bg',
+    getComputedStyle(document.documentElement).getPropertyValue('--bg')==='#ffd6e7'
+    ?'#cce8ff':'#ffd6e7');
 }
 
-/* ================== СТАРТ ================== */
 function resetProgress(){
-  if(!confirm('Сбросить весь прогресс?')) return;
-
-  words.forEach(w=>{
-    w.streak = 0;
-    w.errors = 0;
-  });
-
+  if(!confirm('Сбросить весь прогресс?'))return;
   localStorage.removeItem('words-progress');
-  errors = [];
-  pick();
+  location.reload();
 }
 
+pick();
 </script>
 </body>
 </html>
