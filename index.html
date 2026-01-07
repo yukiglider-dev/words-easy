@@ -6,104 +6,120 @@
 
 <style>
 :root {
-  --bg: #ffe6f0;
-  --card: #ffffff;
-  --accent: #ff9acb;
-  --correct: #9dffb0;
-  --wrong: #ff9a9a;
+  --bg:#ffe6f0;
+  --accent:#ff9acb;
+  --card:#ffffff;
+  --ok:#9dffb0;
+  --bad:#ff9a9a;
+}
+
+body.blue {
+  --bg:#dff3ff;
+  --accent:#6ec6ff;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  margin: 0;
-  padding: 15px;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
 }
 
-h1 {
-  text-align: center;
-  margin: 10px 0;
+.wrapper {
+  max-width:420px;
+  margin:0 auto;
+  padding:15px;
+}
+
+h1 { text-align:center; }
+
+.theme {
+  position:fixed;
+  top:10px;
+  right:10px;
+}
+.theme button {
+  padding:6px 10px;
+  border:none;
+  border-radius:20px;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
 }
 
 .progress {
-  height: 12px;
-  background: #ffd1e6;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 10px;
+  height:10px;
+  background:#eee;
+  border-radius:10px;
+  overflow:hidden;
+  margin:10px 0;
 }
 .progress div {
-  height: 100%;
-  width: 0%;
-  background: var(--accent);
-  transition: width 0.5s;
+  height:100%;
+  width:0%;
+  background:var(--accent);
+  transition:.3s;
 }
 
 .card {
-  background: var(--card);
-  border-radius: 18px;
-  padding: 15px;
-  margin-top: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  animation: fade 0.4s;
+  background:var(--card);
+  padding:15px;
+  border-radius:18px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  margin-top:12px;
 }
 
-@keyframes fade {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-button, input, select {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border-radius: 14px;
-  border: none;
-  font-size: 16px;
+select,button,input {
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border-radius:14px;
+  border:none;
+  font-size:16px;
 }
 
 button {
-  background: var(--accent);
-  color: white;
-  cursor: pointer;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
 }
 
 .answers button {
-  background: #fff;
-  color: #000;
+  background:#fff;
+  color:#000;
 }
 
-.correct { background: var(--correct) !important; }
-.wrong { background: var(--wrong) !important; }
+.correct { background:var(--ok)!important; }
+.wrong { background:var(--bad)!important; }
 
-.hidden { display: none; }
+.hidden { display:none; }
 
-.small {
-  font-size: 14px;
-  text-align: center;
-  margin-top: 6px;
+.dict-row {
+  border-bottom:1px solid #ddd;
+  padding:6px 0;
+  font-size:14px;
 }
 
-.dictionary-row {
-  border-bottom: 1px solid #ddd;
-  padding: 6px 0;
-}
-
-.badge {
-  background: gold;
-  padding: 4px 8px;
-  border-radius: 10px;
-  font-size: 12px;
+.star {
+  background:gold;
+  padding:2px 6px;
+  border-radius:10px;
+  font-size:12px;
+  margin-left:5px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🌸 Words Easy</h1>
+<div class="theme">
+  <button onclick="toggleTheme()">🎨</button>
+</div>
 
-<div class="progress"><div id="progressBar"></div></div>
-<div class="small" id="streak"></div>
+<div class="wrapper">
+
+<h1>Words Easy</h1>
+
+<div class="progress"><div id="bar"></div></div>
 
 <select id="mode">
   <option value="test">🎯 Тест</option>
@@ -111,22 +127,23 @@ button {
   <option value="input">⌨️ Ввод</option>
 </select>
 
-<div class="card" id="game">
+<div class="card">
   <h3 id="question"></h3>
   <div id="answers" class="answers"></div>
-  <input id="textInput" class="hidden" placeholder="Введи ответ">
-  <button onclick="speak()">🔊 Озвучить</button>
-  <button onclick="showReading()">👂 Показать чтение</button>
-  <div class="small" id="reading"></div>
+  <input id="input" class="hidden" placeholder="Напиши перевод">
+  <button onclick="showRead()">👂 Показать чтение</button>
+  <div id="reading"></div>
 </div>
 
 <button onclick="toggleDict()">📖 Словарь</button>
-
 <div id="dict" class="card hidden"></div>
 
-<script>
-const words = {
+</div>
 
+<script>
+const baseWords = {
+"I": ["я","ай"],"you":["ты / вы","ю"],"we":["мы","ви"],"they":["они","зэй"],
+"he":["он","хи"],"she":["она","ши"],"it":["это","ит"],
 "here":["здесь","хиэ"],"there":["там","зэа"],"at school":["в школе","эт скул"],
 
 "understand":["понимать","андэстэнд"],"know":["знать","ноу"],"eat":["есть","ит"],
@@ -180,76 +197,64 @@ const words = {
 "patient":["терпеливый","пэйшент"],"punctual":["пунктуальный","панкчуал"]
 };
 
-let stats = JSON.parse(localStorage.getItem("stats")) || {};
-let errors = JSON.parse(localStorage.getItem("errors")) || [];
-let learned = JSON.parse(localStorage.getItem("learned")) || [];
-let streak = JSON.parse(localStorage.getItem("streak")) || {day:null,count:0};
+
+let stats = JSON.parse(localStorage.stats||"{}");
+let learned = JSON.parse(localStorage.learned||"[]");
+let errors = JSON.parse(localStorage.errors||"[]");
 
 Object.keys(words).forEach(w=>{
-  if(!stats[w]) stats[w]={ok:0,bad:0};
+  if(!stats[w]) stats[w]={ok:0,streak:0};
 });
 
-let current = "";
+let current="";
 
-function save() {
-  localStorage.setItem("stats",JSON.stringify(stats));
-  localStorage.setItem("errors",JSON.stringify(errors));
-  localStorage.setItem("learned",JSON.stringify(learned));
-  localStorage.setItem("streak",JSON.stringify(streak));
-}
-
-function updateStreak() {
-  const today = new Date().toDateString();
-  if(streak.day!==today){
-    if(streak.day && (new Date(today)-new Date(streak.day))===86400000){
-      streak.count++;
-    } else streak.count=1;
-    streak.day=today;
-  }
-  streakEl.innerText = "🔥 Серия: "+streak.count+" дней";
-  save();
-}
-
-function next() {
+function next(){
   reading.innerText="";
   answers.innerHTML="";
-  textInput.classList.add("hidden");
+  input.classList.add("hidden");
 
-  const pool = errors.length?errors:Object.keys(words);
+  let pool = errors.length ? errors : Object.keys(words);
+  pool = pool.filter(w=>!learned.includes(w) || Math.random()<0.4);
+
   current = pool[Math.floor(Math.random()*pool.length)];
+  question.innerText=current;
 
-  question.innerText = current;
   if(mode.value==="test"){
     let opts = Object.values(words).map(v=>v[0]).filter(v=>v!==words[current][0]);
     opts = opts.sort(()=>Math.random()-0.5).slice(0,3);
     opts.push(words[current][0]);
     opts.sort(()=>Math.random()-0.5);
     opts.forEach(o=>{
-      const b=document.createElement("button");
+      let b=document.createElement("button");
       b.innerText=o;
       b.onclick=()=>check(o,b);
       answers.appendChild(b);
     });
   }
+
   if(mode.value==="cards"){
     answers.innerHTML="<button onclick='flip()'>Показать</button>";
   }
+
   if(mode.value==="input"){
-    textInput.classList.remove("hidden");
-    textInput.value="";
-    textInput.onkeydown=e=>{if(e.key==="Enter")check(textInput.value)};
+    input.classList.remove("hidden");
+    input.value="";
+    input.onkeydown=e=>{ if(e.key==="Enter") check(input.value); };
   }
-  updateProgress();
+
+  updateBar();
 }
 
 function check(ans,btn){
-  if(ans===words[current][0]){
+  if(ans.trim().toLowerCase()===words[current][0]){
+    stats[current].streak++;
     stats[current].ok++;
-    if(stats[current].ok>=3 && !learned.includes(current)) learned.push(current);
+    if(stats[current].streak>=3 && !learned.includes(current))
+      learned.push(current);
     errors=errors.filter(e=>e!==current);
     if(btn) btn.classList.add("correct");
   } else {
-    stats[current].bad++;
+    stats[current].streak=0;
     if(!errors.includes(current)) errors.push(current);
     if(btn) btn.classList.add("wrong");
   }
@@ -257,48 +262,35 @@ function check(ans,btn){
   setTimeout(next,900);
 }
 
-function flip(){
-  answers.innerHTML="<div>"+words[current][0]+"</div>";
-}
-
-function speak(){
-  speechSynthesis.speak(new SpeechSynthesisUtterance(current));
-}
-
-function showReading(){
-  reading.innerText="Чтение: "+words[current][1];
-}
+function flip(){ answers.innerHTML=words[current][0]; }
+function showRead(){ reading.innerText="Чтение: "+words[current][1]; }
 
 function toggleDict(){
   dict.classList.toggle("hidden");
   dict.innerHTML=Object.keys(words).map(w=>`
-    <div class="dictionary-row">
+    <div class="dict-row">
       <b>${w}</b> — ${words[w][0]} (${words[w][1]})
-      ${learned.includes(w)?"<span class='badge'>⭐</span>":""}
-      ✅${stats[w].ok} ❌${stats[w].bad}
-    </div>
-  `).join("");
+      ${learned.includes(w)?"<span class='star'>⭐</span>":""}
+      ✔ ${stats[w].ok}
+    </div>`).join("");
 }
 
-function updateProgress(){
-  const total=Object.keys(words).length;
-  progressBar.style.width=(learned.length/total*100)+"%";
+function updateBar(){
+  bar.style.width=(learned.length/Object.keys(words).length*100)+"%";
 }
 
-const question=document.getElementById("question");
-const answers=document.getElementById("answers");
-const reading=document.getElementById("reading");
-const dict=document.getElementById("dict");
-const mode=document.getElementById("mode");
-const progressBar=document.getElementById("progressBar");
-const textInput=document.getElementById("textInput");
-const streakEl=document.getElementById("streak");
+function save(){
+  localStorage.stats=JSON.stringify(stats);
+  localStorage.learned=JSON.stringify(learned);
+  localStorage.errors=JSON.stringify(errors);
+}
 
-updateStreak();
+function toggleTheme(){
+  document.body.classList.toggle("blue");
+}
+
 next();
 </script>
 
 </body>
 </html>
-
-
