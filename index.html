@@ -6,17 +6,17 @@
 
 <style>
 body{
-  font-family:Arial;
-  background:#f2f2f2;
   margin:0;
   padding:20px;
+  font-family:Arial;
+  background:#eee;
 }
 .app{
   max-width:520px;
   margin:auto;
   background:#fff;
-  border-radius:16px;
   padding:20px;
+  border-radius:16px;
 }
 button{
   width:100%;
@@ -30,12 +30,8 @@ button{
 .wrong{background:#f44336;color:#fff}
 .hidden{display:none}
 .center{text-align:center}
-.reading{opacity:.7;font-style:italic}
-.example{
-  margin:8px 0;
-  font-size:15px;
-  color:#333;
-}
+.reading{font-style:italic;color:#666}
+.example{margin:8px 0;font-size:15px}
 </style>
 </head>
 
@@ -44,13 +40,13 @@ button{
 
 <h2 class="center">Words Easy</h2>
 
-<button onclick="mode='test';render()">Тест</button>
-<button onclick="mode='cards';render()">Карточки</button>
+<button onclick="openTab('test')">Тест</button>
+<button onclick="openTab('cards')">Карточки</button>
 
 <hr>
 
 <!-- TEST -->
-<div id="test" class="center hidden">
+<div id="test" class="center">
   <h2 id="word"></h2>
   <div id="reading" class="reading"></div>
   <div id="example" class="example"></div>
@@ -59,15 +55,15 @@ button{
 
 <!-- CARDS -->
 <div id="cards" class="center hidden">
-  <div style="font-size:26px;margin:20px" id="card"></div>
-  <button onclick="flip()">Перевернуть</button>
-  <button onclick="nextCard()">Дальше</button>
+  <div id="card" style="font-size:26px;margin:20px"></div>
+  <button onclick="flipCard()">Перевернуть</button>
+  <button onclick="nextCard()">Следующее</button>
 </div>
 
 </div>
 
 <script>
-/* ===== СЛОВА ===== */
+/* ================= ДАННЫЕ ================= */
 const raw = [
 "work|работать|вёрк|I work every day.",
 "study|учиться|стади|I study English.",
@@ -78,62 +74,56 @@ const raw = [
 "write|писать|райт|I write messages.",
 "play|играть|плэй|I play football.",
 "buy|покупать|бай|I buy food.",
-"think|думать|синк|I think about it.",
-"understand|понимать|андэстэнд|I understand you.",
-"know|знать|ноу|I know the answer.",
-"arrive|прибывать|эрайв|We arrive early.",
-"wait|ждать|вэйт|Please wait here.",
-"ask|спрашивать|аск|I ask a question.",
-"explain|объяснять|иксплэйн|Explain this rule.",
-"take|брать|тэйк|Take this book.",
-"want|хотеть|вонт|I want coffee.",
-"work hard|много работать|вёрк хард|I work hard every day."
+"think|думать|синк|I think about it."
 ];
 
-const saved = JSON.parse(localStorage.getItem('progress')||'[]');
+/* ============ ПРОГРЕСС ============ */
+let saved = JSON.parse(localStorage.getItem('words') || 'null');
 
 let words = raw.map((s,i)=>{
-  const [en,ru,read,ex]=s.split('|');
-  return saved[i] || {en,ru,read,ex,streak:0};
+  const [en,ru,read,ex] = s.split('|');
+  return saved?.[i] || {en,ru,read,ex,streak:0};
 });
 
-let mode='test';
-let index=0;
-let flipped=false;
-
-const wEl=document.getElementById('word');
-const rEl=document.getElementById('reading');
-const eEl=document.getElementById('example');
-const aEl=document.getElementById('answers');
-const cEl=document.getElementById('card');
-
 function save(){
-  localStorage.setItem('progress',JSON.stringify(words));
+  localStorage.setItem('words',JSON.stringify(words));
 }
 
-function pick(){
-  const pool=words.filter(w=>w.streak<3);
+/* ============ ЛОГИКА ============ */
+let currentIndex = 0;
+let flipped = false;
+
+function available(){
+  return words.filter(w=>w.streak<3);
+}
+
+function pickWord(){
+  const pool = available();
   if(!pool.length){
     alert('🎉 Все слова выучены');
     return null;
   }
-  return words.indexOf(pool[Math.floor(Math.random()*pool.length)]);
+  const w = pool[Math.floor(Math.random()*pool.length)];
+  return words.indexOf(w);
 }
 
-/* ===== TEST ===== */
+/* ============ TEST ============ */
 function renderTest(){
-  index=pick();
-  if(index===null) return;
+  const i = pickWord();
+  if(i===null) return;
+  currentIndex = i;
+  const w = words[i];
 
-  const w=words[index];
-  wEl.textContent=w.en;
-  rEl.textContent=w.read;
-  eEl.textContent=w.ex;
+  document.getElementById('word').textContent = w.en;
+  document.getElementById('reading').textContent = w.read;
+  document.getElementById('example').textContent = w.ex;
 
-  aEl.innerHTML='';
+  const answers = document.getElementById('answers');
+  answers.innerHTML='';
+
   let opts=[w.ru];
   while(opts.length<4){
-    let r=words[Math.floor(Math.random()*words.length)].ru;
+    let r = words[Math.floor(Math.random()*words.length)].ru;
     if(!opts.includes(r)) opts.push(r);
   }
   opts.sort(()=>Math.random()-0.5);
@@ -143,45 +133,55 @@ function renderTest(){
     b.textContent=t;
     b.onclick=()=>{
       if(t===w.ru){
-        b.classList.add('correct');
+        b.className='correct';
         w.streak++;
       }else{
-        b.classList.add('wrong');
+        b.className='wrong';
         w.streak=0;
       }
       save();
       setTimeout(renderTest,600);
     };
-    aEl.appendChild(b);
+    answers.appendChild(b);
   });
 }
 
-/* ===== CARDS ===== */
+/* ============ CARDS ============ */
 function renderCard(){
-  const w=words[index];
-  cEl.textContent=flipped ? `${w.ru}\n${w.ex}` : w.en;
+  const w = words[currentIndex];
+  document.getElementById('card').textContent =
+    flipped ? `${w.ru}\n${w.ex}` : w.en;
 }
-function flip(){flipped=!flipped;renderCard()}
+
+function flipCard(){
+  flipped=!flipped;
+  renderCard();
+}
+
 function nextCard(){
-  index=pick();
+  const i = pickWord();
+  if(i===null) return;
+  currentIndex=i;
   flipped=false;
   renderCard();
 }
 
-/* ===== MAIN RENDER ===== */
-function render(){
-  document.getElementById('test').classList.toggle('hidden',mode!=='test');
-  document.getElementById('cards').classList.toggle('hidden',mode!=='cards');
+/* ============ UI ============ */
+function openTab(tab){
+  document.getElementById('test').classList.toggle('hidden',tab!=='test');
+  document.getElementById('cards').classList.toggle('hidden',tab!=='cards');
 
-  if(mode==='test') renderTest();
+  if(tab==='test') renderTest();
   else{
-    index=pick();
+    currentIndex=pickWord();
     renderCard();
   }
 }
 
-render();
+/* старт */
+renderTest();
 </script>
 </body>
 </html>
+
 
