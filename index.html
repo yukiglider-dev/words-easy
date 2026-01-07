@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Words Easy</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+  }
+  h1 {
+    text-align: center;
+  }
+  input, button, select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  button {
+    cursor: pointer;
+  }
+  .answers button {
+    margin-top: 5px;
+  }
+  .stats {
+    margin-top: 15px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>📘 Words Easy</h1>
+
+<select id="mode">
+  <option value="en-ru">ENG → RU</option>
+  <option value="ru-en">RU → ENG</option>
+</select>
+
+<input id="newWord" placeholder="apple яблоко">
+<button onclick="addWord()">Добавить слово</button>
+
+<hr>
+
+<h3 id="question">Нажми «Начать»</h3>
+<div class="answers" id="answers"></div>
+
+<button onclick="nextQuestion()">Начать / Далее</button>
+
+<div class="stats">
+  ✅ Правильно: <span id="correct">0</span> |
+  ❌ Ошибки: <span id="wrong">0</span>
+</div>
+
+<script>
+let words = JSON.parse(localStorage.getItem("words")) || {
+  apple: "яблоко",
+  house: "дом",
+  book: "книга",
+  car: "машина"
+};
+
+let stats = JSON.parse(localStorage.getItem("stats")) || {
+  correct: 0,
+  wrong: 0
+};
+
+document.getElementById("correct").innerText = stats.correct;
+document.getElementById("wrong").innerText = stats.wrong;
+
+let rightAnswer = "";
+
+function addWord() {
+  const input = document.getElementById("newWord").value.trim();
+  if (!input.includes(" ")) {
+    alert("Введи: слово перевод");
+    return;
+  }
+  const parts = input.split(" ");
+  words[parts[0].toLowerCase()] = parts[1].toLowerCase();
+  localStorage.setItem("words", JSON.stringify(words));
+  document.getElementById("newWord").value = "";
+  alert("Слово добавлено");
+}
+
+function nextQuestion() {
+  const keys = Object.keys(words);
+  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  const mode = document.getElementById("mode").value;
+
+  let questionText;
+  let answers;
+
+  if (mode === "en-ru") {
+    questionText = `Переведи: ${randomKey}`;
+    rightAnswer = words[randomKey];
+    answers = Object.values(words);
+  } else {
+    questionText = `Переведи: ${words[randomKey]}`;
+    rightAnswer = randomKey;
+    answers = keys;
+  }
+
+  document.getElementById("question").innerText = questionText;
+
+  let variants = answers
+    .filter(a => a !== rightAnswer)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
+  variants.push(rightAnswer);
+  variants.sort(() => Math.random() - 0.5);
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  variants.forEach(a => {
+    const btn = document.createElement("button");
+    btn.innerText = a;
+    btn.onclick = () => checkAnswer(a);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(answer) {
+  if (answer === rightAnswer) {
+    stats.correct++;
+    alert("✅ Правильно");
+  } else {
+    stats.wrong++;
+    alert("❌ Неправильно. Правильный ответ: " + rightAnswer);
+  }
+
+  localStorage.setItem("stats", JSON.stringify(stats));
+  document.getElementById("correct").innerText = stats.correct;
+  document.getElementById("wrong").innerText = stats.wrong;
+}
+</script>
+
+</body>
+</html>
