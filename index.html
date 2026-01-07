@@ -1,39 +1,63 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <button onclick="showReading()">👂 Показать чтение</button>
-<p id="reading" style="font-style: italic;"></p>
 <head>
 <meta charset="UTF-8">
 <title>Words Easy</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: #f5f5f5;
+    background: #cceeff;
     padding: 20px;
     max-width: 500px;
     margin: auto;
   }
+
   h1 {
     text-align: center;
   }
-  input, button, select {
+
+  select, input, button {
     width: 100%;
     padding: 10px;
-    margin: 5px 0;
+    margin: 6px 0;
     font-size: 16px;
+    border-radius: 12px;
+    border: none;
   }
+
   button {
     cursor: pointer;
+    background: white;
+    transition: background 0.3s;
   }
+
+  button.correct {
+    background: #7CFC98;
+  }
+
+  button.wrong {
+    background: #FF7F7F;
+  }
+
   .answers button {
     margin-top: 5px;
   }
+
+  #reading {
+    text-align: center;
+    font-style: italic;
+    margin-top: 10px;
+  }
+
   .stats {
     margin-top: 15px;
     text-align: center;
+    font-weight: bold;
   }
 </style>
 </head>
+
 <body>
 
 <h1>📘 Words Easy</h1>
@@ -43,31 +67,19 @@
   <option value="ru-en">RU → ENG</option>
 </select>
 
-<input id="newWord" placeholder="apple яблоко">
-<button onclick="addWord()">Добавить слово</button>
-
-<hr>
-
-<h3 id="question">Нажми «Начать»</h3>
+<h3 id="question">Загрузка...</h3>
 <div class="answers" id="answers"></div>
 
-<button onclick="nextQuestion()">Начать / Далее</button>
+<button onclick="showReading()">👂 Показать чтение</button>
+<p id="reading"></p>
 
 <div class="stats">
-  ✅ Правильно: <span id="correct">0</span> |
-  ❌ Ошибки: <span id="wrong">0</span>
+  ✅ <span id="correct">0</span> |
+  ❌ <span id="wrong">0</span>
 </div>
 
 <script>
-let words = JSON.parse(localStorage.getItem("words")) || 
-{let currentWord = "";
-
-function showReading() {
-  if (!currentWord) return;
-  document.getElementById("reading").innerText =
-    "Чтение: " + words[currentWord].read;
-}
-
+let words = {
   "I": { ru: "я", read: "ай" },
   "you": { ru: "ты / вы", read: "ю" },
   "we": { ru: "мы", read: "ви" },
@@ -93,100 +105,94 @@ function showReading() {
   "buy": { ru: "покупать", read: "бай" },
   "play": { ru: "играть", read: "плэй" },
   "want": { ru: "хотеть", read: "вонт" },
-  "study": { ru: "учиться", read: "стади" },
-  "work": { ru: "работать", read: "вёрк" },
-
-  "busy": { ru: "занятый", read: "бизи" },
-  "cosy": { ru: "уютный", read: "коузи" },
-  "rich": { ru: "богатый", read: "рич" },
-  "poor": { ru: "бедный", read: "пуа" },
 
   "I'm busy": { ru: "я занят", read: "айм бизи" },
   "you're right": { ru: "ты прав", read: "йо райт" },
+
   "why": { ru: "почему", read: "уай" },
   "where": { ru: "где", read: "уэа" },
   "what": { ru: "что", read: "уот" }
 };
 
-
-let stats = JSON.parse(localStorage.getItem("stats")) || {
-  correct: 0,
-  wrong: 0
-};
-
-document.getElementById("correct").innerText = stats.correct;
-document.getElementById("wrong").innerText = stats.wrong;
-
-let rightAnswer = "";
-
-function addWord() {
-  const input = document.getElementById("newWord").value.trim();
-  if (!input.includes(" ")) {
-    alert("Введи: слово перевод");
-    return;
-  }
-  const parts = input.split(" ");
-  words[parts[0].toLowerCase()] = parts[1].toLowerCase();
-  localStorage.setItem("words", JSON.stringify(words));
-  document.getElementById("newWord").value = "";
-  alert("Слово добавлено");
-}
+let stats = { correct: 0, wrong: 0 };
+let currentWord = "";
+let correctAnswer = "";
+let locked = false;
 
 function nextQuestion() {
+  locked = false;
+  document.getElementById("reading").innerText = "";
+
   const keys = Object.keys(words);
-  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  currentWord = keys[Math.floor(Math.random() * keys.length)];
   const mode = document.getElementById("mode").value;
 
-  let questionText;
-  let answers;
+  let answersPool;
 
   if (mode === "en-ru") {
-    questionText = `Переведи: ${randomKey}`;
-    rightAnswer = words[randomKey].ru;
-currentWord = randomKey;
-document.getElementById("reading").innerText = "";
-    answers = Object.values(words);
+    document.getElementById("question").innerText =
+      `Переведи: ${currentWord}`;
+    correctAnswer = words[currentWord].ru;
+    answersPool = keys.map(k => words[k].ru);
   } else {
-    questionText = `Переведи: ${words[randomKey]}`;
-    rightAnswer = randomKey;
-    answers = keys;
+    document.getElementById("question").innerText =
+      `Переведи: ${words[currentWord].ru}`;
+    correctAnswer = currentWord;
+    answersPool = keys;
   }
 
-  document.getElementById("question").innerText = questionText;
-
-  let variants = answers
-    .filter(a => a !== rightAnswer)
+  let variants = answersPool
+    .filter(a => a !== correctAnswer)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3);
 
-  variants.push(rightAnswer);
+  variants.push(correctAnswer);
   variants.sort(() => Math.random() - 0.5);
 
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  variants.forEach(a => {
+  variants.forEach(v => {
     const btn = document.createElement("button");
-    btn.innerText = a;
-    btn.onclick = () => checkAnswer(a);
+    btn.innerText = v;
+    btn.onclick = () => checkAnswer(btn, v);
     answersDiv.appendChild(btn);
   });
 }
 
-function checkAnswer(answer) {
-  if (answer === rightAnswer) {
+function checkAnswer(button, answer) {
+  if (locked) return;
+  locked = true;
+
+  if (answer === correctAnswer) {
+    button.classList.add("correct");
     stats.correct++;
-    alert("✅ Правильно");
   } else {
+    button.classList.add("wrong");
     stats.wrong++;
-    alert("❌ Неправильно. Правильный ответ: " + rightAnswer);
+
+    [...document.querySelectorAll(".answers button")].forEach(b => {
+      if (b.innerText === correctAnswer) {
+        b.classList.add("correct");
+      }
+    });
   }
 
-  localStorage.setItem("stats", JSON.stringify(stats));
   document.getElementById("correct").innerText = stats.correct;
   document.getElementById("wrong").innerText = stats.wrong;
+
+  setTimeout(nextQuestion, 1200);
 }
+
+function showReading() {
+  if (!currentWord) return;
+  document.getElementById("reading").innerText =
+    "Чтение: " + words[currentWord].read;
+}
+
+nextQuestion();
 </script>
 
 </body>
 </html>
+
