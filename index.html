@@ -5,14 +5,15 @@
   <title>Words Easy</title>
   <style>
     :root {
-      --bg: #fbe7ef;
+      --pink: #fbe7ef;
+      --blue: #e6f4ff;
       --card: #ffffff;
       --primary: #ff8fb1;
     }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: var(--bg);
+      background: var(--pink);
       display: flex;
       justify-content: center;
     }
@@ -21,23 +22,24 @@
       padding: 20px;
     }
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      position: relative;
+      text-align: center;
+      margin-bottom: 15px;
     }
-    h1 {
-      margin: 0 auto;
-      font-size: 24px;
-    }
+    h1 { margin: 0; }
+
     .lang-toggle {
+      position: absolute;
+      right: 0;
+      top: 0;
       font-size: 12px;
     }
+
     nav {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      margin-bottom: 20px;
+      margin: 15px 0;
     }
     nav button {
       padding: 6px 10px;
@@ -47,14 +49,12 @@
       background: var(--primary);
       color: #fff;
     }
+
     .view { display: none; }
     .view.active { display: block; }
 
     /* CARD */
-    .card-container {
-      perspective: 1000px;
-      margin: 0 auto 15px;
-    }
+    .card-container { perspective: 1000px; }
     .card {
       width: 100%;
       height: 140px;
@@ -67,18 +67,20 @@
       cursor: pointer;
       transition: transform 0.6s;
       transform-style: preserve-3d;
+      margin-bottom: 12px;
     }
     .card.flipped { transform: rotateY(180deg); }
     .side {
       position: absolute;
       backface-visibility: hidden;
+      padding: 10px;
+      text-align: center;
     }
     .back { transform: rotateY(180deg); }
 
     .answer-buttons {
       display: flex;
       gap: 10px;
-      justify-content: center;
     }
     .answer-buttons button {
       flex: 1;
@@ -93,19 +95,17 @@
       border-collapse: collapse;
       font-size: 14px;
     }
-    td, th {
+    th, td {
       border-bottom: 1px solid #ddd;
       padding: 6px;
-      text-align: left;
     }
   </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div></div>
     <h1>Words Easy</h1>
-    <select class="lang-toggle" id="langToggle">
+    <select id="langToggle" class="lang-toggle">
       <option value="en">EN</option>
       <option value="ru">RU</option>
     </select>
@@ -117,27 +117,24 @@
     <button onclick="showView('dict')">Словарь</button>
   </nav>
 
-  <!-- CARDS -->
   <div id="cards" class="view active">
     <div class="card-container">
-      <div class="card" id="card">
-        <div class="side front" id="cardFront"></div>
-        <div class="side back" id="cardBack"></div>
+      <div id="card" class="card">
+        <div id="front" class="side"></div>
+        <div id="back" class="side back"></div>
       </div>
     </div>
     <div class="answer-buttons">
-      <button onclick="markWord(true)">Да</button>
-      <button onclick="markWord(false)">Нет</button>
+      <button onclick="answer(true)">Да</button>
+      <button onclick="answer(false)">Нет</button>
     </div>
-    <p id="context" style="text-align:center;margin-top:10px;"></p>
+    <p id="context" style="text-align:center"></p>
   </div>
 
-  <!-- REPEAT -->
   <div id="repeat" class="view">
-    <p style="text-align:center;">Здесь повторяются сложные слова</p>
+    <p style="text-align:center">Здесь повтор сложных слов</p>
   </div>
 
-  <!-- DICTIONARY -->
   <div id="dict" class="view">
     <table>
       <thead>
@@ -150,72 +147,68 @@
 
 <script>
 let words = [
-  {en:'here',ru:'здесь',tr:'хиэ',example:'I am here',correct:0,errors:0,learned:false},
-  {en:'there',ru:'там',tr:'зеа',example:'She is there',correct:0,errors:0,learned:false},
-  {en:'understand',ru:'понимать',tr:'андерстэнд',example:'I understand you',correct:0,errors:0,learned:false}
+  {en:'analyse',ru:'анализировать',tr:'энэлайз',ex:'We analyse the text',c:0,e:0,l:false},
+  {en:'arrive',ru:'прибывать',tr:'эрайв',ex:'They arrive at 10',c:0,e:0,l:false},
+  {en:'ask',ru:'спрашивать',tr:'аск',ex:'I ask a question',c:0,e:0,l:false},
+  {en:'at school',ru:'в школе',tr:'эт скул',ex:'She is at school',c:0,e:0,l:false},
+  {en:'begin',ru:'начинать',tr:'бигин',ex:'We begin now',c:0,e:0,l:false},
+  {en:'busy',ru:'занятый',tr:'бизи',ex:'I am busy',c:0,e:0,l:false},
+  {en:'buy',ru:'покупать',tr:'бай',ex:'I buy food',c:0,e:0,l:false},
+  {en:'cheap',ru:'дёшево',tr:'чип',ex:'It is cheap',c:0,e:0,l:false},
+  {en:'continue',ru:'продолжать',tr:'континью',ex:'Continue working',c:0,e:0,l:false},
+  {en:'cosy',ru:'уютный',tr:'коузи',ex:'It is cosy',c:0,e:0,l:false},
+  {en:'describe',ru:'описывать',tr:'дискрайб',ex:'Describe it',c:0,e:0,l:false},
+  {en:'drink',ru:'пить',tr:'дринк',ex:'I drink water',c:0,e:0,l:false},
+  {en:'eat',ru:'есть',tr:'ит',ex:'They eat lunch',c:0,e:0,l:false},
+  {en:'enough',ru:'достаточно',tr:'инаф',ex:'It is enough',c:0,e:0,l:false},
+  {en:'expensive',ru:'дорого',tr:'икспенсив',ex:'Too expensive',c:0,e:0,l:false},
+  {en:'finish',ru:'заканчивать',tr:'финиш',ex:'Finish it',c:0,e:0,l:false},
+  {en:'forget',ru:'забывать',tr:'фогет',ex:'I forget names',c:0,e:0,l:false},
+  {en:'get home',ru:'добираться домой',tr:'гет хоум',ex:'I get home late',c:0,e:0,l:false},
+  {en:'here',ru:'здесь',tr:'хиэ',ex:'Come here',c:0,e:0,l:false},
+  {en:'there',ru:'там',tr:'зеа',ex:'Over there',c:0,e:0,l:false}
 ];
 
-const card = document.getElementById('card');
-const front = document.getElementById('cardFront');
-const back = document.getElementById('cardBack');
-const context = document.getElementById('context');
-const dictBody = document.getElementById('dictionary');
-const langToggle = document.getElementById('langToggle');
+const card=document.getElementById('card');
+const front=document.getElementById('front');
+const back=document.getElementById('back');
+const context=document.getElementById('context');
+const dict=document.getElementById('dictionary');
+const lang=document.getElementById('langToggle');
 
-let current = null;
-let showLang = 'en';
+let current=null;
+let langMode='en';
+lang.onchange=()=>langMode=lang.value;
 
-langToggle.onchange = () => showLang = langToggle.value;
+function save(){localStorage.setItem('wordsEasy',JSON.stringify(words));}
+function load(){const s=localStorage.getItem('wordsEasy');if(s)words=JSON.parse(s);}
 
-function save() {
-  localStorage.setItem('wordsEasy', JSON.stringify(words));
-}
-function load() {
-  const s = localStorage.getItem('wordsEasy');
-  if (s) words = JSON.parse(s);
-}
-
-function nextWord(pool = words.filter(w=>!w.learned)) {
-  current = pool[Math.floor(Math.random()*pool.length)];
+function nextWord(pool=words.filter(w=>!w.l)){
+  current=pool[Math.floor(Math.random()*pool.length)];
   card.classList.remove('flipped');
-  front.textContent = showLang==='en'?current.en:current.ru;
-  back.textContent = showLang==='en'?current.ru:current.en;
-  context.textContent = current.example || '';
+  front.textContent=langMode==='en'?current.en:current.ru;
+  back.textContent=langMode==='en'?current.ru:current.en;
+  context.textContent=current.ex;
 }
 
-card.onclick = ()=> card.classList.toggle('flipped');
+card.onclick=()=>card.classList.toggle('flipped');
 
-function markWord(ok) {
-  if (!current) return;
-  if (ok) {
-    current.correct++;
-    if (current.correct >= 3) current.learned = true;
-  } else {
-    current.errors++;
-  }
-  save();
-  nextWord();
-  renderDict();
+function answer(ok){
+  if(ok){current.c++;if(current.c>=3)current.l=true;} else current.e++;
+  save(); renderDict(); nextWord();
 }
 
-function renderDict() {
-  dictBody.innerHTML='';
+function renderDict(){
+  dict.innerHTML='';
   [...words].sort((a,b)=>a.en.localeCompare(b.en))
-    .forEach((w,i)=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.tr}</td>`;
-      dictBody.appendChild(tr);
-    });
+  .forEach((w,i)=>{
+    dict.innerHTML+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.tr}</td></tr>`;
+  });
 }
 
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-load();
-renderDict();
-nextWord();
+load(); renderDict(); nextWord();
 </script>
 </body>
 </html>
