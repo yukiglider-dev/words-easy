@@ -94,6 +94,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 <div id="test" class="center">
   <h2 id="word"></h2>
+  <div id="example" class="reading"></div>
   <div id="reading" class="reading hidden"></div>
   <button onclick="toggleReading()" id="readBtn">Показать чтение</button>
   <div id="answers"></div>
@@ -132,91 +133,96 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 <script>
 const raw = [
-"analyse|анализировать|энэлайз",
-"apologise|извиняться|эполоджайз",
-"arrive|прибывать|эрайв",
-"ask|спрашивать|аск",
-"at school|в школе|эт скул",
-"begin|начинать|бигин",
-"busy|занятый|бизи",
-"buy|покупать|бай",
-"cheap|дёшево|чип",
-"collect|коллекционировать|колэкт",
-"confuse|путать|кэнфьюз",
-"continue|продолжать|континью",
-"cosy|уютный|коузи",
-"creative|творческий|криэйтив",
-"describe|описывать|дискрáйб",
-"drink|пить|дринк",
-"eat|есть|ит",
-"enough|достаточно|инаф",
-"expensive|дорого|икспэнсив",
-"explain|объяснять|иксплэйн",
-"finish|заканчивать|финиш",
-"forget|забывать|фэгэт",
-"forgive|прощать|фэгив",
-"get back|добираться обратно|гэт бэк",
-"get here|добираться сюда|гэт хиэ",
-"get home|добираться домой|гэт хоум",
-"get there|добираться туда|гэт зэа",
-"get to|добираться до|гэт ту",
-"hardworking|трудолюбивый|хардворкинг",
-"he likes|ему нравится|хи лайкс",
-"he needs|ему нужно|хи нидз",
-"he’s rich|он богатый|хиз рич",
-"here|здесь|хиэ",
-"how many|сколько|хау мэни",
-"how much|сколько|хау мач",
-"how often|как часто|хау офн",
-"how regularly|как регулярно|хау рэгьюлэли",
-"I like|мне нравится|ай лайк",
-"I need|мне нужно|ай нид",
-"I’m busy|я занят|айм бизи",
-"impossible|невозможно|импосибл",
-"interrupt|перебивать|интэрапт",
-"it’s cosy|это уютно|итс коузи",
-"it’s enough|этого достаточно|итс инаф",
-"it’s impossible|это невозможно|итс импосибл",
-"it’s possible|это возможно|итс посибл",
-"know|знать|ноу",
-"patient|терпеливый|пэйшэнт",
-"play|играть|плэй",
-"poor|бедный|пуа",
-"possible|возможно|посибл",
-"punctual|пунктуальный|панкчуал",
-"read|читать|рид",
-"rich|богатый|рич",
-"she likes|ей нравится|ши лайкс",
-"she needs|ей нужно|ши нидз",
-"she’s poor|она бедная|шиз пуа",
-"sleep|спать|слиип",
-"start|начинать|старт",
-"strong|сильный|стронг",
-"study|учиться|стади",
-"take|брать|тэйк",
-"there|там|зэа",
-"they like|им нравится|зэй лайк",
-"they need|им нужно|зэй нид",
-"they’re right|они правы|зэй райт",
-"think|думать|синк",
-"understand|понимать|андэстэнд",
-"use|пользоваться|юз",
-"wait|ждать|вэйт",
-"weak|слабый|уик",
-"we like|нам нравится|уи лайк",
-"we need|нам нужно|уи нид",
-"we’re right|мы правы|уи райт",
-"what|что|вот",
-"when|когда|уэн",
-"where|где / куда|уэа",
-"who|кто / кого|ху",
-"why|почему|вай",
-"work|работать|вёрк",
-"write|писать|райт",
-"you like|тебе / вам нравится|ю лайк",
-"you need|тебе / вам нужно|ю нид",
-"you’re right|ты / вы правы|йо райт"
+"here|здесь|хиэ|I am here.",
+"there|там|зэа|She is there.",
+"at school|в школе|эт скул|My brother is at school.",
+
+"understand|понимать|андэстэнд|I understand you.",
+"know|знать|ноу|I know this word.",
+"eat|есть|ит|I eat at home.",
+"drink|пить|дринк|I drink water.",
+"sleep|спать|слиип|I want to sleep.",
+"ask|спрашивать|аск|I ask a question.",
+"read|читать|рид|I read books.",
+"write|писать|райт|I write in English.",
+"describe|описывать|дискрейб|Please describe the picture.",
+"analyse|анализировать|энелайз|We analyse the text.",
+"think|думать|синк|I think about it.",
+"wait|ждать|вэйт|Please wait here.",
+"buy|покупать|бай|I buy food.",
+"play|играть|плэй|I play football.",
+"want|хотеть|уонт|I want coffee.",
+"explain|объяснять|иксплэйн|Can you explain this?",
+"study|учиться|стади|I study English.",
+"work|работать|вёрк|I work every day.",
+"take|брать|тэйк|I take my bag.",
+"arrive|прибывать|эрайв|We arrive at six.",
+"interrupt|перебивать|интэрапт|Please don’t interrupt me.",
+
+"I need|мне нужно|ай нид|I need help.",
+"you need|тебе / вам нужно|ю нид|You need rest.",
+"we need|нам нужно|уи нид|We need time.",
+"they need|им нужно|зэй нид|They need food.",
+"he needs|ему нужно|хи нидз|He needs money.",
+"she needs|ей нужно|ши нидз|She needs help.",
+
+"I like|мне нравится|ай лайк|I like music.",
+"you like|тебе / вам нравится|ю лайк|You like coffee.",
+"we like|нам нравится|уи лайк|We like this place.",
+"they like|им нравится|зэй лайк|They like movies.",
+"he likes|ему нравится|хи лайкс|He likes tea.",
+"she likes|ей нравится|ши лайкс|She likes books.",
+
+"use|пользоваться|юз|I use my phone.",
+"collect|коллекционировать|колэкт|I collect coins.",
+"confuse|путать|кэнфьюз|These words confuse me.",
+"apologise|извиняться|эполоджайз|I apologise for that.",
+"forgive|прощать|фэгив|Please forgive me.",
+"forget|забывать|фэгет|I forget names.",
+
+"start|начинать|старт|We start now.",
+"begin|начинать|бигин|The lesson begins.",
+"continue|продолжать|континью|Please continue.",
+"finish|заканчивать|финиш|We finish work.",
+
+"busy|занятый|бизи|I am busy.",
+"cosy|уютный|коузи|This room is cosy.",
+"enough|достаточно|инаф|It is enough.",
+"rich|богатый|рич|He is rich.",
+"poor|бедный|пуа|They are poor.",
+"possible|возможно|посибл|It is possible.",
+"impossible|невозможно|импосибл|It is impossible.",
+
+"you’re right|ты / вы правы|йо райт|You’re right.",
+"we’re right|мы правы|уи райт|We’re right.",
+"they’re right|они правы|зэй райт|They’re right.",
+
+"why|почему|вай|Why are you here?",
+"who|кто / кого|ху|Who is this?",
+"where|где / куда|уэа|Where are you?",
+"what|что|вот|What is this?",
+"when|когда|уэн|When do we start?",
+"how often|как часто|хау офн|How often do you study?",
+"how regularly|как регулярно|хау рэгьюлэли|How regularly do you work?",
+"how many|сколько|хау мэни|How many books?",
+"how much|сколько|хау мач|How much time?",
+
+"get to|добираться до|гэт ту|How do you get to work?",
+"get home|добираться домой|гэт хоум|I get home late.",
+"get there|добираться туда|гэт зэа|How do we get there?",
+"get here|добираться сюда|гэт хиэ|How did you get here?",
+"get back|добираться обратно|гэт бэк|We get back at night.",
+
+"expensive|дорого|икспэнсив|This is expensive.",
+"cheap|дёшево|чип|It is cheap.",
+"strong|сильный|стронг|He is strong.",
+"weak|слабый|уик|I feel weak.",
+"creative|творческий|криэйтив|She is creative.",
+"hardworking|трудолюбивый|хардворкинг|He is hardworking.",
+"patient|терпеливый|пэйшэнт|She is patient.",
+"punctual|пунктуальный|панкчуал|He is punctual."
 ];
+
 
 
 const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
@@ -261,7 +267,12 @@ function renderTest(){
   w.textContent=current.en;
   r.textContent=current.read;
   r.classList.add('hidden');
+
+  const ex = document.getElementById('example');
+  ex.textContent = examples[current.en] || '';
+
   a.innerHTML='';
+
   let opts=[current.ru];
   while(opts.length<4){
     const x=rnd(words).ru;
