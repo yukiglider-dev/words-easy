@@ -75,6 +75,15 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
 }
+.input-ok{
+  border: 2px solid #4caf50 !important;
+  background: #e8f5e9;
+}
+
+.input-bad{
+  border: 2px solid #f44336 !important;
+  background: #fdecea;
+}
 
 </style>
 </head>
@@ -131,9 +140,9 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
-    onkeydown="if(event.key==='Enter')checkInput()"
+    onkeydown="if(event.key==='Enter')()"
     style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-  <button onclick="checkInput()">Проверить</button>
+  <button onclick="()">Проверить</button>
 </div>
 
 <div id="match" class="hidden center">
@@ -357,7 +366,33 @@ function cardNo(){
 }
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
-function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
+function checkInput(){
+  const correct = current.en.toLowerCase();
+  const value = ie.value.trim().toLowerCase();
+
+  ie.classList.remove('input-ok','input-bad');
+
+  if (value === correct){
+    ie.classList.add('input-ok');
+    current.streak++;
+    save();
+
+    setTimeout(()=>{
+      ie.classList.remove('input-ok');
+      pick();
+    }, 600);
+
+  } else {
+    ie.classList.add('input-bad');
+    current.streak = 0;
+    current.errors++;
+    save();
+
+    setTimeout(()=>{
+      ie.classList.remove('input-bad');
+    }, 600);
+  }
+}
 function renderRepeat(){
   const pool = words.filter(w =>
     w.errors > 0 &&
