@@ -49,7 +49,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 }
 
 /* центрируем чекбокс */
-.table td input[type="checkbox"]{
+.table td [type="checkbox"]{
   display: block;
   margin: 0 auto;
 }
@@ -97,7 +97,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button class="tab active" onclick="openTab('test',this)">Тест</button>
   <button class="tab" onclick="openTab('cards',this)">Карточки</button>
   <button class="tab" onclick="openTab('repeat',this)">Повтор</button>
-  <button class="tab" onclick="openTab('input',this)">Ввод</button>
+  <button class="tab" onclick="openTab('',this)">Ввод</button>
   <button class="tab" onclick="openTab('dict',this)">Словарь</button>
   <button class="tab" onclick="openTab('match',this)">Сопоставление</button>
 </div>
@@ -129,7 +129,17 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <div id="input" class="hidden">
-  <input
+
+<div id="match" class="hidden center">
+  <h3>Сопоставь слова</h3>
+  <div class="matchWrap">
+    <div id="matchEn" class="matchCol"></div>
+    <div id="matchRu" class="matchCol"></div>
+  </div>
+</div>
+
+<div id="dict" class="hidden">
+<input
   id="dictSearch"
   placeholder="Поиск (EN / RU / чтение)"
   oninput="renderDict()"
@@ -141,22 +151,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     border:1px solid #ccc
   "
 >
-  <h3 id="inputRu"></h3>
-  <input id="inputEn" placeholder="Введи английское слово"
-    onkeydown="if(event.key==='Enter')checkInput()"
-    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-  <button onclick="checkInput()">Проверить</button>
-</div>
-
-<div id="match" class="hidden center">
-  <h3>Сопоставь слова</h3>
-  <div class="matchWrap">
-    <div id="matchEn" class="matchCol"></div>
-    <div id="matchRu" class="matchCol"></div>
-  </div>
-</div>
-
-<div id="dict" class="hidden">
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
