@@ -297,16 +297,18 @@ function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.
 function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов'}
 function repeatYes(){pick()} function repeatNo(){pick()}
 function renderDict(){
-  const d=document.getElementById('dict');
-  d.innerHTML='';
+  const d = document.getElementById('dict');
+  d.innerHTML = '';
 
-  const t=document.createElement('table');
-  t.className='table';
-  t.innerHTML=`
+  const t = document.createElement('table');
+  t.className = 'table';
+
+  t.innerHTML = `
     <tr>
       <th>№</th>
       <th>EN</th>
       <th>RU</th>
+      <th>Чтение</th>
       <th>✔</th>
       <th>✖</th>
       <th>Выучено</th>
@@ -314,27 +316,19 @@ function renderDict(){
   `;
 
   words.forEach((w,i)=>{
-    const tr=document.createElement('tr');
-
-    tr.innerHTML=`
-      <td>${i+1}</td>
-      <td>${w.en}</td>
-      <td>${w.ru}</td>
-      <td>${w.streak}</td>
-      <td>${w.errors}</td>
-      <td>
-        <input type="checkbox" ${w.manual?'checked':''}>
-      </td>
+    t.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${w.en}</td>
+        <td>${w.ru}</td>
+        <td>${w.read}</td>
+        <td>${w.streak}</td>
+        <td>${w.errors}</td>
+        <td>
+          <input type="checkbox" ${w.streak>=3?'checked':''} disabled>
+        </td>
+      </tr>
     `;
-
-    const checkbox=tr.querySelector('input');
-    checkbox.onchange=()=>{
-      w.manual=checkbox.checked;
-      save();
-      updateProgress();
-    };
-
-    t.appendChild(tr);
   });
 
   d.appendChild(t);
