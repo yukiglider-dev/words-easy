@@ -143,7 +143,20 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
 
-<div id="dict" class="hidden"></div>
+<div id="dict" class="hidden">
+
+  <div style="display:flex; gap:6px; margin-bottom:8px">
+    <button onclick="setDictFilter('all')">Все</button>
+    <button onclick="setDictFilter('unlearned')">Не выученные</button>
+    <button onclick="setDictFilter('learned')">Выученные</button>
+  </div>
+
+  <button class="correct" onclick="markAllLearned()">
+    Отметить всё выученным
+  </button>
+
+  <div id="dictTable"></div>
+</div>
 
 </div>
 
@@ -321,8 +334,9 @@ function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов'}
 function repeatYes(){pick()} function repeatNo(){pick()}
+let dictFilter = 'all';
 function renderDict(){
-  const d = document.getElementById('dict');
+const d = document.getElementById('dictTable');
   d.innerHTML = '';
 
   const t = document.createElement('table');
@@ -340,7 +354,10 @@ function renderDict(){
     </tr>
   `;
 
-  words.forEach((w, i) => {
+words.forEach((w, i) => {
+
+  if (dictFilter === 'learned' && !w.manualDone && w.streak < 3) return;
+  if (dictFilter === 'unlearned' && (w.manualDone || w.streak >= 3)) return;
     const tr = document.createElement('tr');
 if (w.manualDone || w.streak >= 3) {
   tr.classList.add('learned');
@@ -420,9 +437,26 @@ function renderMatch(){
     ru.appendChild(b);
   });
 }
+  function markAllLearned(){
+  if(!confirm('Отметить ВСЕ слова как выученные?')) return;
+
+  words.forEach(w=>{
+    w.manualDone = true;
+    w.streak = Math.max(w.streak, 3);
+  });
+
+  save();
+  updateProgress();
+  renderDict();
+}
+
 function toggleCardLang(){
   cardLang = cardLang === 'en' ? 'ru' : 'en';
   renderCard();
+}
+function setDictFilter(type){
+  dictFilter = type;
+  renderDict();
 }
 
 function toggleTheme(){
