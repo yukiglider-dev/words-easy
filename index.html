@@ -129,6 +129,18 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <div id="input" class="hidden">
+  <input
+  id="dictSearch"
+  placeholder="Поиск (EN / RU / чтение)"
+  oninput="renderDict()"
+  style="
+    width:100%;
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:10px;
+    border:1px solid #ccc
+  "
+>
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
     onkeydown="if(event.key==='Enter')checkInput()"
@@ -384,6 +396,10 @@ function repeatNo(){
 let dictFilter = 'all';
 function renderDict(){
 const d = document.getElementById('dictTable');
+  const q = document
+  .getElementById('dictSearch')
+  ?.value
+  .toLowerCase() || '';
   d.innerHTML = '';
 
   const t = document.createElement('table');
@@ -402,6 +418,15 @@ const d = document.getElementById('dictTable');
   `;
 
 words.forEach((w, i) => {
+// фильтр поиска
+if (
+  q &&
+  !(
+    w.en.toLowerCase().includes(q) ||
+    w.ru.toLowerCase().includes(q) ||
+    w.read.toLowerCase().includes(q)
+  )
+) return;
 
   if (dictFilter === 'learned' && !w.manualDone && w.streak < 3) return;
   if (dictFilter === 'unlearned' && (w.manualDone || w.streak >= 3)) return;
