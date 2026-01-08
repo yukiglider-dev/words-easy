@@ -71,6 +71,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   display: none !important;
   pointer-events: none !important;
 }
+/* мягкая подсветка выученных слов */
+.table tr.learned {
+  background: #e8f5e9; /* нежно-зелёный */
+}
 
 </style>
 </head>
@@ -426,10 +430,7 @@ function toggleTheme(){
     getComputedStyle(document.documentElement).getPropertyValue('--bg')==='#ffd6e7'
     ?'#cce8ff':'#ffd6e7');
 }
-  /* мягкая подсветка выученных слов */
-.table tr.learned {
-  background: #e8f5e9; /* нежно-зелёный */
-}
+
 
 function resetProgress(){if(confirm('Сбросить прогресс?')){localStorage.removeItem('words-progress');location.reload()}}
   function toggleLearned(i, val){
