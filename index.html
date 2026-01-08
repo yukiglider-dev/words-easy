@@ -67,6 +67,11 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
+  .hidden {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 </style>
 </head>
 
@@ -301,7 +306,11 @@ function renderTest(){
 
 function toggleReading(){r.classList.toggle('hidden')}
 function renderCard(){card.classList.remove('flipped');cf.textContent=current.en;cb.textContent=current.ru;btns.classList.add('hidden')}
-function flipCard(){card.classList.toggle('flipped');btns.classList.remove('hidden')}
+function flipCard(){
+  if (document.getElementById('cards').classList.contains('hidden')) return;
+  card.classList.toggle('flipped');
+  btns.classList.remove('hidden');
+}
 function cardYes(){current.streak++;save();pick()}
 function cardNo(){current.streak=0;current.errors++;errors.push(current);save();pick()}
 function renderInput(){ir.textContent=current.ru;ie.value=''}
