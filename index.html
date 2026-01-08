@@ -274,7 +274,6 @@ function pick(){
   renderInput();
 }
 
-}
 
 function renderTest(){
   w.textContent=current.en;
@@ -321,32 +320,41 @@ function renderDict(){
       <th>EN</th>
       <th>RU</th>
       <th>Чтение</th>
-      <th>✔</th>
-      <th>✖</th>
-      <th>Выучено</th>
+      <th style="text-align:center">✔</th>
+      <th style="text-align:center">✖</th>
+      <th style="text-align:center">Выучено</th>
     </tr>
   `;
 
-  words.forEach((w,i)=>{
-    t.innerHTML += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${w.en}</td>
-        <td>${w.ru}</td>
-        <td>${w.read}</td>
-        <td>${w.streak}</td>
-        <td>${w.errors}</td>
-        <td>
-          <input type="checkbox"
-            ${w.manualDone ? 'checked' : ''}
-            onchange="toggleLearned(${i}, this.checked)">
-        </td>
-      </tr>
+  words.forEach((w, i) => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${w.en}</td>
+      <td>${w.ru}</td>
+      <td><i>${w.read}</i></td>
+      <td style="text-align:center">${w.streak}</td>
+      <td style="text-align:center">${w.errors}</td>
+      <td style="text-align:center">
+        <input type="checkbox">
+      </td>
     `;
+
+    const checkbox = tr.querySelector('input[type="checkbox"]');
+    checkbox.checked = !!w.manualDone;
+
+    checkbox.onclick = () => {
+      w.manualDone = checkbox.checked;
+      save();
+      updateProgress();
+    };
+
+    t.appendChild(tr);
   });
 
-  d.appendChild(t);
-}
+  d.ap
+
 
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
