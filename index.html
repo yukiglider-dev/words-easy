@@ -109,36 +109,28 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button onclick="toggleReading()">Показать чтение</button>
   <div id="answers"></div>
 </div>
-<div id="smart" class="hidden center">
-  <h2 id="smartQuestion"></h2>
 
-  <select id="smartMode"
-    style="margin-bottom:12px;padding:6px;border-radius:8px">
-    <option value="ru-en">RU → EN</option>
-    <option value="en-ru">EN → RU</option>
-    <option value="random">Случайно</option>
-  </select>
-
-  <div id="smartMasked" class="reading"></div>
-
-  <input id="smartInput"
-    placeholder="Впиши пропущенные буквы"
-    style="margin-top:10px;padding:10px;width:80%;border-radius:10px;font-size:18px">
-
-  <button style="margin-top:10px" onclick="checkSmartInput()">Проверить</button>
-</div>
-
-
-<div id="match" class="hidden center">
-  <h3>Сопоставь слова</h3>
-  <div class="matchWrap">
-    <div id="matchEn" class="matchCol"></div>
-    <div id="matchRu" class="matchCol"></div>
+<div id="cards" class="hidden center">
+  <div class="cardWrap">
+    <div id="card" class="card" onclick="flipCard()">
+      <div class="cardSide" id="cardFront"></div>
+      <div class="cardSide cardBack" id="cardBack"></div>
+    </div>
+  </div>
+  <div id="cardBtns" class="controls hidden">
+    <button class="correct" onclick="()">Знаю</button>
+    <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
 </div>
 
-<div id="dict" class="hidden">
-<input
+<div id="repeat" class="hidden center">
+  <h3 id="repeatWord"></h3>
+  <button class="correct" onclick="repeatYes()">Знаю</button>
+  <button class="wrong" onclick="repeatNo()">Не знаю</button>
+</div>
+
+<div id="input" class="hidden">
+  <input
   id="dictSearch"
   placeholder="Поиск (EN / RU / чтение)"
   oninput="renderDict()"
@@ -150,6 +142,22 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     border:1px solid #ccc
   "
 >
+  <h3 id="inputRu"></h3>
+  <input id="inputEn" placeholder="Введи английское слово"
+    onkeydown="if(event.key==='Enter')checkInput()"
+    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
+  <button onclick="checkInput()">Проверить</button>
+</div>
+
+<div id="match" class="hidden center">
+  <h3>Сопоставь слова</h3>
+  <div class="matchWrap">
+    <div id="matchEn" class="matchCol"></div>
+    <div id="matchRu" class="matchCol"></div>
+  </div>
+</div>
+
+<div id="dict" class="hidden">
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
@@ -163,6 +171,28 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
   <div id="dictTable"></div>
 </div>
+
+</div>
+<div id="smart" class="hidden center">
+
+  <select id="smartMode" style="width:100%;padding:8px;border-radius:10px">
+    <option value="ru-en">RU → EN</option>
+    <option value="en-ru">EN → RU</option>
+    <option value="random">Случайно</option>
+  </select>
+
+  <h3 id="smartQuestion" style="margin:12px 0"></h3>
+
+  <input
+    id="smartInput"
+    placeholder="Введи ответ"
+    onkeydown="if(event.key==='Enter')checkSmart()"
+    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc"
+  >
+
+  <button onclick="checkSmart()">Проверить</button>
+
+  <div id="smartResult" style="margin-top:8px"></div>
 
 </div>
 
@@ -320,7 +350,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++}
+      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -467,7 +497,7 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
-  ['test','smart','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
 if(id==='repeat')renderRepeat();
@@ -538,67 +568,66 @@ function resetProgress(){if(confirm('Сбросить прогресс?')){local
   save();
   updateProgress();
 }
-const sq = document.getElementById('smartQuestion');
-const sm = document.getElementById('smartMasked');
-const si = document.getElementById('smartInput');
-
-let smartAnswer = '';
+let smartCurrent = null;
+let smartDirection = 'ru-en';
 
 function pickSmart(){
   const pool = words.filter(w => w.streak < 3 && !w.manualDone);
-  if (!pool.length){
-    sq.textContent = '🎉 Все слова выучены';
-    sm.textContent = '';
-    si.style.display = 'none';
+  if(!pool.length){
+    document.getElementById('smartQuestion').textContent = '🎉 Все слова выучены';
     return;
   }
-  current = rnd(pool);
-  renderSmart();
+
+  smartCurrent = rnd(pool);
+
+  const mode = document.getElementById('smartMode').value;
+  smartDirection =
+    mode === 'random'
+      ? (Math.random() > 0.5 ? 'ru-en' : 'en-ru')
+      : mode;
+
+  document.getElementById('smartQuestion').textContent =
+    smartDirection === 'ru-en'
+      ? smartCurrent.ru
+      : smartCurrent.en;
+
+  document.getElementById('smartInput').value = '';
+  document.getElementById('smartResult').textContent = '';
 }
 
-function maskWord(word){
-  return word
-    .split('')
-    .map((c,i)=> i%2===0 && c!==' ' ? '_' : c)
-    .join('');
-}
+function checkSmart(){
+  const input = document
+    .getElementById('smartInput')
+    .value
+    .trim()
+    .toLowerCase();
 
-function renderSmart(){
-  let mode = document.getElementById('smartMode').value;
-  if (mode === 'random'){
-    mode = Math.random()<0.5 ? 'ru-en' : 'en-ru';
-  }
+  const correct =
+    smartDirection === 'ru-en'
+      ? smartCurrent.en.toLowerCase()
+      : smartCurrent.ru.toLowerCase();
 
-  const question = mode==='ru-en' ? current.ru : current.en;
-  const answer   = mode==='ru-en' ? current.en : current.ru;
+  const result = document.getElementById('smartResult');
 
-  smartAnswer = answer.toLowerCase().trim();
-
-  sq.textContent = question;
-  sm.textContent = maskWord(answer);
-  si.value = '';
-  si.focus();
-}
-
-function checkSmartInput(){
-  const val = si.value.toLowerCase().trim();
-  if (!val) return;
-
-  if (val === smartAnswer){
-    current.streak++;
+  if(input === correct){
+    result.textContent = '✅ Верно';
+    smartCurrent.streak++;
   } else {
-    current.streak = 0;
-    current.errors++;
+    result.textContent = `❌ Неверно: ${correct}`;
+    smartCurrent.streak = 0;
+    smartCurrent.errors++;
   }
-  save();
-  setTimeout(pickSmart,400);
-}
 
+  save();
+  setTimeout(pickSmart, 800);
+}
 
 pick();
 </script>
 </body>
 </html>
+
+
 
 
 
