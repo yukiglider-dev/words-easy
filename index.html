@@ -67,18 +67,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
+  .hidden {
+  display: none !important;
+  pointer-events: none !important;
+}
 /* мягкая подсветка выученных слов */
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
-}
-.input-ok{
-  border: 2px solid #4caf50 !important;
-  background: #e8f5e9;
-}
-
-.input-bad{
-  border: 2px solid #f44336 !important;
-  background: #fdecea;
 }
 
 </style>
@@ -121,7 +116,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-<button class="correct" onclick="cardYes()">Знаю</button>
+    <button class="correct" onclick="()">Знаю</button>
     <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
 </div>
@@ -136,9 +131,9 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
-onkeydown="if(event.key==='Enter')checkInput()"
+    onkeydown="if(event.key==='Enter')checkInput()"
     style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-<button onclick="checkInput()">Проверить</button>
+  <button onclick="checkInput()">Проверить</button>
 </div>
 
 <div id="match" class="hidden center">
@@ -362,36 +357,7 @@ function cardNo(){
 }
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
-function checkInput(){
-  if(!current) return;
-
-  const user = ie.value.trim().toLowerCase();
-  const correct = current.en.trim().toLowerCase();
-
-  ie.classList.remove('input-ok','input-bad');
-
-  if(!user) return;
-
-  if(user === correct){
-    ie.classList.add('input-ok');
-    current.streak++;
-    save();
-
-    setTimeout(()=>{
-      ie.value = '';
-      ie.classList.remove('input-ok');
-      pick();
-    }, 600);
-
-  } else {
-    ie.classList.add('input-bad');
-    current.streak = 0;
-    current.errors++;
-    save();
-  }
-}
-
-
+function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){
   const pool = words.filter(w =>
     w.errors > 0 &&
@@ -508,22 +474,12 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
-
-  ['test','cards','repeat','input','dict','match','partial']
-    .forEach(x=>document.getElementById(x).classList.add('hidden'));
-
+  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-
-  if(id === 'input' && !current){
-    pick();        // ← ВОТ ЭТО КЛЮЧ
-  }
-
-  if(id==='dict') renderDict();
-  if(id==='repeat') renderRepeat();
-  if(id==='match') renderMatch();
-  if(id==='partial') renderPartial();
+  if(id==='dict')renderDict();
+if(id==='repeat')renderRepeat();
+  if(id==='match')renderMatch();
 }
-
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
 let matchSelected=null;
@@ -593,6 +549,8 @@ pick();
 </script>
 </body>
 </html>
+
+
 
 
 
