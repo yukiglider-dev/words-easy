@@ -329,6 +329,9 @@ function renderDict(){
 
   words.forEach((w, i) => {
     const tr = document.createElement('tr');
+if (w.manualDone || w.streak >= 3) {
+  tr.classList.add('learned');
+}
 
     tr.innerHTML = `
       <td>${i + 1}</td>
@@ -346,10 +349,18 @@ function renderDict(){
     checkbox.checked = !!w.manualDone;
 
     checkbox.onclick = () => {
-      w.manualDone = checkbox.checked;
-      save();
-      updateProgress();
-    };
+  w.manualDone = checkbox.checked;
+
+  if (w.manualDone) {
+    tr.classList.add('learned');
+  } else {
+    tr.classList.remove('learned');
+  }
+
+  save();
+  updateProgress();
+};
+
 
     t.appendChild(tr);
   });
@@ -406,6 +417,11 @@ function toggleTheme(){
     getComputedStyle(document.documentElement).getPropertyValue('--bg')==='#ffd6e7'
     ?'#cce8ff':'#ffd6e7');
 }
+  /* мягкая подсветка выученных слов */
+.table tr.learned {
+  background: #e8f5e9; /* нежно-зелёный */
+}
+
 function resetProgress(){if(confirm('Сбросить прогресс?')){localStorage.removeItem('words-progress');location.reload()}}
   function toggleLearned(i, val){
   words[i].manualDone = val;
