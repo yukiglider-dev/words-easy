@@ -36,6 +36,23 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 .progress{margin:8px 0;font-size:14px;color:#444}
 .reset{background:#ff9800;color:#fff}
+  /* одинаковая ширина и центрирование для ✔ ✖ Выучено */
+.table th:nth-child(4),
+.table th:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(4),
+.table td:nth-child(5),
+.table td:nth-child(6){
+  width: 60px;
+  text-align: center;
+}
+
+/* центрируем чекбокс */
+.table td input[type="checkbox"]{
+  display: block;
+  margin: 0 auto;
+}
+
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
 .matchWrap{display:flex;gap:12px}
