@@ -67,7 +67,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
-  .hidden {
+  .{
   display: none !important;
   pointer-events: none !important;
 }
@@ -76,6 +76,8 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   background: #e8f5e9; /* нежно-зелёный */
 }
 .partial-letter{
+  pointer-events: auto !important;
+  background:#fff;
   width:32px;
   height:38px;
   text-align:center;
@@ -125,7 +127,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <div id="answers"></div>
 </div>
 
-<div id="cards" class="hidden center">
+<div id="cards" class="center">
   <div class="cardWrap">
     <div id="card" class="card" onclick="flipCard()">
       <div class="cardSide" id="cardFront"></div>
@@ -138,7 +140,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
 
-<div id="repeat" class="hidden center">
+<div id="repeat" class="center">
   <h3 id="repeatWord"></h3>
   <button class="correct" onclick="repeatYes()">Знаю</button>
   <button class="wrong" onclick="repeatNo()">Не знаю</button>
@@ -153,7 +155,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button onclick="checkInput()">Проверить</button>
 </div>
 
-<div id="match" class="hidden center">
+<div id="match" class="center">
   <h3>Сопоставь слова</h3>
   <div class="matchWrap">
     <div id="matchEn" class="matchCol"></div>
@@ -161,7 +163,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
   
-<div id="partial" class="hidden center">
+<div id="partial" class="center">
   <h3 id="partialWord"></h3>
 
 <div id="partial" class="hidden center">
@@ -587,18 +589,25 @@ function renderPartial(){
   const wrap = document.getElementById('partialWord');
   wrap.innerHTML = '';
 
+  // 👉 выбираем 1–2 позиции для пропусков
+  const letters = [...word].map((c,i)=>({c,i})).filter(l=>l.c!==' ');
+  const gapsCount = Math.min(2, Math.max(1, Math.floor(Math.random()*2)+1));
+  const gaps = letters.sort(()=>0.5-Math.random()).slice(0,gapsCount).map(l=>l.i);
+
   for (let i = 0; i < word.length; i++){
     if (word[i] === ' '){
       wrap.append(' ');
       continue;
     }
 
-    if (Math.random() < 0.5){
+    if (gaps.includes(i)){
       const inp = document.createElement('input');
       inp.maxLength = 1;
       inp.dataset.letter = word[i];
       inp.className = 'partial-letter';
-      inp.oninput = () => inp.value = inp.value.replace(/[^a-z]/i,'');
+      inp.oninput = () => {
+        inp.value = inp.value.replace(/[^a-z]/i,'');
+      };
       wrap.appendChild(inp);
     } else {
       const span = document.createElement('span');
