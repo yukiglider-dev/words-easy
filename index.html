@@ -212,7 +212,7 @@ const raw = [
 const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
 const words = raw.map((s,i)=>{
   const [en,ru,read]=s.split('|');
-  return saved?.[i] || {en,ru,read,streak:0,errors:0};
+return saved?.[i] || {en,ru,read,streak:0,errors:0,manual:false};
 });
 
 let current=null, errors=[], cardLang='en';
@@ -233,11 +233,14 @@ function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 function save(){localStorage.setItem('words-progress',JSON.stringify(words))}
 
 function updateProgress(){
-  prog.textContent=`Осталось слов: ${words.filter(w=>w.streak<3).length} / ${words.length}`;
+  prog.textContent=`Осталось слов: ${
+    words.filter(w=>w.streak<3 && !w.manual).length
+  } / ${words.length}`;
 }
 
+
 function pick(){
-  const pool=words.filter(w=>w.streak<3);
+const pool=words.filter(w=>w.streak<3 && !w.manual);
   updateProgress();
   if(!pool.length){w.textContent='🎉 Все слова выучены';a.innerHTML='';return}
   current=rnd(pool);
@@ -276,7 +279,49 @@ function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов'}
 function repeatYes(){pick()} function repeatNo(){pick()}
-function renderDict(){const d=document.getElementById('dict');d.innerHTML='';const t=document.createElement('table');t.className='table';t.innerHTML='<tr><th>№</th><th>EN</th><th>RU</th><th>✔</th><th>✖</th></tr>';words.forEach((w,i)=>t.innerHTML+=`<tr><td>${i+1}</td><td>${w.en}</td><td>${w.ru}</td><td>${w.streak}</td><td>${w.errors}</td></tr>`);d.appendChild(t)}
+function renderDict(){
+  const d=document.getElementById('dict');
+  d.innerHTML='';
+
+  const t=document.createElement('table');
+  t.className='table';
+  t.innerHTML=`
+    <tr>
+      <th>№</th>
+      <th>EN</th>
+      <th>RU</th>
+      <th>✔</th>
+      <th>✖</th>
+      <th>Выучено</th>
+    </tr>
+  `;
+
+  words.forEach((w,i)=>{
+    const tr=document.createElement('tr');
+
+    tr.innerHTML=`
+      <td>${i+1}</td>
+      <td>${w.en}</td>
+      <td>${w.ru}</td>
+      <td>${w.streak}</td>
+      <td>${w.errors}</td>
+      <td>
+        <input type="checkbox" ${w.manual?'checked':''}>
+      </td>
+    `;
+
+    const checkbox=tr.querySelector('input');
+    checkbox.onchange=()=>{
+      w.manual=checkbox.checked;
+      save();
+      updateProgress();
+    };
+
+    t.appendChild(tr);
+  });
+
+  d.appendChild(t);
+}
 
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
