@@ -229,7 +229,7 @@ const raw = [
 const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
 const words = raw.map((s,i)=>{
   const [en,ru,read]=s.split('|');
-return saved?.[i] || {en,ru,read,streak:0,errors:0,manual:false};
+return saved?.[i] || {en,ru,read,streak:0,errors:0,manualDone:false};
 });
 
 let current=null, errors=[], cardLang='en';
@@ -251,7 +251,7 @@ function save(){localStorage.setItem('words-progress',JSON.stringify(words))}
 
 function updateProgress(){
   prog.textContent=`Осталось слов: ${
-    words.filter(w=>w.streak<3 && !w.manual).length
+const pool = words.filter(w => w.streak < 3 && !w.manualDone);
   } / ${words.length}`;
 }
 
@@ -325,7 +325,9 @@ function renderDict(){
         <td>${w.streak}</td>
         <td>${w.errors}</td>
         <td>
-          <input type="checkbox" ${w.streak>=3?'checked':''} disabled>
+          <input type="checkbox"
+            ${w.manualDone ? 'checked' : ''}
+            onchange="toggleLearned(${i}, this.checked)">
         </td>
       </tr>
     `;
@@ -379,6 +381,12 @@ function toggleTheme(){
     ?'#cce8ff':'#ffd6e7');
 }
 function resetProgress(){if(confirm('Сбросить прогресс?')){localStorage.removeItem('words-progress');location.reload()}}
+  function toggleLearned(i, val){
+  words[i].manualDone = val;
+  save();
+  updateProgress();
+}
+
 pick();
 </script>
 </body>
