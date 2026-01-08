@@ -95,6 +95,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 <div class="tabs">
   <button class="tab active" onclick="openTab('test',this)">Тест</button>
+  <button class="tab" onclick="openTab('smart',this)">Умный тест</button>
   <button class="tab" onclick="openTab('cards',this)">Карточки</button>
   <button class="tab" onclick="openTab('repeat',this)">Повтор</button>
   <button class="tab" onclick="openTab('input',this)">Ввод</button>
@@ -107,6 +108,22 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <div id="reading" class="reading hidden"></div>
   <button onclick="toggleReading()">Показать чтение</button>
   <div id="answers"></div>
+</div>
+<div id="smart" class="hidden center">
+  <h2 id="smartQuestion"></h2>
+
+  <select id="smartMode"
+    style="margin-bottom:8px;padding:6px;border-radius:8px">
+    <option value="ru-en">RU → EN</option>
+    <option value="en-ru">EN → RU</option>
+    <option value="random">Случайно</option>
+  </select>
+
+  <div id="smartHint" class="reading hidden"></div>
+
+  <button onclick="showSmartHint()">Подсказка</button>
+
+  <div id="smartAnswers"></div>
 </div>
 
 <div id="cards" class="hidden center">
@@ -479,6 +496,7 @@ function openTab(id,b){
   if(id==='dict')renderDict();
 if(id==='repeat')renderRepeat();
   if(id==='match')renderMatch();
+  if(id==='smart') pickSmart();
 }
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
@@ -543,6 +561,71 @@ function resetProgress(){if(confirm('Сбросить прогресс?')){local
   words[i].manualDone = val;
   save();
   updateProgress();
+}
+const sq = document.getElementById('smartQuestion');
+const sa = document.getElementById('smartAnswers');
+const sh = document.getElementById('smartHint');
+
+function pickSmart(){
+  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
+  if (!pool.length){
+    sq.textContent = '🎉 Все слова выучены';
+    sa.innerHTML = '';
+    return;
+  }
+  current = rnd(pool);
+  renderSmart();
+}
+
+function renderSmart(){
+  let mode = document.getElementById('smartMode').value;
+  if (mode === 'random'){
+    mode = Math.random() < 0.5 ? 'ru-en' : 'en-ru';
+  }
+
+  const question = mode === 'ru-en' ? current.ru : current.en;
+  const correct  = mode === 'ru-en' ? current.en : current.ru;
+
+  sq.textContent = question;
+  sh.classList.add('hidden');
+
+  // подсказка: частичное слово
+  sh.textContent = correct
+    .split('')
+    .map((c,i)=> i%2===0 ? '_' : c)
+    .join('');
+
+  sa.innerHTML = '';
+  let opts = [correct];
+
+  while (opts.length < 4){
+    const w = rnd(words);
+    const v = mode === 'ru-en' ? w.en : w.ru;
+    if (!opts.includes(v)) opts.push(v);
+  }
+
+  opts.sort(()=>Math.random()-0.5).forEach(v=>{
+    const b = document.createElement('button');
+    b.textContent = v;
+    b.onclick = ()=>{
+      [...sa.children].forEach(x=>x.disabled=true);
+      if (v === correct){
+        b.classList.add('correct');
+        current.streak++;
+      } else {
+        b.classList.add('wrong');
+        current.streak = 0;
+        current.errors++;
+      }
+      save();
+      setTimeout(pickSmart,600);
+    };
+    sa.appendChild(b);
+  });
+}
+
+function showSmartHint(){
+  sh.classList.remove('hidden');
 }
 
 pick();
