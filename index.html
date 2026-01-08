@@ -116,7 +116,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-    <button class="correct" onclick="cardYes()">Знаю</button>
+    <button class="correct" onclick="()">Знаю</button>
     <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
 </div>
@@ -328,8 +328,21 @@ function flipCard(){
   card.classList.toggle('flipped');
   btns.classList.remove('hidden');
 }
-function cardYes(){current.streak++;save();pick()}
-function cardNo(){current.streak=0;current.errors++;errors.push(current);save();pick()}
+function cardYes(){
+  current.streak++;
+  save();
+  pick();
+  renderCard();   // ← ВАЖНО
+}
+
+function cardNo(){
+  current.streak = 0;
+  current.errors++;
+  save();
+  pick();
+  renderCard();   // ← ВАЖНО
+}
+
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){
@@ -349,12 +362,16 @@ function renderRepeat(){
 }
 function repeatYes(){
   current.streak++;
-  if (current.streak >= 3) {
+
+  // если 1 раза подряд — убираем из повтора
+  if (current.streak >= 1) {
     current.errors = 0;
   }
+
   save();
   renderRepeat();
 }
+
 
 function repeatNo(){
   current.errors++;
@@ -362,6 +379,7 @@ function repeatNo(){
   save();
   renderRepeat();
 }
+
 let dictFilter = 'all';
 function renderDict(){
 const d = document.getElementById('dictTable');
