@@ -256,7 +256,7 @@ const words = raw.map((s,i)=>{
 });
 
 
-let current=null, errors=[], cardLang='en';
+let current=null, cardLang='en';
 
 const w=document.getElementById('word');
 const a=document.getElementById('answers');
@@ -332,8 +332,36 @@ function cardYes(){current.streak++;save();pick()}
 function cardNo(){current.streak=0;current.errors++;errors.push(current);save();pick()}
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
-function renderRepeat(){rw.textContent=errors.length?rnd(errors).en:'Нет слов'}
-function repeatYes(){pick()} function repeatNo(){pick()}
+function renderRepeat(){
+  const pool = words.filter(w =>
+    w.errors > 0 &&
+    w.streak < 3 &&
+    !w.manualDone
+  );
+
+  if (!pool.length){
+    rw.textContent = '🎉 Нет слов для повтора';
+    return;
+  }
+
+  current = rnd(pool);
+  rw.textContent = current.en;
+}
+function repeatYes(){
+  current.streak++;
+  if (current.streak >= 3) {
+    current.errors = 0;
+  }
+  save();
+  renderRepeat();
+}
+
+function repeatNo(){
+  current.errors++;
+  current.streak = 0;
+  save();
+  renderRepeat();
+}
 let dictFilter = 'all';
 function renderDict(){
 const d = document.getElementById('dictTable');
@@ -405,7 +433,7 @@ function openTab(id,b){
   ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
-  if(id==='repeat')renderRepeat();
+if(id==='repeat')renderRepeat();
   if(id==='match')renderMatch();
 }
 
