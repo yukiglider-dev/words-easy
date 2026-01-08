@@ -116,8 +116,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-    <button class="correct" onclick="()">Знаю</button>
-    <button class="wrong" onclick="cardNo()">Не знаю</button>
+onclick    <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
 </div>
 
@@ -314,7 +313,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
+      else{b.classList.add('wrong');current.streak=0;current.errors++;let errors.push(current)}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -335,6 +334,12 @@ function cardYes(){
   nextCard();
 }
 
+function getAvailableWords(){
+  return words.filter(w =>
+    !w.manualDone &&
+    w.streak < 3
+  );
+}
 
 function cardNo(){
   current.streak = 0;
@@ -364,7 +369,9 @@ function nextCard(){
   const pool = getAvailableWords();
 
   if (!pool.length){
-    cardBox.textContent = '🎉 Пока нет слов для изучения';
+cf.textContent = '🎉 Пока нет слов для изучения';
+cb.textContent = '';
+btns.classList.add('hidden');
     return;
   }
 
@@ -388,9 +395,7 @@ function renderRepeat(){
     return;
   }
 
-  current = rnd(pool);
-  rw.textContent = current.en;
-}
+
 
 
   current = rnd(pool);
