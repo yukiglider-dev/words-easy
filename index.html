@@ -144,6 +144,19 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     <div id="matchRu" class="matchCol"></div>
   </div>
 </div>
+  
+<div id="partial" class="hidden center">
+  <h3 id="partialWord"></h3>
+
+  <input
+    id="partialInput"
+    placeholder="Вставь пропущенные буквы"
+    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc"
+    onkeydown="if(event.key==='Enter')checkPartial()"
+  >
+
+  <button onclick="checkPartial()">Проверить</button>
+</div>
 
 <div id="dict" class="hidden">
 <input
@@ -158,18 +171,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     border:1px solid #ccc
   "
 >
-<div id="partial" class="hidden center">
-  <h3 id="partialWord"></h3>
 
-  <input
-    id="partialInput"
-    placeholder="Вставь пропущенные буквы"
-    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc"
-    onkeydown="if(event.key==='Enter')checkPartial()"
-  >
-
-  <button onclick="checkPartial()">Проверить</button>
-</div>
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
