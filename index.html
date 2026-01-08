@@ -67,10 +67,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
-  .hidden {
+ .hidden {
   display: none !important;
-  pointer-events: none !important;
 }
+
 /* мягкая подсветка выученных слов */
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
@@ -116,9 +116,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-onclick    <button class="wrong" onclick="cardNo()">Не знаю</button>
-  </div>
+  <button class="correct" onclick="cardYes()">Знаю</button>
+  <button class="wrong" onclick="cardNo()">Не знаю</button>
 </div>
+
 
 <div id="repeat" class="hidden center">
   <h3 id="repeatWord"></h3>
@@ -313,7 +314,8 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++;let errors.push(current)}
+      else{b.classList.add('wrong');current.streak=0;current.errors++; let errors = [];
+errors.push(current);}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -544,6 +546,12 @@ function toggleCardLang(){
 function setDictFilter(type){
   dictFilter = type;
   renderDict();
+}
+function renderCard(){
+  card.classList.remove('flipped');
+  cf.textContent = cardLang === 'en' ? current.en : current.ru;
+  cb.textContent = cardLang === 'en' ? current.ru : current.en;
+  btns.classList.add('hidden');
 }
 
 function toggleTheme(){
