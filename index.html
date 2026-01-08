@@ -15,7 +15,7 @@ body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-conten
 .tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
 .tab{flex:1;padding:8px;border-radius:10px;background:var(--btn);border:none;cursor:pointer;font-size:13px}
 .tab.active{background:#cce8ff;font-weight:bold}
-.hidden{display:none}
+.hidden{:none}
 button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
 .correct{background:#8bc34a;color:#fff}
 .wrong{background:#f44336;color:#fff}
@@ -23,13 +23,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 .reading{font-style:italic;color:#666;margin:6px 0;font-size:14px}
 
-.cardWrap{perspective:1000px;display:flex;justify-content:center}
+.cardWrap{perspective:1000px;:flex;justify-content:center}
 .card{width:100%;max-width:320px;min-height:140px;position:relative;transform-style:preserve-3d;transition:transform .6s ease;cursor:pointer}
 .card.flipped{transform:rotateY(180deg)}
-.cardSide{position:absolute;width:100%;height:100%;backface-visibility:hidden;border:1px solid #ddd;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;background:#fff}
+.cardSide{position:absolute;width:100%;height:100%;backface-visibility:hidden;border:1px solid #ddd;border-radius:16px;:flex;align-items:center;justify-content:center;font-size:24px;background:#fff}
 .cardBack{transform:rotateY(180deg)}
 
-.controls{display:flex;gap:10px;margin-top:10px}
+.controls{:flex;gap:10px;margin-top:10px}
 
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
@@ -49,13 +49,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 /* центрируем чекбокс */
 .table td input[type="checkbox"]{
-  display: block;
+  : block;
   margin: 0 auto;
 }
 
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
-.matchWrap{display:flex;gap:12px}
+.matchWrap{:flex;gap:12px}
 .matchCol{flex:1}
 .matchBtn{
   padding:10px;
@@ -67,8 +67,8 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
- .hidden {
-  display: none !important;
+.hidden {
+  display: none;
 }
 
 /* мягкая подсветка выученных слов */
@@ -161,6 +161,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <script>
+  document.body.addEventListener('click', () => {
+  console.log('CLICK');
+});
+
 const raw = [
 "analyse|анализировать|энэлайз",
 "apologise|извиняться|эполоджайз",
