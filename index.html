@@ -129,18 +129,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <div id="input" class="hidden">
-  <input
-  id="dictSearch"
-  placeholder="Поиск (EN / RU / чтение)"
-  oninput="renderDict()"
-  style="
-    width:100%;
-    padding:10px;
-    margin-bottom:8px;
-    border-radius:10px;
-    border:1px solid #ccc
-  "
->
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
     onkeydown="if(event.key==='Enter')checkInput()"
@@ -157,6 +145,18 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <div id="dict" class="hidden">
+<input
+  id="dictSearch"
+  placeholder="Поиск (EN / RU / чтение)"
+  oninput="renderDict()"
+  style="
+    width:100%;
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:10px;
+    border:1px solid #ccc
+  "
+>
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
