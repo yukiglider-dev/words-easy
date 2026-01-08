@@ -554,61 +554,11 @@ function pickSmart(){
 }
 
 function renderSmart(){
-  let mode = document.getElementById('smartMode').value;
-  if (mode === 'random'){
-    mode = Math.random() < 0.5 ? 'ru-en' : 'en-ru';
-  }
-
-  const question = mode === 'ru-en' ? current.ru : current.en;
-  const correct  = mode === 'ru-en' ? current.en : current.ru;
-
-  sq.textContent = question;
-  sh.classList.add('hidden');
-
-  // подсказка: частичное слово
-  sh.textContent = correct
-    .split('')
-    .map((c,i)=> i%2===0 ? '_' : c)
-    .join('');
-
-  sa.innerHTML = '';
-  let opts = [correct];
-
-  while (opts.length < 4){
-    const w = rnd(words);
-    const v = mode === 'ru-en' ? w.en : w.ru;
-    if (!opts.includes(v)) opts.push(v);
-  }
-
-  opts.sort(()=>Math.random()-0.5).forEach(v=>{
-    const b = document.createElement('button');
-    b.textContent = v;
-    b.onclick = ()=>{
-      [...sa.children].forEach(x=>x.disabled=true);
-      if (v === correct){
-        b.classList.add('correct');
-        current.streak++;
-      } else {
-        b.classList.add('wrong');
-        current.streak = 0;
-        current.errors++;
-      }
-      save();
-      setTimeout(pickSmart,600);
-    };
-    sa.appendChild(b);
-  });
-}
-
-function showSmartHint(){
-  sh.classList.remove('hidden');
-}
 const sq = document.getElementById('smartQuestion');
 const sm = document.getElementById('smartMasked');
 const si = document.getElementById('smartInput');
 
 let smartAnswer = '';
-let smartMode = '';
 
 function pickSmart(){
   const pool = words.filter(w => w.streak < 3 && !w.manualDone);
@@ -621,6 +571,7 @@ function pickSmart(){
   current = rnd(pool);
   renderSmart();
 }
+
 
 function maskWord(word){
   return word
