@@ -113,45 +113,21 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <h2 id="smartQuestion"></h2>
 
   <select id="smartMode"
-    style="margin-bottom:8px;padding:6px;border-radius:8px">
+    style="margin-bottom:12px;padding:6px;border-radius:8px">
     <option value="ru-en">RU → EN</option>
     <option value="en-ru">EN → RU</option>
     <option value="random">Случайно</option>
   </select>
 
-  <div id="smartHint" class="reading hidden"></div>
+  <div id="smartMasked" class="reading"></div>
 
-  <button onclick="showSmartHint()">Подсказка</button>
+  <input id="smartInput"
+    placeholder="Впиши пропущенные буквы"
+    style="margin-top:10px;padding:10px;width:80%;border-radius:10px;font-size:18px">
 
-  <div id="smartAnswers"></div>
+  <button style="margin-top:10px" onclick="checkSmartInput()">Проверить</button>
 </div>
 
-<div id="cards" class="hidden center">
-  <div class="cardWrap">
-    <div id="card" class="card" onclick="flipCard()">
-      <div class="cardSide" id="cardFront"></div>
-      <div class="cardSide cardBack" id="cardBack"></div>
-    </div>
-  </div>
-  <div id="cardBtns" class="controls hidden">
-    <button class="correct" onclick="()">Знаю</button>
-    <button class="wrong" onclick="cardNo()">Не знаю</button>
-  </div>
-</div>
-
-<div id="repeat" class="hidden center">
-  <h3 id="repeatWord"></h3>
-  <button class="correct" onclick="repeatYes()">Знаю</button>
-  <button class="wrong" onclick="repeatNo()">Не знаю</button>
-</div>
-
-<div id="input" class="hidden">
-  <h3 id="inputRu"></h3>
-  <input id="inputEn" placeholder="Введи английское слово"
-    onkeydown="if(event.key==='Enter')checkInput()"
-    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-  <button onclick="checkInput()">Проверить</button>
-</div>
 
 <div id="match" class="hidden center">
   <h3>Сопоставь слова</h3>
@@ -626,6 +602,63 @@ function renderSmart(){
 
 function showSmartHint(){
   sh.classList.remove('hidden');
+}
+const sq = document.getElementById('smartQuestion');
+const sm = document.getElementById('smartMasked');
+const si = document.getElementById('smartInput');
+
+let smartAnswer = '';
+let smartMode = '';
+
+function pickSmart(){
+  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
+  if (!pool.length){
+    sq.textContent = '🎉 Все слова выучены';
+    sm.textContent = '';
+    si.style.display = 'none';
+    return;
+  }
+  current = rnd(pool);
+  renderSmart();
+}
+
+function maskWord(word){
+  return word
+    .split('')
+    .map((c,i)=> i%2===0 && c!==' ' ? '_' : c)
+    .join('');
+}
+
+function renderSmart(){
+  let mode = document.getElementById('smartMode').value;
+  if (mode === 'random'){
+    mode = Math.random()<0.5 ? 'ru-en' : 'en-ru';
+  }
+  smartMode = mode;
+
+  const question = mode==='ru-en' ? current.ru : current.en;
+  const answer   = mode==='ru-en' ? current.en : current.ru;
+
+  smartAnswer = answer.toLowerCase().trim();
+
+  sq.textContent = question;
+  sm.textContent = maskWord(answer);
+  si.value = '';
+  si.focus();
+}
+
+function checkSmartInput(){
+  const val = si.value.toLowerCase().trim();
+  if (!val) return;
+
+  if (val === smartAnswer){
+    current.streak++;
+  } else {
+    current.streak = 0;
+    current.errors++;
+  }
+  save();
+  setTimeout(pickSmart,400);
 }
 
 pick();
