@@ -330,25 +330,56 @@ function flipCard(){
 }
 function cardYes(){
   current.streak++;
+  setNextReview(current, true);
   save();
-  pick();
-  renderCard();   // ← ВАЖНО
+  nextCard();
 }
+
 
 function cardNo(){
   current.streak = 0;
   current.errors++;
+  setNextReview(current, false);
   save();
-  pick();
-  renderCard();   // ← ВАЖНО
+  nextCard();
+}
+
+function setNextReview(word, correct) {
+  const now = Date.now();
+
+  if (!correct) {
+    word.interval = 1; // 1 минута
+    word.nextReview = now + 1 * 60 * 1000;
+    return;
+  }
+
+  if (word.streak === 1) word.interval = 10;        // 10 мин
+  else if (word.streak === 2) word.interval = 60;   // 1 час
+  else if (word.streak === 3) word.interval = 1440; // 1 день
+  else word.interval = 4320;                         // 3 дня
+
+  word.nextReview = now + word.interval * 60 * 1000;
+}
+function nextCard(){
+  const pool = getAvailableWords();
+
+  if (!pool.length){
+    cardBox.textContent = '🎉 Пока нет слов для изучения';
+    return;
+  }
+
+  current = rnd(pool);
+  renderCard();
 }
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){
+  const now = Date.now();
+
   const pool = words.filter(w =>
     w.errors > 0 &&
-    w.streak < 3 &&
+    w.nextReview <= now &&
     !w.manualDone
   );
 
@@ -356,6 +387,11 @@ function renderRepeat(){
     rw.textContent = '🎉 Нет слов для повтора';
     return;
   }
+
+  current = rnd(pool);
+  rw.textContent = current.en;
+}
+
 
   current = rnd(pool);
   rw.textContent = current.en;
