@@ -99,6 +99,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button class="tab" onclick="openTab('input',this)">Ввод</button>
   <button class="tab" onclick="openTab('dict',this)">Словарь</button>
   <button class="tab" onclick="openTab('match',this)">Сопоставление</button>
+  <button class="tab" onclick="openTab('partial',this)">Частичное</button>
 </div>
 
 <div id="test" class="center">
@@ -157,6 +158,18 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     border:1px solid #ccc
   "
 >
+<div id="partial" class="hidden center">
+  <h3 id="partialWord"></h3>
+
+  <input
+    id="partialInput"
+    placeholder="Вставь пропущенные буквы"
+    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc"
+    onkeydown="if(event.key==='Enter')checkPartial()"
+  >
+
+  <button onclick="checkPartial()">Проверить</button>
+</div>
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
@@ -474,11 +487,12 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
-  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+ ['test','cards','repeat','input','dict','match','partial'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
 if(id==='repeat')renderRepeat();
   if(id==='match')renderMatch();
+  if(id==='partial') renderPartial();
 }
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
@@ -543,6 +557,49 @@ function resetProgress(){if(confirm('Сбросить прогресс?')){local
   words[i].manualDone = val;
   save();
   updateProgress();
+}
+let partialCurrent = null;
+
+function renderPartial(){
+  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
+  if (!pool.length){
+    document.getElementById('partialWord').textContent = '🎉 Все слова выучены';
+    return;
+  }
+
+  partialCurrent = rnd(pool);
+
+  const word = partialCurrent.en;
+  let masked = '';
+
+  for (let i = 0; i < word.length; i++){
+    if (word[i] === ' ') {
+      masked += ' ';
+    } else {
+      masked += Math.random() < 0.5 ? '_' : word[i];
+    }
+  }
+
+  document.getElementById('partialWord').textContent = masked;
+  document.getElementById('partialInput').value = '';
+}
+
+function checkPartial(){
+  const input = document
+    .getElementById('partialInput')
+    .value
+    .trim()
+    .toLowerCase();
+
+  if (input === partialCurrent.en.toLowerCase()){
+    partialCurrent.streak++;
+  } else {
+    partialCurrent.streak = 0;
+    partialCurrent.errors++;
+  }
+
+  save();
+  renderPartial();
 }
 
 pick();
