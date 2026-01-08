@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -15,7 +16,7 @@ body{margin:0;font-family:Arial;background:var(--bg);display:flex;justify-conten
 .tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
 .tab{flex:1;padding:8px;border-radius:10px;background:var(--btn);border:none;cursor:pointer;font-size:13px}
 .tab.active{background:#cce8ff;font-weight:bold}
-.hidden{:none}
+.hidden{display:none}
 button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;cursor:pointer;background:var(--btn)}
 .correct{background:#8bc34a;color:#fff}
 .wrong{background:#f44336;color:#fff}
@@ -23,13 +24,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 .reading{font-style:italic;color:#666;margin:6px 0;font-size:14px}
 
-.cardWrap{perspective:1000px;:flex;justify-content:center}
+.cardWrap{perspective:1000px;display:flex;justify-content:center}
 .card{width:100%;max-width:320px;min-height:140px;position:relative;transform-style:preserve-3d;transition:transform .6s ease;cursor:pointer}
 .card.flipped{transform:rotateY(180deg)}
-.cardSide{position:absolute;width:100%;height:100%;backface-visibility:hidden;border:1px solid #ddd;border-radius:16px;:flex;align-items:center;justify-content:center;font-size:24px;background:#fff}
+.cardSide{position:absolute;width:100%;height:100%;backface-visibility:hidden;border:1px solid #ddd;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;background:#fff}
 .cardBack{transform:rotateY(180deg)}
 
-.controls{:flex;gap:10px;margin-top:10px}
+.controls{display:flex;gap:10px;margin-top:10px}
 
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
@@ -49,13 +50,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
 /* центрируем чекбокс */
 .table td input[type="checkbox"]{
-  : block;
+  display: block;
   margin: 0 auto;
 }
 
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
-.matchWrap{:flex;gap:12px}
+.matchWrap{display:flex;gap:12px}
 .matchCol{flex:1}
 .matchBtn{
   padding:10px;
@@ -67,10 +68,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
-.hidden {
-  display: none;
+  .hidden {
+  display: none !important;
+  pointer-events: none !important;
 }
-
 /* мягкая подсветка выученных слов */
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
@@ -116,10 +117,10 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-  <button class="correct" onclick="cardYes()">Знаю</button>
-  <button class="wrong" onclick="cardNo()">Не знаю</button>
+    <button class="correct" onclick="()">Знаю</button>
+    <button class="wrong" onclick="cardNo()">Не знаю</button>
+  </div>
 </div>
-
 
 <div id="repeat" class="hidden center">
   <h3 id="repeatWord"></h3>
@@ -161,10 +162,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 </div>
 
 <script>
-  document.body.addEventListener('click', () => {
-  console.log('CLICK');
-});
-
 const raw = [
 "analyse|анализировать|энэлайз",
 "apologise|извиняться|эполоджайз",
@@ -318,8 +315,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++; let errors = [];
-errors.push(current);}
+      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -335,64 +331,25 @@ function flipCard(){
 }
 function cardYes(){
   current.streak++;
-  setNextReview(current, true);
   save();
-  nextCard();
-}
-
-function getAvailableWords(){
-  return words.filter(w =>
-    !w.manualDone &&
-    w.streak < 3
-  );
+  pick();
+  renderCard();   // ← ВАЖНО
 }
 
 function cardNo(){
   current.streak = 0;
   current.errors++;
-  setNextReview(current, false);
   save();
-  nextCard();
-}
-
-function setNextReview(word, correct) {
-  const now = Date.now();
-
-  if (!correct) {
-    word.interval = 1; // 1 минута
-    word.nextReview = now + 1 * 60 * 1000;
-    return;
-  }
-
-  if (word.streak === 1) word.interval = 10;        // 10 мин
-  else if (word.streak === 2) word.interval = 60;   // 1 час
-  else if (word.streak === 3) word.interval = 1440; // 1 день
-  else word.interval = 4320;                         // 3 дня
-
-  word.nextReview = now + word.interval * 60 * 1000;
-}
-function nextCard(){
-  const pool = getAvailableWords();
-
-  if (!pool.length){
-cf.textContent = '🎉 Пока нет слов для изучения';
-cb.textContent = '';
-btns.classList.add('hidden');
-    return;
-  }
-
-  current = rnd(pool);
-  renderCard();
+  pick();
+  renderCard();   // ← ВАЖНО
 }
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){ie.value.toLowerCase()===current.en.toLowerCase()?current.streak++:(current.streak=0,current.errors++);save();pick()}
 function renderRepeat(){
-  const now = Date.now();
-
   const pool = words.filter(w =>
     w.errors > 0 &&
-    w.nextReview <= now &&
+    w.streak < 3 &&
     !w.manualDone
   );
 
@@ -400,9 +357,6 @@ function renderRepeat(){
     rw.textContent = '🎉 Нет слов для повтора';
     return;
   }
-
-
-
 
   current = rnd(pool);
   rw.textContent = current.en;
@@ -551,12 +505,6 @@ function setDictFilter(type){
   dictFilter = type;
   renderDict();
 }
-function renderCard(){
-  card.classList.remove('flipped');
-  cf.textContent = cardLang === 'en' ? current.en : current.ru;
-  cb.textContent = cardLang === 'en' ? current.ru : current.en;
-  btns.classList.add('hidden');
-}
 
 function toggleTheme(){
   document.documentElement.style.setProperty('--bg',
@@ -576,5 +524,6 @@ pick();
 </script>
 </body>
 </html>
+
 
 
