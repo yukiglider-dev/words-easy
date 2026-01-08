@@ -367,8 +367,8 @@ function cardNo(){
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){
-  const correct = current.en.toLowerCase();
   const value = ie.value.trim().toLowerCase();
+  const correct = current.en.toLowerCase();
 
   ie.classList.remove('input-ok','input-bad');
 
@@ -379,20 +379,18 @@ function checkInput(){
 
     setTimeout(()=>{
       ie.classList.remove('input-ok');
-      pick();
-    }, 600);
+      pick();           // ← только тут
+    }, 700);
 
   } else {
     ie.classList.add('input-bad');
     current.streak = 0;
     current.errors++;
     save();
-
-    setTimeout(()=>{
-      ie.classList.remove('input-bad');
-    }, 600);
+    // ❗ слово НЕ меняем — пользователь может исправить
   }
 }
+
 function renderRepeat(){
   const pool = words.filter(w =>
     w.errors > 0 &&
