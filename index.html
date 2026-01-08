@@ -367,29 +367,34 @@ function cardNo(){
 
 function renderInput(){ir.textContent=current.ru;ie.value=''}
 function checkInput(){
-  const value = ie.value.trim().toLowerCase();
-  const correct = current.en.toLowerCase();
+  if(!current) return;
+
+  const user = ie.value.trim().toLowerCase();
+  const correct = current.en.trim().toLowerCase();
 
   ie.classList.remove('input-ok','input-bad');
 
-  if (value === correct){
+  if(!user) return;
+
+  if(user === correct){
     ie.classList.add('input-ok');
     current.streak++;
     save();
 
     setTimeout(()=>{
+      ie.value = '';
       ie.classList.remove('input-ok');
-      pick();           // ← только тут
-    }, 700);
+      pick();
+    }, 600);
 
   } else {
     ie.classList.add('input-bad');
     current.streak = 0;
     current.errors++;
     save();
-    // ❗ слово НЕ меняем — пользователь может исправить
   }
 }
+
 
 function renderRepeat(){
   const pool = words.filter(w =>
@@ -507,12 +512,22 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
-  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+
+  ['test','cards','repeat','input','dict','match','partial']
+    .forEach(x=>document.getElementById(x).classList.add('hidden'));
+
   document.getElementById(id).classList.remove('hidden');
-  if(id==='dict')renderDict();
-if(id==='repeat')renderRepeat();
-  if(id==='match')renderMatch();
+
+  if(id === 'input' && !current){
+    pick();        // ← ВОТ ЭТО КЛЮЧ
+  }
+
+  if(id==='dict') renderDict();
+  if(id==='repeat') renderRepeat();
+  if(id==='match') renderMatch();
+  if(id==='partial') renderPartial();
 }
+
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
 let matchSelected=null;
