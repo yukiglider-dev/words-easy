@@ -229,8 +229,9 @@ const raw = [
 const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
 const words = raw.map((s,i)=>{
   const [en,ru,read]=s.split('|');
-const base = { en, ru, read, streak: 0, errors: 0, manualDone: false };
-return saved?.[i] ? { ...base, ...saved[i] } : base;
+  const base = { en, ru, read, streak: 0, errors: 0, manualDone: false };
+  return saved?.[i] ? { ...base, ...saved[i] } : base;
+});
 
 
 let current=null, errors=[], cardLang='en';
@@ -251,14 +252,14 @@ function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
 function save(){localStorage.setItem('words-progress',JSON.stringify(words))}
 
 function updateProgress(){
-  prog.textContent=`Осталось слов: ${
-const pool = words.filter(w => w.streak < 3 && !w.manualDone);
-  } / ${words.length}`;
+  const left = words.filter(w => w.streak < 3 && !w.manualDone).length;
+  prog.textContent = `Осталось слов: ${left} / ${words.length}`;
 }
 
 
+
 function pick(){
-  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
+const pool = words.filter(w => w.streak < 3 && !w.manualDone);
 
   updateProgress();
 
@@ -353,7 +354,8 @@ function renderDict(){
     t.appendChild(tr);
   });
 
-  d.ap
+  d.appendChild(t);
+}
 
 
 function openTab(id,b){
@@ -393,6 +395,10 @@ function renderMatch(){
     };
     ru.appendChild(b);
   });
+}
+function toggleCardLang(){
+  cardLang = cardLang === 'en' ? 'ru' : 'en';
+  renderCard();
 }
 
 function toggleTheme(){
