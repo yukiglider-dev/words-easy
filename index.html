@@ -67,10 +67,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
-  .hidden {
-  display: none !important;
-  pointer-events: none !important;
-}
 /* мягкая подсветка выученных слов */
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
@@ -125,7 +121,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     </div>
   </div>
   <div id="cardBtns" class="controls hidden">
-    <button class="correct" onclick="()">Знаю</button>
+<button class="correct" onclick="cardYes()">Знаю</button>
     <button class="wrong" onclick="cardNo()">Не знаю</button>
   </div>
 </div>
@@ -140,9 +136,9 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 
   <h3 id="inputRu"></h3>
   <input id="inputEn" placeholder="Введи английское слово"
-    onkeydown="if(event.key==='Enter')()"
+onkeydown="if(event.key==='Enter')checkInput()"
     style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc">
-  <button onclick="()">Проверить</button>
+<button onclick="checkInput()">Проверить</button>
 </div>
 
 <div id="match" class="hidden center">
