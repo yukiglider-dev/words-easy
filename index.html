@@ -229,8 +229,9 @@ const raw = [
 const saved = JSON.parse(localStorage.getItem('words-progress')||'null');
 const words = raw.map((s,i)=>{
   const [en,ru,read]=s.split('|');
-return saved?.[i] || {en,ru,read,streak:0,errors:0,manualDone:false};
-});
+const base = { en, ru, read, streak: 0, errors: 0, manualDone: false };
+return saved?.[i] ? { ...base, ...saved[i] } : base;
+
 
 let current=null, errors=[], cardLang='en';
 
@@ -257,11 +258,22 @@ const pool = words.filter(w => w.streak < 3 && !w.manualDone);
 
 
 function pick(){
-const pool=words.filter(w=>w.streak<3 && !w.manual);
+  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
+
   updateProgress();
-  if(!pool.length){w.textContent='🎉 Все слова выучены';a.innerHTML='';return}
-  current=rnd(pool);
-  renderTest();renderCard();renderInput();
+
+  if(!pool.length){
+    w.textContent = '🎉 Все слова выучены';
+    a.innerHTML = '';
+    return;
+  }
+
+  current = rnd(pool);
+  renderTest();
+  renderCard();
+  renderInput();
+}
+
 }
 
 function renderTest(){
