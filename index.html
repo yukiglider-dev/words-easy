@@ -67,28 +67,13 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
+  .hidden {
+  display: none !important;
+  pointer-events: none !important;
 }
 /* мягкая подсветка выученных слов */
 .table tr.learned {
   background: #e8f5e9; /* нежно-зелёный */
-}
-.partial-letter{
-  pointer-events: auto !important;
-  background:#fff;
-  width:32px;
-  height:38px;
-  text-align:center;
-  font-size:20px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  margin:0 2px;
-}
-
-.partial-static{
-  display:inline-block;
-  width:32px;
-  font-size:22px;
-  margin:0 2px;
 }
 
 </style>
@@ -114,7 +99,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button class="tab" onclick="openTab('input',this)">Ввод</button>
   <button class="tab" onclick="openTab('dict',this)">Словарь</button>
   <button class="tab" onclick="openTab('match',this)">Сопоставление</button>
-  <button class="tab" onclick="openTab('partial',this)">Частичное</button>
 </div>
 
 <div id="test" class="center">
@@ -124,7 +108,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <div id="answers"></div>
 </div>
 
-<div id="cards" class="center">
+<div id="cards" class="hidden center">
   <div class="cardWrap">
     <div id="card" class="card" onclick="flipCard()">
       <div class="cardSide" id="cardFront"></div>
@@ -137,7 +121,7 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
 
-<div id="repeat" class="center">
+<div id="repeat" class="hidden center">
   <h3 id="repeatWord"></h3>
   <button class="correct" onclick="repeatYes()">Знаю</button>
   <button class="wrong" onclick="repeatNo()">Не знаю</button>
@@ -152,20 +136,12 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   <button onclick="checkInput()">Проверить</button>
 </div>
 
-<div id="match" class="center">
+<div id="match" class="hidden center">
   <h3>Сопоставь слова</h3>
   <div class="matchWrap">
     <div id="matchEn" class="matchCol"></div>
     <div id="matchRu" class="matchCol"></div>
   </div>
-</div>
-  
-
-<div id="partial" class="hidden center">
-  <h3 id="partialWord"></h3>
-  <button onclick="checkPartial()">Проверить</button>
-</div>
-
 </div>
 
 <div id="dict" class="hidden">
@@ -181,7 +157,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
     border:1px solid #ccc
   "
 >
-
 
   <div style="display:flex; gap:6px; margin-bottom:8px">
     <button onclick="setDictFilter('all')">Все</button>
@@ -352,7 +327,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++}
+      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -499,12 +474,11 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
- ['test','cards','repeat','input','dict','match','partial'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
 if(id==='repeat')renderRepeat();
   if(id==='match')renderMatch();
-  if(id==='partial') renderPartial();
 }
 
 /* ==== СОПОСТАВЛЕНИЕ ==== */
@@ -570,77 +544,11 @@ function resetProgress(){if(confirm('Сбросить прогресс?')){local
   save();
   updateProgress();
 }
-let partialCurrent = null;
-
-function renderPartial(){
-  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
-  if (!pool.length){
-    document.getElementById('partialWord').textContent = '🎉 Все слова выучены';
-    return;
-  }
-
-  partialCurrent = rnd(pool);
-  const word = partialCurrent.en;
-  const wrap = document.getElementById('partialWord');
-  wrap.innerHTML = '';
-
-  // 👉 выбираем 1–2 позиции для пропусков
-  const letters = [...word].map((c,i)=>({c,i})).filter(l=>l.c!==' ');
-  const gapsCount = Math.min(2, Math.max(1, Math.floor(Math.random()*2)+1));
-  const gaps = letters.sort(()=>0.5-Math.random()).slice(0,gapsCount).map(l=>l.i);
-
-  for (let i = 0; i < word.length; i++){
-    if (word[i] === ' '){
-      wrap.append(' ');
-      continue;
-    }
-
-    if (gaps.includes(i)){
-      const inp = document.createElement('input');
-      inp.maxLength = 1;
-      inp.dataset.letter = word[i];
-      inp.className = 'partial-letter';
-      inp.oninput = () => {
-        inp.value = inp.value.replace(/[^a-z]/i,'');
-      };
-      wrap.appendChild(inp);
-    } else {
-      const span = document.createElement('span');
-      span.textContent = word[i];
-      span.className = 'partial-static';
-      wrap.appendChild(span);
-    }
-  }
-}
-
-
-function checkPartial(){
-  let ok = true;
-
-  document.querySelectorAll('.partial-letter').forEach(inp=>{
-    if (inp.value.toLowerCase() !== inp.dataset.letter.toLowerCase()){
-      ok = false;
-    }
-  });
-
-  if (ok){
-    partialCurrent.streak++;
-  } else {
-    partialCurrent.streak = 0;
-    partialCurrent.errors++;
-  }
-
-  save();
-  renderPartial();
-}
-
-
 
 pick();
 </script>
 </body>
 </html>
-
 
 
 
