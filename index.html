@@ -320,7 +320,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
+      else{b.classList.add('wrong');current.streak=0;current.errors++}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
