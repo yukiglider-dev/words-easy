@@ -67,9 +67,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
 .matchBtn.active{background:#cce8ff}
 .matchBtn.correct{background:#8bc34a;color:#fff}
 .matchBtn.wrong{background:#f44336;color:#fff}
-  .{
-  display: none !important;
-  pointer-events: none !important;
 }
 /* мягкая подсветка выученных слов */
 .table tr.learned {
@@ -163,8 +160,6 @@ button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:12px;curso
   </div>
 </div>
   
-<div id="partial" class="center">
-  <h3 id="partialWord"></h3>
 
 <div id="partial" class="hidden center">
   <h3 id="partialWord"></h3>
@@ -357,7 +352,7 @@ function renderTest(){
     b.onclick=()=>{
       [...a.children].forEach(x=>x.disabled=true);
       if(t===current.ru){b.classList.add('correct');current.streak++}
-      else{b.classList.add('wrong');current.streak=0;current.errors++;errors.push(current)}
+      else{b.classList.add('wrong');current.streak=0;current.errors++}
       save();setTimeout(pick,600);
     };
     a.appendChild(b);
@@ -620,16 +615,15 @@ function renderPartial(){
 
 
 function checkPartial(){
-  const inputs = document.querySelectorAll('.partial-letter');
-  let result = '';
+  let ok = true;
 
-  inputs.forEach(i => result += i.value.toLowerCase());
+  document.querySelectorAll('.partial-letter').forEach(inp=>{
+    if (inp.value.toLowerCase() !== inp.dataset.letter.toLowerCase()){
+      ok = false;
+    }
+  });
 
-  const correct = partialCurrent.en
-    .replace(/[^a-z]/gi,'')
-    .toLowerCase();
-
-  if (result === correct){
+  if (ok){
     partialCurrent.streak++;
   } else {
     partialCurrent.streak = 0;
@@ -639,6 +633,7 @@ function checkPartial(){
   save();
   renderPartial();
 }
+
 
 
 pick();
