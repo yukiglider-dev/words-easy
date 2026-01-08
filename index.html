@@ -467,7 +467,7 @@ if (w.manualDone || w.streak >= 3) {
 function openTab(id,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
-  ['test','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  ['test','smart','cards','repeat','input','dict','match'].forEach(x=>document.getElementById(x).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   if(id==='dict')renderDict();
 if(id==='repeat')renderRepeat();
@@ -539,22 +539,6 @@ function resetProgress(){if(confirm('Сбросить прогресс?')){local
   updateProgress();
 }
 const sq = document.getElementById('smartQuestion');
-const sa = document.getElementById('smartAnswers');
-const sh = document.getElementById('smartHint');
-
-function pickSmart(){
-  const pool = words.filter(w => w.streak < 3 && !w.manualDone);
-  if (!pool.length){
-    sq.textContent = '🎉 Все слова выучены';
-    sa.innerHTML = '';
-    return;
-  }
-  current = rnd(pool);
-  renderSmart();
-}
-
-function renderSmart(){
-const sq = document.getElementById('smartQuestion');
 const sm = document.getElementById('smartMasked');
 const si = document.getElementById('smartInput');
 
@@ -572,7 +556,6 @@ function pickSmart(){
   renderSmart();
 }
 
-
 function maskWord(word){
   return word
     .split('')
@@ -585,7 +568,6 @@ function renderSmart(){
   if (mode === 'random'){
     mode = Math.random()<0.5 ? 'ru-en' : 'en-ru';
   }
-  smartMode = mode;
 
   const question = mode==='ru-en' ? current.ru : current.en;
   const answer   = mode==='ru-en' ? current.en : current.ru;
@@ -611,6 +593,7 @@ function checkSmartInput(){
   save();
   setTimeout(pickSmart,400);
 }
+
 
 pick();
 </script>
