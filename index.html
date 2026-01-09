@@ -279,7 +279,19 @@
 </head>
 <body>
   <div class="app">
+  <div <div class="app">
   <div class="header">
+    <div class="brand-title">Words Easy</div>
+    <div class="header-mini">
+      <div class="mini-counter" id="miniCounter">— / —</div>
+      <button class="mini-theme" id="miniTheme">🌙</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="panel" id="panel"></div>
+</div>
+">
     <div class="brand-title">Words Easy</div>
     <div class="header-mini">
       <div class="mini-counter" id="miniCounter">— / —</div>
@@ -576,8 +588,8 @@ document.getElementById('miniTheme').textContent =
 
     // ---------- Tab: Cards ----------
     let cardsIdx = { value: -1 };
-    let flipped = false;
-   let cardIndex = 0;
+  let cardIndex = 0;
+let flipped = false;
 
 function renderCards() {
   if (!words.length) {
@@ -586,18 +598,52 @@ function renderCards() {
   }
 
   const current = words[cardIndex];
+  flipped = false;
 
   panelEl.innerHTML = `
-    <div class="card">
-      <div style="font-size:22px;font-weight:700">${current.en}</div>
-      <div class="muted" style="margin-top:8px">${current.ru}</div>
+    <div id="flip" class="flip">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div style="font-size:24px;font-weight:700">${current.en}</div>
+          <div class="muted" style="margin-top:8px">нажмите, чтобы перевернуть</div>
+        </div>
+        <div class="flip-face flip-back">
+          <div style="font-size:22px;font-weight:700">${current.ru}</div>
+          ${current.tr ? `<div class="muted" style="margin-top:6px">/${current.tr}/</div>` : ''}
+        </div>
+      </div>
     </div>
 
-    <div class="row" style="justify-content:center;margin-top:12px">
-      <button id="dontKnow">Не знаю</button>
-      <button id="know">Знаю</button>
+    <div class="row" style="justify-content:center;margin-top:16px">
+      <button id="cardDontKnow" class="btn">Не знаю</button>
+      <button id="cardKnow" class="btn success">Знаю</button>
     </div>
   `;
+
+  const flipEl = document.getElementById('flip');
+
+  flipEl.onclick = (e) => {
+    if (e.target.id === 'cardKnow' || e.target.id === 'cardDontKnow') return;
+    flipped = !flipped;
+    flipEl.classList.toggle('flipped', flipped);
+  };
+
+  document.getElementById('cardKnow').onclick = () => {
+    current.streak += 1;
+    saveState();
+    cardIndex = (cardIndex + 1) % words.length;
+    setTimeout(renderCards, 300);
+  };
+
+  document.getElementById('cardDontKnow').onclick = () => {
+    current.errors += 1;
+    current.streak = 0;
+    saveState();
+    cardIndex = (cardIndex + 1) % words.length;
+    setTimeout(renderCards, 300);
+  };
+}
+
 
   document.getElementById('dontKnow').onclick = () => {
     current.errors += 1;
