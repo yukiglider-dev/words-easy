@@ -288,9 +288,6 @@
 </div>
 
       <div class="controls">
-        <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
-        <button class="btn" id="themeSwitch">Переключить тему</button>
-        <button class="btn error" id="resetAll">Полный сброс</button>
       </div>
     </div>
 
@@ -516,10 +513,13 @@ function updateProgress() {
     };
     trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 
-  document.getElementById('themeSwitch').onclick = () => {
-  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-  saveSettings();
-};
+ const themeBtn = document.getElementById('themeSwitch');
+if (themeBtn) {
+  themeBtn.onclick = () => {
+    ...
+  };
+}
+
 
 document.getElementById('miniTheme').onclick = () => {
   settings.theme = settings.theme === 'light' ? 'dark' : 'light';
@@ -532,13 +532,13 @@ document.getElementById('miniTheme').textContent =
   settings.theme === 'dark' ? '🌙' : '☀️';
 
 
-    document.getElementById('resetAll').onclick = () => {
-      if (!confirm('Точно сбросить весь прогресс?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      words = loadState();
-      saveState();
-      renderPanel();
-    };
+  const resetBtn = document.getElementById('resetAll');
+if (resetBtn) {
+  resetBtn.onclick = () => {
+    ...
+  };
+}
+
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
