@@ -325,10 +325,6 @@
   <div class="app">
     <div class="header">
       <div class="brand-title">Words Easy</div>
-  
-      <div class="controls">
-        <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
-      </div>
     </div>
 
     <div class="tabs" id="tabs"></div>
@@ -548,17 +544,7 @@ console.log('renderTabs работает');
 }
 
 
-    // Global controls
-    const trBtn = document.getElementById('toggleTranscription');
-    trBtn.onclick = () => {
-      if (activeTab !== 'test') return; // только в тесте
-      settings.showTr = !settings.showTr;
-      trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
-      saveSettings();
-      renderTest(false); // не менять слово
-    };
-    trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
-
+    
   
 
     // ---------- Tab: Test ----------
@@ -566,7 +552,6 @@ console.log('renderTabs работает');
     let currentTestWord = null;
 
     function renderTest(pickNew = true) {
-document.getElementById('toggleTranscription').style.display = 'none';
       const pool = getUnlearned();
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
       if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
@@ -628,7 +613,6 @@ if (wordEl && trEl) {
     let cardsIdx = { value: -1 };
     let flipped = false;
     function renderCards() {
-      document.getElementById('toggleTranscription').style.display = 'none';
       const pool = getUnlearned();
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`; return; }
       const current = nextOf(pool, cardsIdx) || pool[0];
@@ -675,7 +659,6 @@ if (wordEl && trEl) {
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
     function renderRepeat() {
-      document.getElementById('toggleTranscription').style.display = 'none';
       const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Пока нет слов для повтора. Ошибок нет — супер!</div>`; return; }
       const current = nextOf(pool, repeatIdx) || pool[0];
@@ -708,7 +691,6 @@ if (wordEl && trEl) {
     // ---------- Tab: Input ----------
     let inputIdx = { value: -1 };
     function renderInput() {
-      document.getElementById('toggleTranscription').style.display = 'none';
       const pool = getUnlearned();
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`; return; }
       const current = nextOf(pool, inputIdx) || pool[0];
@@ -753,8 +735,6 @@ if (wordEl && trEl) {
     let dictFilter = 'all';
     let dictQuery = '';
     function renderDict() {
-      document.getElementById('toggleTranscription').style.display = 'none';
-
   const header = `
   <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
     <div class="field" style="flex:2; min-width:240px">
@@ -870,8 +850,6 @@ document.getElementById('resetAll').onclick = () => {
     }
 
     function renderMatch() {
-      document.getElementById('toggleTranscription').style.display = 'none';
-
       if (!matchSet.length) makeMatchSet(4);
       if (!matchSet.length) { panelEl.innerHTML = `<div class="empty">Слова недоступны для сопоставления.</div>`; return; }
 
@@ -939,7 +917,6 @@ document.getElementById('resetAll').onclick = () => {
     function renderPanel() {
       renderTabs();
       updateProgress();
-      document.getElementById('toggleTranscription').style.display = activeTab === 'test' ? 'inline-block' : 'none';
       switch (activeTab) {
         case 'test': renderTest(); break;
         case 'cards': renderCards(); break;
