@@ -532,7 +532,7 @@ function renderTabs() {
     { id: 'cards', label: 'Карточки' },
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
-    { id: 'dictionary', label: 'Словарь' },
+    { id: 'dict', label: 'Словарь' }, // ✅ ВАЖНО
     { id: 'match', label: 'Сопоставление' }
   ];
 
@@ -545,6 +545,7 @@ function renderTabs() {
     </button>
   `).join('');
 }
+
 function switchTab(tabId) {
   activeTab = tabId;
   renderPanel();
