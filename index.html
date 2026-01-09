@@ -325,29 +325,11 @@
   <div class="app">
     <div class="header">
       <div class="brand-title">Words Easy</div>
-      <div class="progress" id="progressBar">
-        <div class="progress-item">
-          <div class="progress-label">Осталось к изучению</div>
-          <div class="progress-value" id="remainingCount">—</div>
-        </div>
-        <div class="progress-item">
-         <div class="progress-label">Всего слов</div>
-          <div class="progress-value" id="totalCount">—</div>
-        </div>
-      </div>
+  
       <div class="controls">
         <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
-        <button class="btn" id="themeSwitch">Переключить тему</button>
       </div>
     </div>
-
-    <div class="tabs" id="tabs"></div>
-    <div class="panel" id="panel"></div>
-  </div>
-
-    <div class="tabs" id="tabs"></div>
-    <div class="panel" id="panel"></div>
-  </div>
 
     <div class="tabs" id="tabs"></div>
     <div class="panel" id="panel"></div>
@@ -577,10 +559,7 @@ console.log('renderTabs работает');
     };
     trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 
-    document.getElementById('themeSwitch').onclick = () => {
-      settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-      saveSettings();
-    };
+  
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
