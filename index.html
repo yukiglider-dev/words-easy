@@ -751,7 +751,7 @@ if (miniTheme) {
 
     <div class="field" style="display:flex; gap:8px">
       <button class="btn success" id="markAll">Отметить всё выученным</button>
-      <button class="btn error" id="resetAll">Полный сброс</button>
+      <button class="btn error" id="">Полный сброс</button>
     </div>
   </div>
   <div class="divider"></div>
@@ -806,11 +806,17 @@ if (miniTheme) {
       `;
 document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  words = loadState();
+
+  words.forEach(w => {
+    w.streak = 0;
+    w.errors = 0;
+    w.manual = false;
+  });
+
   saveState();
   renderDict();
 };
+
       document.getElementById('dictSearch').oninput = (e) => { dictQuery = e.target.value; renderDict(); };
       document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
       panelEl.querySelectorAll('.dictManual').forEach(ch => {
