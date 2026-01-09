@@ -672,7 +672,23 @@ if (wordEl && trEl) {
     let repeatIdx = { value: -1 };
     function renderRepeat() {
       const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
-      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Пока нет слов для повтора. Ошибок нет — супер!</div>`; return; }
+if (!pool.length) {
+  panelEl.innerHTML = `
+    <div style="
+      height: 100%;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    ">
+      <div class="empty">
+        Пока нет слов для повтора. Ошибок нет — супер!
+      </div>
+    </div>
+  `;
+  return;
+}
       const current = nextOf(pool, repeatIdx) || pool[0];
 
       panelEl.innerHTML = `
