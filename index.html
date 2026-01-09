@@ -484,14 +484,6 @@
     document.documentElement.setAttribute('data-theme', settings.theme);
 
     // ---------- Helpers ----------
-    const tabs = [
-      { id: 'test', label: 'Тест' },
-      { id: 'cards', label: 'Карточки' },
-      { id: 'repeat', label: 'Повтор' },
-      { id: 'input', label: 'Ввод' },
-      { id: 'match', label: 'Сопоставление' },
-      { id: 'dict', label: 'Словарь' },
-    ];
     let activeTab = 'test';
 
     function isLearned(w) { return w.streak >= 3 || w.manual; }
@@ -536,8 +528,8 @@ function renderTabs() {
     { id: 'cards', label: 'Карточки' },
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
-    { id: 'dict', label: 'Словарь' },
     { id: 'match', label: 'Сопоставление' }
+    { id: 'dict', label: 'Словарь' },
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
