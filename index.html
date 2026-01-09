@@ -540,7 +540,8 @@
     const panelEl = document.getElementById('panel');
 
     function renderTabs() {
-      tabsEl.inner = tabs.map(t => `
+      tabsEl.innerHTML = tabs.map(t => `
+
       tabsEl.inner = tabs.map
         <button class="tab-btn ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">
           ${t.label}
