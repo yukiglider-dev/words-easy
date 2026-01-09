@@ -149,8 +149,17 @@
       position: relative;
       width: 100%;
       }
-   .test-transcription {
-  margin-top: 6px; /* было 10 — уменьшили */
+.test-transcription {
+  margin-top: 6px;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.test-transcription.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 
@@ -295,37 +304,14 @@
   align-items: center;
   justify-content: center;
 }
-.test-transcription {
-  margin-top: 10px;
-  font-size: 18px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
 
-.test-transcription.show {
-  opacity: 1;
-  pointer-events: auto;
-}
+
 
 .test-word {
   cursor: pointer;
 }
-/* ===== ЧЁТКИЙ ЦЕНТР СЛОВА В ТЕСТЕ ===== */
 
-}
-.test-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.test-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-/* ===== ИДЕАЛЬНЫЙ ЦЕНТР СЛОВА В ТЕСТЕ ===== */
 .test-center {
   display: flex;
   flex-direction: column;
@@ -335,10 +321,7 @@
 
 .test-word {
   line-height: 1.1;
-}
-
-.test-transcription {
-  margin-top: 6px;
+  cursor: pointer;
 }
 
 
