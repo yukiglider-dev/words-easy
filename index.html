@@ -316,23 +316,6 @@
 .card {
   box-sizing: border-box;
 }
-.tabs-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.top-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#progress {
-  font-size: 14px;
-  opacity: 0.8;
-}
 
   </style>
 </head>
@@ -545,8 +528,8 @@ function renderTabs() {
     { id: 'cards', label: 'Карточки' },
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
-    { id: 'dict', label: 'Словарь' },
-    { id: 'match', label: 'Сопоставление' }
+    { id: 'match', label: 'Сопоставление' },
+    { id: 'dict', label: 'Словарь' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -558,7 +541,6 @@ function renderTabs() {
     </button>
   `).join('');
 }
-
 
 
 function switchTab(tabId) {
@@ -732,44 +714,16 @@ if (!pool.length) {
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`; return; }
       const current = nextOf(pool, inputIdx) || pool[0];
 
-    panelEl.innerHTML = `
-  <div style="
-    height: 100%;
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  ">
-    <div style="width:100%; max-width:680px; text-align:center">
-      
-      <div class="card">
-        <div style="font-size:22px; font-weight:700">
-          ${current.ru}
+      panelEl.innerHTML = `
+        <div class="card" style="max-width:680px; margin:0 auto">
+          <div style="font-size:22px; font-weight:700">${current.ru}</div>
         </div>
-      </div>
-
-      <div class="field" style="margin-top:16px">
-        <input
-          type="text"
-          id="inputAnswer"
-          placeholder="Введите английское слово..."
-          autocomplete="off"
-        />
-        <button class="btn primary" id="inputCheck">
-          Проверить
-        </button>
-      </div>
-
-      <div
-        id="inputFeedback"
-        class="muted"
-        style="margin-top:10px"
-      ></div>
-
-    </div>
-  </div>
-`;
-
+        <div class="field" style="max-width:680px; margin:12px auto 0">
+          <input type="text" id="inputAnswer" placeholder="Введите английское слово..." autocomplete="off" />
+          <button class="btn primary" id="inputCheck">Проверить</button>
+        </div>
+        <div id="inputFeedback" class="muted" style="max-width:680px; margin:10px auto 0; text-align:center"></div>
+      `;
       const inEl = document.getElementById('inputAnswer');
       const fbEl = document.getElementById('inputFeedback');
       inEl.focus();
