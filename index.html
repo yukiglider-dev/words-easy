@@ -541,21 +541,13 @@ console.log('renderTabs работает');
 
 function renderTabs() {
   const tabs = [
-   <div class="tabs-wrap">
-  <div class="tabs">
-    <button class="tab active">Тест</button>
-    <button class="tab">Карточки</button>
-    <button class="tab">Повтор</button>
-    <button class="tab">Ввод</button>
-    <button class="tab">Словарь</button>
-    <button class="tab">Сопоставление</button>
-  </div>
-
-  <div class="top-right">
-    <span id="progress">0 / 85</span>
-    <button id="themeToggle">🌙</button>
-  </div>
-</div>
+    { id: 'test', label: 'Тест' },
+    { id: 'cards', label: 'Карточки' },
+    { id: 'repeat', label: 'Повтор' },
+    { id: 'input', label: 'Ввод' },
+    { id: 'dict', label: 'Словарь' },
+    { id: 'match', label: 'Сопоставление' }
+  ];
 
   tabsEl.innerHTML = tabs.map(tab => `
     <button
@@ -566,6 +558,7 @@ function renderTabs() {
     </button>
   `).join('');
 }
+
 
 
 function switchTab(tabId) {
