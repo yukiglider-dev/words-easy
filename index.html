@@ -44,7 +44,7 @@
     <div class="tabs" id="tabs"></div>
     <div class="panel" id="panel">Загрузка...</div>
   </div>
-  <script>
+    <script>
     const tabs=[{id:'test',label:'Тест'},{id:'cards',label:'Карточки'},{id:'repeat',label:'Повтор'},
                 {id:'input',label:'Ввод'},{id:'dict',label:'Словарь'},{id:'match',label:'Сопоставление'}];
     let activeTab='test'; let currentTestWord=null;
@@ -84,4 +84,68 @@
     function renderMatch(){if(!matchSet.length)makeMatchSet();if(!matchSet.length){panel.innerHTML="<div class='empty'>Нет слов для сопоставления</div>";return;}
       const ens=shuffle(matchSet.map(m=>({type:'en',id:m.id,text:m.en})));const rus=shuffle(matchSet.map(m=>({type:'ru',id:m.id,text:m.ru})));
       panel.innerHTML=`<div class="match-columns"><div><div class="grid">${ens.map(e=>`<div class="option" data-id="${e.id}" data-type="en">${e.text}</div>`).join('')}</div></div>
-        <div><div class="grid">${rus.map(r=>`<div class="option" data-id="${r.id}" data-type="ru">${r.text}</
+        <div><div class="grid">${rus.map(r=>`<div class="option" data-id="${r.id}" data-type="ru">${r.text}</div>`).join('')}</div></div></div>`;
+          panel.querySelectorAll('.option').forEach(el=>el.onclick=()=>{
+        const id=Number(el.dataset.id);
+        const type=el.dataset.type;
+        if(!matchPicked && type==='en'){
+          matchPicked=id;
+          el.classList.add('selected');
+        } else if(matchPicked && type==='ru'){
+          const correct=id===matchPicked;
+          const enEl=panel.querySelector(`.option[data-type="en"][data-id="${matchPicked}"]`);
+          const ruEl=el;
+          if(correct){
+            enEl.classList.add('correct');
+            ruEl.classList.add('correct');
+            const w=words.find(x=>x.id===matchPicked);
+            if(w) w.streak++;
+            matchSet=matchSet.filter(m=>m.id!==matchPicked);
+          } else {
+            enEl.classList.add('wrong');
+            ruEl.classList.add('wrong');
+            const w=words.find(x=>x.id===matchPicked);
+            if(w){ w.errors++; w.streak=0; }
+          }
+          matchPicked=null;
+          setTimeout(()=>{ if(!matchSet.length) makeMatchSet(); renderMatch(); },700);
+        }
+      });
+    }
+
+    // --- Словарь (упрощённо) ---
+    function renderDict(){
+      panel.innerHTML="<div class='card'><b>Словарь</b><br>"+words.map(w=>`${w.en} — ${w.ru}`).join("<br>")+"</div>";
+    }
+
+    // --- Карточки и Повтор (упрощённо) ---
+    function renderCards(){ panel.innerHTML="<div class='card'>Карточки пока упрощены</div>"; }
+    function renderRepeat(){ panel.innerHTML="<div class='card'>Повтор пока упрощён</div>"; }
+
+    // --- Панель ---
+    function renderPanel(){
+      updateProgress();
+      switch(activeTab){
+        case 'test': renderTest(); break;
+        case 'input': renderInput(); break;
+        case 'match': renderMatch(); break;
+        case 'dict': renderDict(); break;
+        case 'cards': renderCards(); break;
+        case 'repeat': renderRepeat(); break;
+      }
+    }
+
+    // --- Тема ---
+    document.getElementById('themeSwitch').onchange=()=>{
+      document.body.style.background=document.getElementById('themeSwitch').checked?"#0f1722":"#f9fbfd";
+      document.body.style.color=document.getElementById('themeSwitch').checked?"#eaf1f9":"#1f3042";
+    };
+
+    // --- Запуск ---
+    const panel=document.getElementById('panel');
+    renderTabs();
+    renderPanel();
+    updateProgress();
+  </script>
+</body>
+</html>
