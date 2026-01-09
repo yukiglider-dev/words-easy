@@ -53,11 +53,50 @@
       text-align: center; /* название по центру */
       margin-bottom: 12px;
     }
+    .header {
+  position: relative;
+  text-align: center;
+}
+
+.header-mini {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-counter {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: var(--shadow);
+}
+
+.mini-theme {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
     .brand-title {
       font-weight: 800;
       letter-spacing: 0.3px;
       font-size: 26px;
     }
+    <div class="header-mini">
+  <div class="mini-counter" id="miniCounter">— / —</div>
+  <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+</div>
+
 
     .progress {
       display: flex;
@@ -430,12 +469,14 @@
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
-    function updateProgress() {
-      const total = words.length;
-      const remaining = words.filter(w => !isLearned(w)).length;
-      document.getElementById('totalCount').textContent = total;
-      document.getElementById('remainingCount').textContent = remaining;
-    }
+  function updateProgress() {
+  const total = words.length;
+  const remaining = words.filter(w => !isLearned(w)).length;
+
+  const mini = document.getElementById('miniCounter');
+  if (mini) mini.textContent = `${remaining} / ${total}`;
+}
+
 
     function shuffle(arr) {
       const a = arr.slice();
@@ -483,10 +524,15 @@
     };
     trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 
-    document.getElementById('themeSwitch').onclick = () => {
-      settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-      saveSettings();
-    };
+   document.getElementById('miniTheme').onclick = () => {
+  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+  saveSettings();
+  document.getElementById('miniTheme').textContent =
+    settings.theme === 'dark' ? '🌙' : '☀️';
+};
+document.getElementById('miniTheme').textContent =
+  settings.theme === 'dark' ? '🌙' : '☀️';
+
 
     document.getElementById('resetAll').onclick = () => {
       if (!confirm('Точно сбросить весь прогресс?')) return;
