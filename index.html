@@ -733,22 +733,29 @@ if (miniTheme) {
     function renderDict() {
       document.getElementById('toggleTranscription').style.display = 'none';
 
-      const header = `
-        <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
-          <div class="field" style="flex:2; min-width:240px">
-            <input type="text" id="dictSearch" placeholder="Поиск по слову, переводу или транскрипции..." value="${dictQuery}">
-          </div>
-          <div class="field" style="flex:1; min-width:200px">
-            <select id="dictFilter">
-              <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
-              <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
-              <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
-            </select>
-          </div>
-        <div class="field" style="display:flex; gap:8px">
-  <button class="btn success" id="markAll">Отметить всё выученным</button>
-  <button class="btn error" id="resetAll">Полный сброс</button>
-</div>
+  const header = `
+  <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+    <div class="field" style="flex:2; min-width:240px">
+      <input type="text" id="dictSearch"
+        placeholder="Поиск по слову, переводу или транскрипции..."
+        value="${dictQuery}">
+    </div>
+
+    <div class="field" style="flex:1; min-width:200px">
+      <select id="dictFilter">
+        <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
+        <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
+        <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
+      </select>
+    </div>
+
+    <div class="field" style="display:flex; gap:8px">
+      <button class="btn success" id="markAll">Отметить всё выученным</button>
+      <button class="btn error" id="resetAll">Полный сброс</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+`;
 document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
   localStorage.removeItem(STORAGE_KEY);
@@ -756,9 +763,7 @@ document.getElementById('resetAll').onclick = () => {
   saveState();
   renderDict();
 };
-        </div>
-        <div class="divider"></div>
-      `;
+
 
       let list = words.slice();
       if (dictQuery.trim()) {
