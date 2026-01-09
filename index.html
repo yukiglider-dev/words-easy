@@ -631,7 +631,8 @@ if (trBtn2) {
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
     function renderRepeat() {
-      document.getElementById('toggleTranscription').style.display = 'none';
+const tr = document.getElementById('toggleTranscription');
+if (tr) tr.style.display = 'none';
       const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Пока нет слов для повтора. Ошибок нет — супер!</div>`; return; }
       const current = nextOf(pool, repeatIdx) || pool[0];
@@ -664,7 +665,8 @@ if (trBtn2) {
     // ---------- Tab: Input ----------
     let inputIdx = { value: -1 };
     function renderInput() {
-      document.getElementById('toggleTranscription').style.display = 'none';
+const tr = document.getElementById('toggleTranscription');
+if (tr) tr.style.display = 'none';
       const pool = getUnlearned();
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`; return; }
       const current = nextOf(pool, inputIdx) || pool[0];
@@ -709,7 +711,8 @@ if (trBtn2) {
     let dictFilter = 'all';
     let dictQuery = '';
     function renderDict() {
-      document.getElementById('toggleTranscription').style.display = 'none';
+const tr = document.getElementById('toggleTranscription');
+if (tr) tr.style.display = 'none';
 
       const header = `
         <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
@@ -807,7 +810,8 @@ if (trBtn2) {
     }
 
     function renderMatch() {
-      document.getElementById('toggleTranscription').style.display = 'none';
+const tr = document.getElementById('toggleTranscription');
+if (tr) tr.style.display = 'none';
 
       if (!matchSet.length) makeMatchSet(4);
       if (!matchSet.length) { panelEl.innerHTML = `<div class="empty">Слова недоступны для сопоставления.</div>`; return; }
