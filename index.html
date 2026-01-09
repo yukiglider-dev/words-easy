@@ -447,10 +447,16 @@
             const k = w.en + '|' + w.ru;
             return byKey.has(k) ? Object.assign({}, w, byKey.get(k)) : w;
           });
-        } catch { return initialWords.slice(); }
-      }
-      return initialWords.slice();
-    }
+  catch {
+  return initialWords.map(w => ({
+    ...w,
+    streak: 0,
+    errors: 0,
+    manual: false
+  }));
+}
+
+
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
