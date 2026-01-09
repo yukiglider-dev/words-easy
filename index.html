@@ -311,6 +311,24 @@
 .test-word {
   cursor: pointer;
 }
+/* Единый контейнер для всех вкладок */
+#panel,
+.panel {
+  max-width: 900px;        /* одинаковая ширина */
+  min-height: 420px;       /* одинаковая высота */
+  margin: 0 auto;          /* по центру */
+  padding: 24px;
+  box-sizing: border-box;
+
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #e3ebf5;
+
+  overflow: hidden;        /* НИЧЕГО не вылезает */
+}
+#panel * {
+  box-sizing: border-box;
+}
 
 
   </style>
