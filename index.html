@@ -538,15 +538,16 @@
     // ---------- UI Mount ----------
     const tabsEl = document.getElementById('tabs');
     const panelEl = document.getElementById('panel');
+console.log('renderTabs работает');
 
-    function renderTabs() {
-      tabsEl.innerHTML = tabs.map(t => `
+  function renderTabs() {
+  tabsEl.innerHTML = tabs.map(t => `
+    <button class="tab ${activeTab === t ? 'active' : ''}">
+      ${t}
+    </button>
+  `).join('');
+}
 
-      tabsEl.inner = tabs.map
-        <button class="tab-btn ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">
-          ${t.label}
-        </button>
-      `).join('');
       tabsEl.querySelectorAll('button').forEach(btn => {
         btn.onclick = () => { activeTab = btn.dataset.tab; renderPanel(); };
       });
