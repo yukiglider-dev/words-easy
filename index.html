@@ -540,18 +540,23 @@
     const panelEl = document.getElementById('panel');
 console.log('renderTabs работает');
 
-  function renderTabs() {
+ function renderTabs() {
   tabsEl.innerHTML = tabs.map(t => `
-    <button class="tab ${activeTab === t ? 'active' : ''}">
-      ${t}
+    <button
+      class="tab-btn ${activeTab === t.id ? 'active' : ''}"
+      data-tab="${t.id}">
+      ${t.label}
     </button>
   `).join('');
+
+  tabsEl.querySelectorAll('button').forEach(btn => {
+    btn.onclick = () => {
+      activeTab = btn.dataset.tab;
+      renderPanel();
+    };
+  });
 }
 
-      tabsEl.querySelectorAll('button').forEach(btn => {
-        btn.onclick = () => { activeTab = btn.dataset.tab; renderPanel(); };
-      });
-    }
 
     // Global controls
     const trBtn = document.getElementById('toggleTranscription');
@@ -576,7 +581,7 @@ console.log('renderTabs работает');
     function renderTest(pickNew = true) {
 document.getElementById('toggleTranscription').style.display = 'none';
       const pool = getUnlearned();
-      if (!pool.length) { panelEl.inner = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
+      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
       if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
 
       const current = currentTestWord;
