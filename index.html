@@ -246,14 +246,7 @@
       .progress { flex-direction: column; align-items: center; }
     }
     /* ===== MINI UI ===== */
-.mini-ui {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
-  z-index: 999;
-}
+
 
 .mini-counter {
   font-size: 12px;
@@ -316,6 +309,39 @@
 .card {
   box-sizing: border-box;
 }
+.tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+/* вкладки по центру */
+.tabs {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* mini ui теперь не fixed */
+.mini-ui.inline {
+  position: static;
+  display: flex;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .tabs-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mini-ui.inline {
+    margin-top: 8px;
+  }
+}
 
   </style>
 </head>
@@ -331,7 +357,14 @@
       <div class="brand-title">Words Easy</div>
     </div>
 
-    <div class="tabs" id="tabs"></div>
+<div class="tabs-bar">
+  <div class="tabs" id="tabs"></div>
+
+  <div class="mini-ui inline">
+    <div class="mini-counter" id="miniCounter">— / —</div>
+    <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+  </div>
+</div>
     <div class="panel" id="panel"></div>
   </div>
 
