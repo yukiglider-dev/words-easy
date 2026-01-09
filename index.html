@@ -312,23 +312,36 @@
   cursor: pointer;
 }
 /* Единый контейнер для всех вкладок */
+/* Компактный контейнер для всех вкладок */
 #panel,
 .panel {
-  max-width: 900px;        /* одинаковая ширина */
-  min-height: 420px;       /* одинаковая высота */
-  margin: 0 auto;          /* по центру */
-  padding: 24px;
-  box-sizing: border-box;
+  max-width: 820px;     /* уже */
+  min-height: 300px;    /* сильно ниже */
+  margin: 0 auto;
+  padding: 16px 18px;   /* меньше внутренние отступы */
 
   background: #fff;
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid #e3ebf5;
 
-  overflow: hidden;        /* НИЧЕГО не вылезает */
-}
-#panel * {
+  overflow-y: auto;
   box-sizing: border-box;
 }
+/* Все внутренние карточки / варианты */
+#panel .card,
+#panel .option,
+#panel .item {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+}
+#panel .word,
+#panel h2,
+#panel .question {
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
 
 
   </style>
