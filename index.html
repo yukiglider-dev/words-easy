@@ -503,7 +503,7 @@ function updateProgress() {
     }
 
     // Global controls
- const trBtn = document.getElementById('toggleTranscription');
+const trBtn = document.getElementById('toggleTranscription');
 if (trBtn) {
   trBtn.onclick = () => {
     if (activeTab !== 'test') return;
@@ -514,6 +514,7 @@ if (trBtn) {
   };
   trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 }
+
 
 
 
