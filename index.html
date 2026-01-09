@@ -503,22 +503,18 @@ function updateProgress() {
     }
 
     // Global controls
-    const trBtn = document.getElementById('toggleTranscription');
-    trBtn.onclick = () => {
-      if (activeTab !== 'test') return; // только в тесте
-      settings.showTr = !settings.showTr;
-      trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
-      saveSettings();
-      renderTest(false); // не менять слово
-    };
+ const trBtn = document.getElementById('toggleTranscription');
+if (trBtn) {
+  trBtn.onclick = () => {
+    if (activeTab !== 'test') return;
+    settings.showTr = !settings.showTr;
     trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
-
- const themeBtn = document.getElementById('themeSwitch');
-if (themeBtn) {
-  themeBtn.onclick = () => {
-    ...
+    saveSettings();
+    renderTest(false);
   };
+  trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 }
+
 
 
 document.getElementById('miniTheme').onclick = () => {
@@ -530,15 +526,6 @@ document.getElementById('miniTheme').onclick = () => {
 
 document.getElementById('miniTheme').textContent =
   settings.theme === 'dark' ? '🌙' : '☀️';
-
-
-  const resetBtn = document.getElementById('resetAll');
-if (resetBtn) {
-  resetBtn.onclick = () => {
-    ...
-  };
-}
-
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
@@ -593,7 +580,10 @@ if (resetBtn) {
     let cardsIdx = { value: -1 };
     let flipped = false;
     function renderCards() {
-      document.getElementById('toggleTranscription').style.display = 'none';
+const trBtn2 = document.getElementById('toggleTranscription');
+if (trBtn2) {
+  trBtn2.style.display = activeTab === 'test' ? 'inline-block' : 'none';
+}
       const pool = getUnlearned();
       if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`; return; }
       const current = nextOf(pool, cardsIdx) || pool[0];
