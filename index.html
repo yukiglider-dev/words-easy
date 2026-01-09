@@ -756,13 +756,6 @@ if (miniTheme) {
   </div>
   <div class="divider"></div>
 `;
-document.getElementById('resetAll').onclick = () => {
-  if (!confirm('Точно сбросить весь прогресс?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  words = loadState();
-  saveState();
-  renderDict();
-};
 
 
       let list = words.slice();
@@ -811,7 +804,13 @@ document.getElementById('resetAll').onclick = () => {
           </table>
         </div>
       `;
-
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('Точно сбросить весь прогресс?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  words = loadState();
+  saveState();
+  renderDict();
+};
       document.getElementById('dictSearch').oninput = (e) => { dictQuery = e.target.value; renderDict(); };
       document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
       panelEl.querySelectorAll('.dictManual').forEach(ch => {
