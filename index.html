@@ -53,50 +53,11 @@
       text-align: center; /* название по центру */
       margin-bottom: 12px;
     }
-    .header {
-  position: relative;
-  text-align: center;
-}
-
-.header-mini {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mini-counter {
-  font-size: 12px;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 8px;
-  box-shadow: var(--shadow);
-}
-
-.mini-theme {
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  cursor: pointer;
-  box-shadow: var(--shadow);
-}
-
     .brand-title {
       font-weight: 800;
       letter-spacing: 0.3px;
       font-size: 26px;
     }
-    <div class="header-mini">
-  <div class="mini-counter" id="miniCounter">— / —</div>
-  <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
-</div>
-
 
     .progress {
       display: flex;
@@ -279,33 +240,55 @@
     @media (max-width: 640px) {
       .match-columns { grid-template-columns: 1fr; }
       .progress { flex-direction: column; align-items: center; }
-    }
+    }/* ===== Mini header controls ===== */
+.header {
+  position: relative;
+}
+
+.header-mini {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.mini-counter,
+.mini-theme {
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: var(--shadow);
+  line-height: 1;
+}
+
+.mini-theme {
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="header">
-      <div class="brand-title">Words Easy</div>
-      <div class="progress" id="progressBar">
-        <div class="progress-item">
-          <div class="progress-label">Осталось к изучению</div>
-          <div class="progress-value" id="remainingCount">—</div>
-        </div>
-        <div class="progress-item">
-          <div class="progress-label">Всего слов</div>
-          <div class="progress-value" id="totalCount">—</div>
-        </div>
-      </div>
-      <div class="controls">
-        <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
-        <button class="btn" id="themeSwitch">Переключить тему</button>
-        <button class="btn error" id="resetAll">Полный сброс</button>
-      </div>
-    </div>
+   <div class="header">
+  <div class="brand-title">Words Easy</div>
 
-    <div class="tabs" id="tabs"></div>
-    <div class="panel" id="panel"></div>
+  <!-- мини-элементы в углу -->
+  <div class="header-mini">
+    <div class="mini-counter" id="miniCounter">— / —</div>
+    <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
   </div>
+
+  <div class="progress" id="progressBar">
+    ...
+  </div>
+
+  <div class="controls">
+    ...
+  </div>
+</div>
 
   <script>
     // ---------- Data & Storage ----------
@@ -439,6 +422,7 @@
       updateProgress();
     }
 
+
     function loadSettings() {
       const raw = localStorage.getItem(SETTINGS_KEY);
       if (raw) { try { return JSON.parse(raw); } catch { return { showTr: false, theme: 'light' }; } }
@@ -469,15 +453,24 @@
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
-  function updateProgress() {
+    function updateProgress() {
   const total = words.length;
   const remaining = words.filter(w => !isLearned(w)).length;
-
-  const mini = document.getElementById('miniCounter');
-  if (mini) mini.textContent = `${remaining} / ${total}`;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('remainingCount').textContent = remaining;
+  updateMiniCounter();
 }
+document.getElementById('miniTheme').onclick = () => {
+  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+  saveSettings();
+};
 
-
+function updateMiniCounter() {
+  const total = words.length;
+  const remaining = words.filter(w => !isLearned(w)).length;
+  const el = document.getElementById('miniCounter');
+  if (el) el.textContent = `${remaining} / ${total}`;
+}
     function shuffle(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -524,15 +517,10 @@
     };
     trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 
-   document.getElementById('miniTheme').onclick = () => {
-  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-  saveSettings();
-  document.getElementById('miniTheme').textContent =
-    settings.theme === 'dark' ? '🌙' : '☀️';
-};
-document.getElementById('miniTheme').textContent =
-  settings.theme === 'dark' ? '🌙' : '☀️';
-
+    document.getElementById('themeSwitch').onclick = () => {
+      settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+      saveSettings();
+    };
 
     document.getElementById('resetAll').onclick = () => {
       if (!confirm('Точно сбросить весь прогресс?')) return;
