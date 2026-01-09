@@ -526,24 +526,29 @@
     const panelEl = document.getElementById('panel');
 console.log('renderTabs работает');
 
- function renderTabs() {
-  tabsEl.innerHTML = tabs.map(t => `
+function renderTabs() {
+  const tabs = [
+    { id: 'test', label: 'Тест' },
+    { id: 'cards', label: 'Карточки' },
+    { id: 'repeat', label: 'Повтор' },
+    { id: 'input', label: 'Ввод' },
+    { id: 'dictionary', label: 'Словарь' },
+    { id: 'match', label: 'Сопоставление' }
+  ];
+
+  tabsEl.innerHTML = tabs.map(tab => `
     <button
-      class="tab-btn ${activeTab === t.id ? 'active' : ''}"
-      data-tab="${t.id}">
-      ${t.label}
+      class="tab-btn ${activeTab === tab.id ? 'active' : ''}"
+      onclick="switchTab('${tab.id}')"
+    >
+      ${tab.label}
     </button>
   `).join('');
-
-  tabsEl.querySelectorAll('button').forEach(btn => {
-    btn.onclick = () => {
-      activeTab = btn.dataset.tab;
-      renderPanel();
-    };
-  });
 }
-
-
+function switchTab(tabId) {
+  activeTab = tabId;
+  renderPanel();
+}
     
   
 
