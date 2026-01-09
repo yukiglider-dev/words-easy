@@ -346,11 +346,12 @@
   </style>
 </head>
 <body>
-  <!-- mini ui -->
-<div class="mini-ui">
-  <div class="mini-counter" id="miniCounter">— / —</div>
-  <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
-</div>
+.mini-ui.inline {
+  position: static;
+  display: flex;
+  gap: 8px;
+}
+
 
   <div class="app">
     <div class="header">
