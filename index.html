@@ -759,6 +759,7 @@ if (miniTheme) {
 
 
       let list = words.slice();
+list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
       if (dictQuery.trim()) {
         const q = dictQuery.toLowerCase();
         list = list.filter(w =>
