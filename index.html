@@ -528,27 +528,30 @@ document.getElementById('miniTheme').textContent =
       const distractors = pickRandom(words.map(w => w.ru), 3, correctRu);
       const options = shuffle([correctRu, ...distractors]);
 
-      panelEl.innerHTML = `
-      <div class="card">
-  <div
-    id="testWord"
-    style="font-size:22px; font-weight:700; cursor:pointer"
-    title="Нажмите, чтобы показать транскрипцию"
-  >
-    ${current.en}
+     panelEl.innerHTML = `
+  <div class="card">
+    <div
+      id="testWord"
+      style="font-size:22px; font-weight:700; cursor:pointer"
+      title="Нажмите, чтобы показать транскрипцию"
+    >
+      ${current.en}
+    </div>
+
+    <div
+      id="testTr"
+      class="muted"
+      style="margin-top:8px; display:none"
+    >
+      ${current.tr ? `/${current.tr}/` : ''}
+    </div>
   </div>
 
-  <div
-    id="testTr"
-    class="muted"
-    style="margin-top:8px; display:none"
-  >
-    ${current.tr ? `/${current.tr}/` : ''}
+  <div class="options">
+    ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
   </div>
-</div>
-          ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
-        </div>
-      `;
+`;
+
 
       let answered = false;
       panelEl.querySelectorAll('.option').forEach(opt => {
