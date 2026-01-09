@@ -241,9 +241,47 @@
       .match-columns { grid-template-columns: 1fr; }
       .progress { flex-direction: column; align-items: center; }
     }
+    /* ===== MINI UI ===== */
+.mini-ui {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 999;
+}
+
+.mini-counter {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.mini-theme {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+
   </style>
 </head>
 <body>
+  <!-- mini ui -->
+<div class="mini-ui">
+  <div class="mini-counter" id="miniCounter">— / —</div>
+  <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+</div>
+
   <div class="app">
     <div class="header">
       <div class="brand-title">Words Easy</div>
@@ -435,8 +473,9 @@
       const remaining = words.filter(w => !isLearned(w)).length;
       document.getElementById('totalCount').textContent = total;
       document.getElementById('remainingCount').textContent = remaining;
-    }
-
+  const mini = document.getElementById('miniCounter');
+  if (mini) mini.textContent = `${total - remaining} / ${total}`;
+}
     function shuffle(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -487,6 +526,13 @@
       settings.theme = settings.theme === 'light' ? 'dark' : 'light';
       saveSettings();
     };
+const miniTheme = document.getElementById('miniTheme');
+if (miniTheme) {
+  miniTheme.onclick = () => {
+    settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+    saveSettings();
+  };
+}
 
     document.getElementById('resetAll').onclick = () => {
       if (!confirm('Точно сбросить весь прогресс?')) return;
