@@ -148,7 +148,11 @@
       text-align: center;
       position: relative;
       width: 100%;
-    }
+      }
+   .test-transcription {
+  margin-top: 6px; /* было 10 — уменьшили */
+}
+
 
     /* Тест: одна колонка — 4 строки */
     .options {
@@ -537,6 +541,7 @@
 
     function renderTabs() {
       tabsEl.inner = tabs.map(t => `
+      tabsEl.inner = tabs.map
         <button class="tab-btn ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">
           ${t.label}
         </button>
@@ -561,20 +566,13 @@
       settings.theme = settings.theme === 'light' ? 'dark' : 'light';
       saveSettings();
     };
-const miniTheme = document.getElementById('miniTheme');
-if (miniTheme) {
-  miniTheme.onclick = () => {
-    settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-    saveSettings();
-  };
-}
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
     let currentTestWord = null;
 
     function renderTest(pickNew = true) {
-      document.getElementById('toggleTranscription').style.display = 'inline-block';
+document.getElementById('toggleTranscription').style.display = 'none';
       const pool = getUnlearned();
       if (!pool.length) { panelEl.inner = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
       if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
