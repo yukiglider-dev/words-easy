@@ -316,6 +316,23 @@
 .card {
   box-sizing: border-box;
 }
+.tabs-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#progress {
+  font-size: 14px;
+  opacity: 0.8;
+}
 
   </style>
 </head>
@@ -524,13 +541,21 @@ console.log('renderTabs работает');
 
 function renderTabs() {
   const tabs = [
-    { id: 'test', label: 'Тест' },
-    { id: 'cards', label: 'Карточки' },
-    { id: 'repeat', label: 'Повтор' },
-    { id: 'input', label: 'Ввод' },
-    { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' }
-  ];
+   <div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active">Тест</button>
+    <button class="tab">Карточки</button>
+    <button class="tab">Повтор</button>
+    <button class="tab">Ввод</button>
+    <button class="tab">Словарь</button>
+    <button class="tab">Сопоставление</button>
+  </div>
+
+  <div class="top-right">
+    <span id="progress">0 / 85</span>
+    <button id="themeToggle">🌙</button>
+  </div>
+</div>
 
   tabsEl.innerHTML = tabs.map(tab => `
     <button
