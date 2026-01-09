@@ -135,20 +135,25 @@
     .muted { color: var(--muted); }
     .divider { height: 1px; background: var(--border); margin: 12px 0; }
 
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      min-width: 260px;
-      min-height: 120px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      position: relative;
-      width: 100%;
-      .empty { align-content: center; }
-      }
+   .card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  min-width: 260px;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card .empty {
+  align-content: center;
+}
+
    .test-transcription {
   margin-top: 6px; /* было 10 — уменьшили */
 }
@@ -342,11 +347,6 @@
   </style>
 </head>
 <body>
-.mini-ui.inline {
-  position: static;
-  display: flex;
-  gap: 8px;
-}
 
 
   <div class="app">
