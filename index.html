@@ -4,163 +4,194 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Words Easy</title>
+
 <style>
 :root{
-  --bg:#f9fbfd;--surface:#fff;--text:#1f3042;--muted:#6b7a88;
-  --primary:#58a6ff;--border:#dde6ef;--shadow:0 8px 24px rgba(0,0,0,.08)
+ --bg:#f9fbfd;--surface:#fff;--text:#1f3042;--muted:#6b7a88;
+ --primary:#58a6ff;--border:#dde6ef;--shadow:0 8px 24px rgba(0,0,0,.08)
 }
 [data-theme="dark"]{
-  --bg:#0f1722;--surface:#152233;--text:#eaf1f9;--muted:#a9b6c3;
-  --border:#233244;--shadow:0 8px 24px rgba(0,0,0,.35)
+ --bg:#0f1722;--surface:#152233;--text:#eaf1f9;--muted:#a9b6c3;
+ --border:#233244;--shadow:0 8px 24px rgba(0,0,0,.35)
 }
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui}
 .app{max-width:1100px;margin:auto;padding:16px}
-.header{position:relative;text-align:center;margin-bottom:12px}
+.header{position:relative;text-align:center}
 .brand{font-size:26px;font-weight:800}
-.top-right{position:absolute;right:0;top:0;display:flex;gap:10px;align-items:center}
+.top-right{position:absolute;right:0;top:0;display:flex;gap:10px}
 .counter{font-size:12px;color:var(--muted)}
-.theme-toggle{border:1px solid var(--border);background:var(--surface);border-radius:20px;padding:4px 8px;font-size:12px;cursor:pointer}
+.theme{cursor:pointer;border:1px solid var(--border);padding:4px 8px;border-radius:20px}
 .tabs{display:flex;justify-content:center;gap:8px;margin:12px 0;flex-wrap:wrap}
-.tab{width:120px;padding:8px 0;border:1px solid var(--border);background:var(--surface);border-radius:10px;font-weight:600;cursor:pointer}
+.tab{width:120px;padding:8px 0;border:1px solid var(--border);border-radius:10px;cursor:pointer}
 .tab.active{background:var(--primary);color:#fff;border:none}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);min-height:220px}
-.card{text-align:center;padding:24px;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);max-width:520px;margin:0 auto}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;min-height:240px}
+.card{text-align:center;padding:24px;border:1px solid var(--border);border-radius:16px;max-width:520px;margin:auto}
 .en{font-size:24px;font-weight:700;cursor:pointer}
-.tr{font-size:14px;margin-top:6px;color:var(--muted);display:none}
+.tr{display:none;color:var(--muted);margin-top:6px}
 .tr.show{display:block}
 .options{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-.option{padding:10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;box-shadow:var(--shadow)}
+.option{padding:10px;border:1px solid var(--border);border-radius:12px;cursor:pointer}
 .correct{background:#e9ffe6}
 .wrong{background:#ffe9e9}
 .row{display:flex;gap:8px;justify-content:center;margin-top:12px}
-button{padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:600}
+button{padding:8px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer}
 .success{background:#34c759;color:#fff;border:none}
 input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border)}
 .table-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse}
-th,td{border-bottom:1px solid var(--border);padding:8px;text-align:left}
-.center{text-align:center}
-.empty{text-align:center;color:var(--muted);padding:20px}
+td,th{border-bottom:1px solid var(--border);padding:8px}
 .match{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.selected{background:#eef}
+.empty{text-align:center;color:var(--muted);padding:20px}
 </style>
 </head>
+
 <body>
 <div class="app">
-  <div class="header">
-    <div class="brand">Words Easy</div>
-    <div class="top-right">
-      <div class="counter" id="counter"></div>
-      <div class="theme-toggle" id="theme">☀️</div>
-    </div>
+ <div class="header">
+  <div class="brand">Words Easy</div>
+  <div class="top-right">
+   <div class="counter" id="counter"></div>
+   <div class="theme" id="theme">☀️</div>
   </div>
-  <div class="tabs" id="tabs"></div>
-  <div class="panel" id="panel"></div>
+ </div>
+
+ <div class="tabs" id="tabs"></div>
+ <div class="panel" id="panel"></div>
 </div>
+
 <script>
-const STORAGE='words_easy_full'
-let words=JSON.parse(localStorage.getItem(STORAGE))||[
- {en:'here',ru:'здесь',tr:'хиа',streak:0,errors:0},
- {en:'there',ru:'там',tr:'зэа',streak:0,errors:0},
- {en:'eat',ru:'есть',tr:'ит',streak:0,errors:0},
- {en:'drink',ru:'пить',tr:'дринк',streak:0,errors:0},
- {en:'sleep',ru:'спать',tr:'слип',streak:0,errors:0}
+const STORAGE='words_easy_ok_v1'
+let words=JSON.parse(localStorage.getItem(STORAGE))
+if(!Array.isArray(words)){
+ words=[
+  {en:'here',ru:'здесь',tr:'хиа',streak:0,errors:0},
+  {en:'there',ru:'там',tr:'зэа',streak:0,errors:0},
+  {en:'eat',ru:'есть',tr:'ит',streak:0,errors:0},
+  {en:'drink',ru:'пить',tr:'дринк',streak:0,errors:0}
+ ]
+}
+
+const tabs=[
+ ['test','Тест'],['cards','Карточки'],['repeat','Повтор'],
+ ['input','Ввод'],['dict','Словарь'],['match','Сопоставление']
 ]
-const tabs=[['test','Тест'],['cards','Карточки'],['repeat','Повтор'],['input','Ввод'],['dict','Словарь'],['match','Сопоставление']]
+
 let active='test'
+let matchState={set:[],pick:null}
+
 const panel=document.getElementById('panel')
+
 function save(){localStorage.setItem(STORAGE,JSON.stringify(words));updateCounter()}
 function learned(w){return w.streak>=3}
-function updateCounter(){const total=words.length;const rest=words.filter(w=>!learned(w)).length;document.getElementById('counter').textContent=`${rest} / ${total}`}
-function renderTabs(){const el=document.getElementById('tabs');el.innerHTML=tabs.map(t=>`<div class="tab ${active===t[0]?'active':''}" data-id="${t[0]}">${t[1]}</div>`).join('');el.querySelectorAll('.tab').forEach(b=>{b.onclick=()=>{active=b.dataset.id;render()}})}
-function shuffle(a){return a.sort(()=>Math.random()-0.5)}
-function renderTest(){const pool=words.filter(w=>!learned(w));if(!pool.length){panel.innerHTML='<div class="empty">Все слова выучены 🎉</div>';return}const w=pool[Math.floor(Math.random()*pool.length)];const opts=shuffle([w.ru,...words.filter(x=>x!==w).map(x=>x.ru)]).slice(0,4);panel.innerHTML=`<div class="card"><div class="en" id="en">${w.en}</div><div class="tr" id="tr">/${w.tr}/</div></div><div class="options">${opts.map(o=>`<div class="option">${o}</div>`).join('')}</div>`;document.getElementById('en').onclick=()=>document.getElementById('tr').classList.toggle('show');panel.querySelectorAll('.option').forEach(o=>{o.onclick=()=>{if(o.textContent===w.ru){o.classList.add('correct');w.streak++}else{o.classList.add('wrong');w.streak=0;w.errors++}save();setTimeout(renderTest,600)}})}
-function renderCards(){const w=words[Math.floor(Math.random()*words.length)];panel.innerHTML=`<div class="card"><div class="en" id="en">${w.en}</div><div class="tr" id="tr">/${w.tr}/</div><div class="row"><button class="success" id="know">Знаю</button><button id="dont">Не знаю</button></div></div>`;document.getElementById('en').onclick=()=>document.getElementById('tr').classList.toggle('show');document.getElementById('know').onclick=()=>{w.streak++;save();renderCards()};document.getElementById('dont').onclick=()=>{w.errors++;w.streak=0;save();renderCards()}}
-function renderRepeat(){const pool=words.filter(w=>w.errors>0&&!learned(w));if(!pool.length){panel.innerHTML='<div class="empty">Нет слов для повтора</div>';return}const w=pool[Math.floor(Math.random()*pool.length)];panel.innerHTML=`<div class="card"><div class="en" id="en">${w.en}</div><div class="tr" id="tr">/${w.tr}/</div><div class="row"><button class="success" id="know">Знаю</button><button id="dont">Не знаю</button></div></div>`;document.getElementById('en').onclick=()=>document.getElementById('tr').classList.toggle('show');document.getElementById('know').onclick=()=>{if(w.errors>0)w.errors--;w.streak++;save();renderRepeat()};document.getElementById('dont').onclick=()=>{w.errors++;w.streak=0;save();renderRepeat()}}
+function updateCounter(){
+ const t=words.length,r=words.filter(w=>!learned(w)).length
+ document.getElementById('counter').textContent=`${r} / ${t}`
+}
+
+function renderTabs(){
+ tabsEl.innerHTML=tabs.map(t=>`<div class="tab ${active===t[0]?'active':''}" data-id="${t[0]}">${t[1]}</div>`).join('')
+ tabsEl.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{active=b.dataset.id;render()})
+}
+
+function renderTest(){
+ const pool=words.filter(w=>!learned(w))
+ if(!pool.length){panel.innerHTML='<div class="empty">Все слова выучены 🎉</div>';return}
+ const w=pool[Math.floor(Math.random()*pool.length)]
+ panel.innerHTML=`
+ <div class="card">
+  <div class="en" id="en">${w.en}</div>
+  <div class="tr" id="tr">/${w.tr}/</div>
+ </div>
+ <div class="options">
+  ${words.map(x=>x.ru).sort(()=>Math.random()-0.5).slice(0,4).map(o=>`<div class="option">${o}</div>`).join('')}
+ </div>`
+ en.onclick=()=>tr.classList.toggle('show')
+ panel.querySelectorAll('.option').forEach(o=>o.onclick=()=>{
+  if(o.textContent===w.ru){o.classList.add('correct');w.streak++}
+  else{o.classList.add('wrong');w.errors++;w.streak=0}
+  save();setTimeout(renderTest,600)
+ })
+}
+
+function renderCards(){
+ const w=words[Math.floor(Math.random()*words.length)]
+ panel.innerHTML=`
+ <div class="card">
+  <div class="en" id="en">${w.en}</div>
+  <div class="tr" id="tr">/${w.tr}/</div>
+  <div class="row">
+   <button class="success" id="k">Знаю</button>
+   <button id="d">Не знаю</button>
+  </div>
+ </div>`
+ en.onclick=()=>tr.classList.toggle('show')
+ k.onclick=()=>{w.streak++;save();renderCards()}
+ d.onclick=()=>{w.errors++;w.streak=0;save();renderCards()}
+}
+
+function renderRepeat(){
+ const pool=words.filter(w=>w.errors>0&&!learned(w))
+ if(!pool.length){panel.innerHTML='<div class="empty">Нет слов для повтора</div>';return}
+ const w=pool[Math.floor(Math.random()*pool.length)]
+ panel.innerHTML=`<div class="card"><div class="en">${w.en}</div></div>`
+}
+
 function renderInput(){
-  const w=words[Math.floor(Math.random()*words.length)];
-  panel.innerHTML=`
-    <div class="card">
-      <div>${w.ru}</div>
-      <input id="inp" placeholder="Введите английское слово">
-      <button class="success" id="check">Проверить</button>
-    </div>`;
-  document.getElementById('check').onclick=()=>{
-    const val=document.getElementById('inp').value.trim().toLowerCase();
-    if(val===w.en.toLowerCase()){w.streak++}
-    else{w.errors++;w.streak=0}
-    save();renderInput();
-  };
+ const w=words[Math.floor(Math.random()*words.length)]
+ panel.innerHTML=`
+ <div class="card">
+  <div>${w.ru}</div>
+  <input id="i">
+  <button class="success" id="c">Проверить</button>
+ </div>`
+ c.onclick=()=>{
+  if(i.value.trim().toLowerCase()===w.en.toLowerCase())w.streak++
+  else{w.errors++;w.streak=0}
+  save();renderInput()
+ }
 }
 
 function renderDict(){
-  panel.innerHTML=`
-    <div class="table-wrap">
-      <table>
-        <tr><th>EN</th><th>RU</th><th>TR</th><th>✔</th><th>✖</th></tr>
-        ${words.map(w=>`
-          <tr>
-            <td>${w.en}</td>
-            <td>${w.ru}</td>
-            <td>/${w.tr}/</td>
-            <td class="center">${w.streak}</td>
-            <td class="center">${w.errors}</td>
-          </tr>`).join('')}
-      </table>
-    </div>`;
+ panel.innerHTML=`
+ <div class="table-wrap">
+ <table>
+ ${words.map(w=>`<tr><td>${w.en}</td><td>${w.ru}</td><td>${w.tr}</td></tr>`).join('')}
+ </table></div>`
 }
 
 function renderMatch(){
-  let set=words.slice(0,4).sort(()=>Math.random()-0.5);
-  let pick=null;
-  panel.innerHTML=`
-    <div class="match">
-      <div>${set.map(w=>`<div class="option" data-en="${w.en}">${w.en}</div>`).join('')}</div>
-      <div>${set.map(w=>`<div class="option" data-ru="${w.ru}">${w.ru}</div>`).join('')}</div>
-    </div>`;
-  panel.querySelectorAll('.option').forEach(o=>{
-    o.onclick=()=>{
-      if(o.dataset.en){
-        pick=o.dataset.en;
-        o.classList.add('selected');
-      } else if(pick){
-        const w=set.find(x=>x.en===pick);
-        if(o.dataset.ru===w.ru){
-          o.classList.add('correct');
-          w.streak++;
-        } else {
-          o.classList.add('wrong');
-          w.errors++;
-          w.streak=0;
-        }
-        save();
-        setTimeout(renderMatch,500);
-      }
-    };
-  });
+ if(!matchState.set.length){
+  matchState.set=[...words].sort(()=>Math.random()-0.5).slice(0,4)
+  matchState.pick=null
+ }
+ panel.innerHTML=`
+ <div class="match">
+  <div>${matchState.set.map(w=>`<div class="option" data-en="${w.en}">${w.en}</div>`).join('')}</div>
+  <div>${matchState.set.map(w=>`<div class="option" data-ru="${w.ru}">${w.ru}</div>`).join('')}</div>
+ </div>`
+ panel.querySelectorAll('.option').forEach(o=>o.onclick=()=>{
+  if(o.dataset.en){matchState.pick=o.dataset.en}
+  else if(matchState.pick){
+   const w=matchState.set.find(x=>x.en===matchState.pick)
+   if(o.dataset.ru===w.ru)w.streak++;else{w.errors++;w.streak=0}
+   save();matchState.set=[];renderMatch()
+  }
+ })
 }
 
 function render(){
-  renderTabs();
-  updateCounter();
-  ({
-    test:renderTest,
-    cards:renderCards,
-    repeat:renderRepeat,
-    input:renderInput,
-    dict:renderDict,
-    match:renderMatch
-  })[active]();
+ renderTabs();updateCounter()
+ ;({test:renderTest,cards:renderCards,repeat:renderRepeat,input:renderInput,dict:renderDict,match:renderMatch})[active]()
 }
 
-document.getElementById('theme').onclick=()=>{
-  const html=document.documentElement;
-  const d=html.getAttribute('data-theme')==='dark';
-  html.setAttribute('data-theme',d?'light':'dark');
-  document.getElementById('theme').textContent=d?'☀️':'🌙';
-};
+theme.onclick=()=>{
+ const h=document.documentElement
+ h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark')
+ theme.textContent=h.getAttribute('data-theme')==='dark'?'🌙':'☀️'
+}
 
-render();
+const tabsEl=document.getElementById('tabs')
+render()
 </script>
 </body>
 </html>
