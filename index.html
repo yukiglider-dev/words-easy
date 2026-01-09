@@ -279,6 +279,18 @@
   font-size: 14px;
   line-height: 1;
 }
+.mini-theme {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 
   </style>
@@ -288,6 +300,7 @@
 <div class="mini-ui">
   <div class="mini-counter" id="miniCounter">— / —</div>
   <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+  <button class="mini-theme" id="miniTheme" title="Сменить тему">☀️</button>
 </div>
 
   <div class="app">
@@ -905,6 +918,21 @@ if (miniTheme) {
         case 'match': renderMatch(); break;
       }
     }
+const miniThemeBtn = document.getElementById('miniTheme');
+
+function updateThemeIcon() {
+  miniThemeBtn.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
+}
+
+miniThemeBtn.onclick = () => {
+  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', settings.theme);
+  saveSettings();
+  updateThemeIcon();
+};
+
+// при загрузке страницы
+updateThemeIcon();
 
     renderTabs();
     renderPanel();
