@@ -318,7 +318,6 @@
       <div class="controls">
         <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
         <button class="btn" id="themeSwitch">Переключить тему</button>
-        <button class="btn error" id="resetAll">Полный сброс</button>
       </div>
     </div>
 
@@ -554,14 +553,6 @@ if (miniTheme) {
   };
 }
 
-    document.getElementById('resetAll').onclick = () => {
-      if (!confirm('Точно сбросить весь прогресс?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      words = loadState();
-      saveState();
-      renderPanel();
-    };
-
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
     let currentTestWord = null;
@@ -754,9 +745,17 @@ if (miniTheme) {
               <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
             </select>
           </div>
-          <div class="field">
-            <button class="btn success" id="markAll">Отметить всё выученным</button>
-          </div>
+        <div class="field" style="display:flex; gap:8px">
+  <button class="btn success" id="markAll">Отметить всё выученным</button>
+  <button class="btn error" id="resetAll">Полный сброс</button>
+</div>
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('Точно сбросить весь прогресс?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  words = loadState();
+  saveState();
+  renderDict();
+};
         </div>
         <div class="divider"></div>
       `;
