@@ -149,17 +149,8 @@
       position: relative;
       width: 100%;
       }
-.test-transcription {
-  margin-top: 6px;
-  font-size: 18px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.test-transcription.show {
-  opacity: 1;
-  pointer-events: auto;
+   .test-transcription {
+  margin-top: 6px; /* было 10 — уменьшили */
 }
 
 
@@ -304,23 +295,20 @@
   align-items: center;
   justify-content: center;
 }
-
-
-
-.test-word {
-  cursor: pointer;
+.test-transcription {
+  margin-top: 10px;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
 
-
-.test-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.test-transcription.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .test-word {
-  line-height: 1.1;
   cursor: pointer;
 }
 
@@ -582,22 +570,19 @@ function switchTab(tabId) {
       const distractors = pickRandom(words.map(w => w.ru), 3, correctRu);
       const options = shuffle([correctRu, ...distractors]);
 
-panelEl.innerHTML = `
+   panelEl.innerHTML = `
   <div class="card">
-    <div class="test-center">
-      <div class="test-word" id="testWord" style="font-size:22px; font-weight:700">
-        ${current.en}
-      </div>
-      <div class="test-transcription" id="testTranscription">
-        ${current.tr ? `/${current.tr}/` : ''}
-      </div>
+    <div class="test-word" id="testWord" style="font-size:22px; font-weight:700">
+      ${current.en}
+    </div>
+    <div class="test-transcription" id="testTranscription">
+      ${current.tr ? `/${current.tr}/` : ''}
     </div>
   </div>
   <div class="options">
     ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
   </div>
 `;
-
 const wordEl = document.getElementById('testWord');
 const trEl = document.getElementById('testTranscription');
 
