@@ -136,6 +136,7 @@
 
     .tabs {
       display: flex;
+      justify-content: center; /* вкладки по центру */
       gap: 8px;
       flex-wrap: wrap;
       margin: 12px 0;
@@ -335,117 +336,117 @@
 
   <script>
     // ---------- Data & Storage ----------
-    const STORAGE_KEY = 'words_easy_v1';
-    const SETTINGS_KEY = 'words_easy_settings';
+    const STORAGE_KEY = 'words_easy_v2';
+    const SETTINGS_KEY = 'words_easy_settings_v2';
 
     const initialWords = [
       // Basic places
-      { en: 'here', ru: 'здесь', tr: 'hɪər' },
-      { en: 'there', ru: 'там', tr: 'ðeər' },
-      { en: 'at school', ru: 'в школе', tr: 'æt skuːl' },
+      { en: 'here', ru: 'здесь', tr: 'хиа' },
+      { en: 'there', ru: 'там', tr: 'зэа' },
+      { en: 'at school', ru: 'в школе', tr: 'эт скул' },
 
       // Verbs core
-      { en: 'understand', ru: 'понимать', tr: 'ˌʌndərˈstænd' },
-      { en: 'know', ru: 'знать', tr: 'noʊ' },
-      { en: 'eat', ru: 'есть', tr: 'iːt' },
-      { en: 'drink', ru: 'пить', tr: 'drɪŋk' },
-      { en: 'sleep', ru: 'спать', tr: 'sliːp' },
-      { en: 'ask', ru: 'спрашивать', tr: 'æsk' },
-      { en: 'read', ru: 'читать', tr: 'riːd' },
-      { en: 'write', ru: 'писать', tr: 'raɪt' },
-      { en: 'describe', ru: 'описывать', tr: 'dɪˈskraɪb' },
-      { en: 'analyse', ru: 'анализировать', tr: 'ˈænəlaɪz' },
-      { en: 'think', ru: 'думать', tr: 'θɪŋk' },
-      { en: 'wait', ru: 'ждать', tr: 'weɪt' },
-      { en: 'buy', ru: 'покупать', tr: 'baɪ' },
-      { en: 'play', ru: 'играть', tr: 'pleɪ' },
-      { en: 'want', ru: 'хотеть', tr: 'wɒnt' },
-      { en: 'explain', ru: 'объяснять', tr: 'ɪkˈspleɪn' },
-      { en: 'study', ru: 'учиться', tr: 'ˈstʌdi' },
-      { en: 'work', ru: 'работать', tr: 'wɜːrk' },
-      { en: 'take', ru: 'брать', tr: 'teɪk' },
-      { en: 'arrive', ru: 'прибывать', tr: 'əˈraɪv' },
-      { en: 'interrupt', ru: 'перебивать', tr: 'ˌɪntəˈrʌpt' },
+      { en: 'understand', ru: 'понимать', tr: 'андэстэнд' },
+      { en: 'know', ru: 'знать', tr: 'ноу' },
+      { en: 'eat', ru: 'есть', tr: 'ит' },
+      { en: 'drink', ru: 'пить', tr: 'дринк' },
+      { en: 'sleep', ru: 'спать', tr: 'слип' },
+      { en: 'ask', ru: 'спрашивать', tr: 'аск' },
+      { en: 'read', ru: 'читать', tr: 'рид' },
+      { en: 'write', ru: 'писать', tr: 'райт' },
+      { en: 'describe', ru: 'описывать', tr: 'дискрайб' },
+      { en: 'analyse', ru: 'анализировать', tr: 'энэлайз' },
+      { en: 'think', ru: 'думать', tr: 'синк' },
+      { en: 'wait', ru: 'ждать', tr: 'вэйт' },
+      { en: 'buy', ru: 'покупать', tr: 'бай' },
+      { en: 'play', ru: 'играть', tr: 'плей' },
+      { en: 'want', ru: 'хотеть', tr: 'вонт' },
+      { en: 'explain', ru: 'объяснять', tr: 'иксплейн' },
+      { en: 'study', ru: 'учиться', tr: 'стади' },
+      { en: 'work', ru: 'работать', tr: 'вёк' },
+      { en: 'take', ru: 'брать', tr: 'тэйк' },
+      { en: 'arrive', ru: 'прибывать', tr: 'эрайв' },
+      { en: 'interrupt', ru: 'перебивать', tr: 'интерапт' },
 
       // Need/like phrases
-      { en: 'I need', ru: 'мне нужно', tr: 'aɪ niːd' },
-      { en: 'you need', ru: 'тебе / вам нужно', tr: 'juː niːd' },
-      { en: 'we need', ru: 'нам нужно', tr: 'wiː niːd' },
-      { en: 'they need', ru: 'им нужно', tr: 'ðeɪ niːd' },
-      { en: 'he needs', ru: 'ему нужно', tr: 'hiː niːdz' },
-      { en: 'she needs', ru: 'ей нужно', tr: 'ʃiː niːdz' },
+      { en: 'I need', ru: 'мне нужно', tr: 'ай нид' },
+      { en: 'you need', ru: 'тебе / вам нужно', tr: 'ю нид' },
+      { en: 'we need', ru: 'нам нужно', tr: 'ви нид' },
+      { en: 'they need', ru: 'им нужно', tr: 'зэй нид' },
+      { en: 'he needs', ru: 'ему нужно', tr: 'хи нидз' },
+      { en: 'she needs', ru: 'ей нужно', tr: 'ши нидз' },
 
-      { en: 'I like', ru: 'мне нравится', tr: 'aɪ laɪk' },
-      { en: 'you like', ru: 'тебе / вам нравится', tr: 'juː laɪk' },
-      { en: 'we like', ru: 'нам нравится', tr: 'wiː laɪk' },
-      { en: 'they like', ru: 'им нравится', tr: 'ðeɪ laɪk' },
-      { en: 'he likes', ru: 'ему нравится', tr: 'hiː laɪks' },
-      { en: 'she likes', ru: 'ей нравится', tr: 'ʃiː laɪks' },
+      { en: 'I like', ru: 'мне нравится', tr: 'ай лайк' },
+      { en: 'you like', ru: 'тебе / вам нравится', tr: 'ю лайк' },
+      { en: 'we like', ru: 'нам нравится', tr: 'ви лайк' },
+      { en: 'they like', ru: 'им нравится', tr: 'зэй лайк' },
+      { en: 'he likes', ru: 'ему нравится', tr: 'хи лайкс' },
+      { en: 'she likes', ru: 'ей нравится', tr: 'ши лайкс' },
 
       // Actions misc
-      { en: 'use', ru: 'пользоваться', tr: 'juːz' },
-      { en: 'collect', ru: 'коллекционировать', tr: 'kəˈlekt' },
-      { en: 'confuse', ru: 'путать', tr: 'kənˈfjuːz' },
-      { en: 'apologise', ru: 'извиняться', tr: 'əˈpɒlədʒaɪz' },
-      { en: 'forgive', ru: 'прощать', tr: 'fəˈɡɪv' },
-      { en: 'forget', ru: 'забывать', tr: 'fəˈɡet' },
+      { en: 'use', ru: 'пользоваться', tr: 'юз' },
+      { en: 'collect', ru: 'коллекционировать', tr: 'колэкт' },
+      { en: 'confuse', ru: 'путать', tr: 'конфьюз' },
+      { en: 'apologise', ru: 'извиняться', tr: 'эполоджайз' },
+      { en: 'forgive', ru: 'прощать', tr: 'фогив' },
+      { en: 'forget', ru: 'забывать', tr: 'фогет' },
 
       // Phases
-      { en: 'start', ru: 'начинать', tr: 'stɑːrt' },
-      { en: 'begin', ru: 'начинать', tr: 'bɪˈɡɪn' },
-      { en: 'continue', ru: 'продолжать', tr: 'kənˈtɪnjuː' },
-      { en: 'finish', ru: 'заканчивать', tr: 'ˈfɪnɪʃ' },
+      { en: 'start', ru: 'начинать', tr: 'старт' },
+      { en: 'begin', ru: 'начинать', tr: 'бигин' },
+      { en: 'continue', ru: 'продолжать', tr: 'континью' },
+      { en: 'finish', ru: 'заканчивать', tr: 'финиш' },
 
       // Adjectives
-      { en: 'busy', ru: 'занятый', tr: 'ˈbɪzi' },
-      { en: 'cosy', ru: 'уютный', tr: 'ˈkoʊzi' },
-      { en: 'enough', ru: 'достаточно', tr: 'ɪˈnʌf' },
-      { en: 'rich', ru: 'богатый', tr: 'rɪtʃ' },
-      { en: 'poor', ru: 'бедный', tr: 'pʊr' },
-      { en: 'possible', ru: 'возможно', tr: 'ˈpɒsəbl' },
-      { en: 'impossible', ru: 'невозможно', tr: 'ɪmˈpɒsəbl' },
+      { en: 'busy', ru: 'занятый', tr: 'бизи' },
+      { en: 'cosy', ru: 'уютный', tr: 'кози' },
+      { en: 'enough', ru: 'достаточно', tr: 'инаф' },
+      { en: 'rich', ru: 'богатый', tr: 'рич' },
+      { en: 'poor', ru: 'бедный', tr: 'пур' },
+      { en: 'possible', ru: 'возможно', tr: 'поссибл' },
+      { en: 'impossible', ru: 'невозможно', tr: 'импоссибл' },
 
       // Sentences
-      { en: 'I’m busy', ru: 'я занят', tr: 'aɪm ˈbɪzi' },
-      { en: 'it’s cosy', ru: 'это уютно', tr: 'ɪts ˈkoʊzi' },
-      { en: 'it’s enough', ru: 'этого достаточно', tr: 'ɪts ɪˈnʌf' },
-      { en: 'he’s rich', ru: 'он богатый', tr: 'hiːz rɪtʃ' },
-      { en: 'she’s poor', ru: 'она бедная', tr: 'ʃiːz pʊr' },
-      { en: 'it’s possible', ru: 'это возможно', tr: 'ɪts ˈpɒsəbl' },
-      { en: 'it’s impossible', ru: 'это невозможно', tr: 'ɪts ɪmˈpɒsəbl' },
+      { en: 'I’m busy', ru: 'я занят', tr: 'айм бизи' },
+      { en: 'it’s cosy', ru: 'это уютно', tr: 'итс кози' },
+      { en: 'it’s enough', ru: 'этого достаточно', tr: 'итс инаф' },
+      { en: 'he’s rich', ru: 'он богатый', tr: 'хиз рич' },
+      { en: 'she’s poor', ru: 'она бедная', tr: 'шиз пур' },
+      { en: 'it’s possible', ru: 'это возможно', tr: 'итс поссибл' },
+      { en: 'it’s impossible', ru: 'это невозможно', tr: 'итс импоссибл' },
 
       // Right
-      { en: 'you’re right', ru: 'ты / вы правы', tr: 'jʊr raɪt' },
-      { en: 'we’re right', ru: 'мы правы', tr: 'wɪr raɪt' },
-      { en: 'they’re right', ru: 'они правы', tr: 'ðeər raɪt' },
+      { en: 'you’re right', ru: 'ты / вы правы', tr: 'юр райт' },
+      { en: 'we’re right', ru: 'мы правы', tr: 'вир райт' },
+      { en: 'they’re right', ru: 'они правы', tr: 'зэйр райт' },
 
       // Questions
-      { en: 'why', ru: 'почему', tr: 'waɪ' },
-      { en: 'who', ru: 'кто / кого', tr: 'huː' },
-      { en: 'where', ru: 'где / куда', tr: 'weər' },
-      { en: 'what', ru: 'что', tr: 'wɒt' },
-      { en: 'when', ru: 'когда', tr: 'wen' },
-      { en: 'how often', ru: 'как часто', tr: 'haʊ ˈɒfn' },
-      { en: 'how regularly', ru: 'как регулярно', tr: 'haʊ ˈreɡjʊlərli' },
-      { en: 'how many', ru: 'сколько', tr: 'haʊ ˈmeni' },
-      { en: 'how much', ru: 'сколько', tr: 'haʊ mʌtʃ' },
+      { en: 'why', ru: 'почему', tr: 'уай' },
+      { en: 'who', ru: 'кто / кого', tr: 'ху' },
+      { en: 'where', ru: 'где / куда', tr: 'вэа' },
+      { en: 'what', ru: 'что', tr: 'вот' },
+      { en: 'when', ru: 'когда', tr: 'вэн' },
+      { en: 'how often', ru: 'как часто', tr: 'хау офн' },
+      { en: 'how regularly', ru: 'как регулярно', tr: 'хау рэгьюлэли' },
+      { en: 'how many', ru: 'сколько', tr: 'хау мэни' },
+      { en: 'how much', ru: 'сколько', tr: 'хау мач' },
 
       // Get phrases
-      { en: 'get to', ru: 'добира́ться до', tr: 'ɡet tuː' },
-      { en: 'get home', ru: 'добира́ться домой', tr: 'ɡet hoʊm' },
-      { en: 'get there', ru: 'добира́ться туда', tr: 'ɡet ðeər' },
-      { en: 'get here', ru: 'добира́ться сюда', tr: 'ɡet hɪər' },
-      { en: 'get back', ru: 'добира́ться обратно', tr: 'ɡet bæk' },
+      { en: 'get to', ru: 'добираться до', tr: 'гет ту' },
+      { en: 'get home', ru: 'добираться домой', tr: 'гет хоум' },
+      { en: 'get there', ru: 'добираться туда', tr: 'гет зэа' },
+      { en: 'get here', ru: 'добираться сюда', tr: 'гет хиа' },
+      { en: 'get back', ru: 'добираться обратно', tr: 'гет бэк' },
 
       // Qualities
-      { en: 'expensive', ru: 'дорого', tr: 'ɪkˈspensɪv' },
-      { en: 'cheap', ru: 'дёшево', tr: 'tʃiːp' },
-      { en: 'strong', ru: 'сильный', tr: 'strɒŋ' },
-      { en: 'weak', ru: 'слабый', tr: 'wiːk' },
-      { en: 'creative', ru: 'творческий', tr: 'kriːˈeɪtɪv' },
-      { en: 'hardworking', ru: 'трудолюбивый', tr: 'ˌhɑːrdˈwɜːrkɪŋ' },
-      { en: 'patient', ru: 'терпеливый', tr: 'ˈpeɪʃnt' },
-      { en: 'punctual', ru: 'пунктуальный', tr: 'ˈpʌŋktʃuəl' },
+      { en: 'expensive', ru: 'дорого', tr: 'экспэнсив' },
+      { en: 'cheap', ru: 'дёшево', tr: 'чип' },
+      { en: 'strong', ru: 'сильный', tr: 'стронг' },
+      { en: 'weak', ru: 'слабый', tr: 'уик' },
+      { en: 'creative', ru: 'творческий', tr: 'криэйтив' },
+      { en: 'hardworking', ru: 'трудолюбивый', tr: 'хардворкинг' },
+      { en: 'patient', ru: 'терпеливый', tr: 'пэйшент' },
+      { en: 'punctual', ru: 'пунктуальный', tr: 'панкчюал' },
     ].map((w, i) => ({
       id: i+1,
       en: w.en,
@@ -461,7 +462,6 @@
       if (raw) {
         try {
           const data = JSON.parse(raw);
-          // merge to keep possible new words on updates
           const byKey = new Map(data.map(d => [d.en + '|' + d.ru, d]));
           return initialWords.map(w => {
             const k = w.en + '|' + w.ru;
@@ -533,7 +533,7 @@
     }
 
     function pickRandom(arr, n, excludeItem) {
-      const filtered = excludeItem ? arr.filter(x => x !== excludeItem) : arr.slice();
+      const filtered = excludeItem !== undefined ? arr.filter(x => x !== excludeItem) : arr.slice();
       return shuffle(filtered).slice(0, n);
     }
 
@@ -543,11 +543,7 @@
       return list[indexRef.value];
     }
 
-    function html(strings, ...vals) {
-      return strings.reduce((acc, s, i) => acc + s + (i < vals.length ? vals[i] : ''), '');
-    }
-
-    // ---------- UI Rendering ----------
+    // ---------- UI Mount ----------
     const tabsEl = document.getElementById('tabs');
     const panelEl = document.getElementById('panel');
 
@@ -566,15 +562,17 @@
     }
 
     // Global controls
-    document.getElementById('toggleTranscription').onclick = () => {
+    const trBtn = document.getElementById('toggleTranscription');
+    trBtn.onclick = () => {
+      // Кнопка доступна только в «Тесте»
+      if (activeTab !== 'test') return;
       settings.showTr = !settings.showTr;
-      document.getElementById('toggleTranscription').textContent =
-        settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
+      trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
       saveSettings();
-      renderPanel();
+      // ВАЖНО: слово не должно меняться — просто перерисуем тест того же слова
+      renderTest(false); // false => не выбирать новое слово
     };
-    document.getElementById('toggleTranscription').textContent =
-      settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
+    trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
 
     document.getElementById('themeSwitch').onclick = () => {
       settings.theme = settings.theme === 'light' ? 'dark' : 'light';
@@ -591,15 +589,22 @@
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
-    function renderTest() {
+    let currentTestWord = null; // удерживаем текущее слово при переключении транскрипции
+
+    function renderTest(pickNew = true) {
       const pool = getUnlearned();
+      // показать/скрыть кнопку транскрипции в зависимости от вкладки
+      document.getElementById('toggleTranscription').style.display = activeTab === 'test' ? 'inline-block' : 'none';
+
       if (!pool.length) {
-        panelEl.innerHTML = `
-          <div class="empty">Все слова выучены. Отличная работа!</div>
-        `;
+        panelEl.innerHTML = `<div class="empty">Все слова выучены. Отличная работа!</div>`;
         return;
       }
-      const current = nextOf(pool, testIdx) || pool[0];
+
+      if (pickNew || !currentTestWord) {
+        currentTestWord = nextOf(pool, testIdx) || pool[0];
+      }
+      const current = currentTestWord;
       const correctRu = current.ru;
       const distractors = pickRandom(words.map(w => w.ru), 3, correctRu);
       const options = shuffle([correctRu, ...distractors]);
@@ -637,7 +642,11 @@
             });
           }
           saveState();
-          setTimeout(renderTest, 700);
+          // после ответа выбираем новое слово
+          setTimeout(() => {
+            currentTestWord = null;
+            renderTest(true);
+          }, 700);
         };
       });
     }
@@ -646,6 +655,9 @@
     let cardsIdx = { value: -1 };
     let flipped = false;
     function renderCards() {
+      // кнопка транскрипции только в тесте
+      document.getElementById('toggleTranscription').style.display = 'none';
+
       const pool = getUnlearned();
       if (!pool.length) {
         panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`;
@@ -672,7 +684,6 @@
       `;
       const flipEl = document.getElementById('flip');
       flipEl.onclick = (e) => {
-        // Only flip if click outside buttons
         if (e.target.id === 'cardKnow' || e.target.id === 'cardDontKnow') return;
         flipped = !flipped;
         flipEl.classList.toggle('flipped', flipped);
@@ -695,6 +706,8 @@
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
     function renderRepeat() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+
       const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
       if (!pool.length) {
         panelEl.innerHTML = `<div class="empty">Пока нет слов для повтора. Ошибок нет — супер!</div>`;
@@ -716,7 +729,7 @@
         current.errors = Math.max(0, current.errors - 1); // уменьшить значимость ошибки
         current.streak += 1;
         saveState();
-        setTimeout(renderRepeat, 400); // исчезнет если ошибок станет 0
+        setTimeout(renderRepeat, 400);
       };
       document.getElementById('repDontKnow').onclick = () => {
         current.errors += 1;
@@ -729,6 +742,8 @@
     // ---------- Tab: Input ----------
     let inputIdx = { value: -1 };
     function renderInput() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+
       const pool = getUnlearned();
       if (!pool.length) {
         panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`;
@@ -781,6 +796,8 @@
     let dictFilter = 'all'; // all | learned | unlearned
     let dictQuery = '';
     function renderDict() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+
       const header = `
         <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
           <div class="field" style="flex:2; min-width:240px">
@@ -817,7 +834,7 @@
           <td class="center">${idx+1}</td>
           <td>${w.en}</td>
           <td>${w.ru}</td>
-          <td class="center">${settings.showTr && w.tr ? `/${w.tr}/` : (w.tr ? `<span class="muted">скрыто</span>` : '')}</td>
+          <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
           <td class="center" style="width:100px">${w.streak}</td>
           <td class="center" style="width:100px">${w.errors}</td>
           <td class="center" style="width:100px">
@@ -874,7 +891,8 @@
     // ---------- Tab: Match ----------
     let matchSet = [];
     let matchPicked = null;
-    function makeMatchSet(size = 6) {
+
+    function makeMatchSet(size = 4) {
       const pool = getUnlearned();
       const base = (pool.length ? pool : words);
       const chosen = pickRandom(base, Math.min(size, base.length));
@@ -882,7 +900,9 @@
     }
 
     function renderMatch() {
-      if (!matchSet.length) makeMatchSet(6);
+      document.getElementById('toggleTranscription').style.display = 'none';
+
+      if (!matchSet.length) makeMatchSet(4);
       if (!matchSet.length) {
         panelEl.innerHTML = `<div class="empty">Слова недоступны для сопоставления.</div>`;
         return;
@@ -925,10 +945,10 @@
             if (correct) {
               enEl.classList.add('correct');
               ruEl.classList.add('correct');
-              // progress
+              // прогресс
               const w = words.find(x => x.id === matchPicked);
               if (w) w.streak += 1;
-              // remove matched from set
+              // удалить пару сразу
               matchSet = matchSet.filter(m => m.id !== matchPicked);
               saveState();
             } else {
@@ -941,10 +961,10 @@
             matchPicked = null;
             setTimeout(() => {
               if (!matchSet.length) {
-                makeMatchSet(6);
+                makeMatchSet(4);
               }
               renderMatch();
-            }, 700);
+            }, 500);
           }
         };
       });
@@ -954,6 +974,8 @@
     function renderPanel() {
       renderTabs();
       updateProgress();
+      // активность кнопки транскрипции: только в тесте
+      document.getElementById('toggleTranscription').style.display = activeTab === 'test' ? 'inline-block' : 'none';
       switch (activeTab) {
         case 'test': renderTest(); break;
         case 'cards': renderCards(); break;
