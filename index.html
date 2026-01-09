@@ -33,7 +33,40 @@
       --accent-3: #3a1f1f;
       --border: #233244;
       --shadow: 0 8px 24px rgba(0,0,0,0.35);
-    }
+   .header {
+  position: relative;
+  text-align: center;
+}
+
+.header-mini {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-counter {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: var(--shadow);
+}
+
+.mini-theme {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
 
     html, body {
       height: 100%;
@@ -43,6 +76,13 @@
       margin: 0;
     }
 
+
+<div class="header">
+  <div class="brand-title">Words Easy</div>
+ <div class="header-mini">
+  <div class="mini-counter" id="miniCounter">— / —</div>
+  <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+</div>
     .app {
       max-width: 1100px;
       margin: 0 auto;
@@ -419,16 +459,14 @@
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
-  function updateProgress() {
-  const totalEl = document.getElementById('totalCount');
-  const remEl = document.getElementById('remainingCount');
-  if (!totalEl || !remEl) return;
-
+function updateProgress() {
   const total = words.length;
   const remaining = words.filter(w => !isLearned(w)).length;
-  totalEl.textContent = total;
-  remEl.textContent = remaining;
+
+  const mini = document.getElementById('miniCounter');
+  if (mini) mini.textContent = `${remaining} / ${total}`;
 }
+
 
 
     function shuffle(arr) {
@@ -480,7 +518,15 @@
     document.getElementById('themeSwitch').onclick = () => {
       settings.theme = settings.theme === 'light' ? 'dark' : 'light';
       saveSettings();
-    };
+  document.getElementById('miniTheme').onclick = () => {
+  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+  saveSettings();
+  document.getElementById('miniTheme').textContent =
+    settings.theme === 'dark' ? '🌙' : '☀️';
+};
+document.getElementById('miniTheme').textContent =
+  settings.theme === 'dark' ? '🌙' : '☀️';
+
 
     document.getElementById('resetAll').onclick = () => {
       if (!confirm('Точно сбросить весь прогресс?')) return;
