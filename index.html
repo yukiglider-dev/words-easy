@@ -1,164 +1,859 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Words Easy</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Words Easy</title>
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text: #1f3042;
+      --muted: #5c6b7a;
+      --primary: #58a6ff;
+      --success: #34c759;
+      --error: #ff3b30;
+      --accent-1: #e6f2ff;
+      --accent-2: #e9ffe6;
+      --accent-3: #ffe9e9;
+      --border: #dde6ef;
+      --card-radius: 14px;
+      --btn-radius: 12px;
+      --shadow: 0 8px 24px rgba(31,48,66,0.08);
+    }
+    [data-theme="dark"] {
+      --bg: #0f1722;
+      --surface: #152233;
+      --text: #eaf1f9;
+      --muted: #b3c0cc;
+      --success: #35d27f;
+      --error: #ff6b5e;
+      --accent-1: #152a40;
+      --accent-2: #163024;
+      --accent-3: #3a1f1f;
+      --border: #233244;
+      --shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
 
-<style>
-/* === ТВОИ СТИЛИ — БЕЗ ИЗМЕНЕНИЙ === */
-:root {
-  --bg:#f9fbfd;--surface:#fff;--text:#1f3042;--muted:#5c6b7a;
-  --primary:#58a6ff;--success:#34c759;--error:#ff3b30;
-  --accent-1:#e6f2ff;--accent-2:#e9ffe6;--accent-3:#ffe9e9;
-  --border:#dde6ef;--shadow:0 8px 24px rgba(31,48,66,.08)
-}
-[data-theme="dark"]{
-  --bg:#0f1722;--surface:#152233;--text:#eaf1f9;--muted:#b3c0cc;
-  --border:#233244;--shadow:0 8px 24px rgba(0,0,0,.35)
-}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui}
-.app{max-width:1100px;margin:0 auto;padding:16px}
-.header{position:relative;text-align:center;margin-bottom:12px}
-.header-mini{position:absolute;top:0;right:0;display:flex;gap:8px}
-.mini-counter,.mini-theme{
-  font-size:12px;background:var(--surface);border:1px solid var(--border);
-  border-radius:999px;padding:4px 8px;box-shadow:var(--shadow)
-}
-.mini-theme{cursor:pointer}
-.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
-.tab-btn{padding:8px 14px;border-radius:12px;border:1px solid var(--border);background:#fff}
-.tab-btn.active{background:var(--primary);color:#fff}
-.panel{background:#fff;border:1px solid var(--border);border-radius:16px;
-box-shadow:var(--shadow);padding:16px;min-height:220px}
-.card{border:1px solid var(--border);border-radius:16px;padding:24px;
-box-shadow:var(--shadow);text-align:center}
-.options{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.option{padding:10px;border-radius:12px;border:1px solid var(--border);cursor:pointer}
-.option.correct{background:var(--accent-2)}
-.option.wrong{background:var(--accent-3)}
-.muted{color:var(--muted)}
-.row{display:flex;gap:12px;justify-content:center;margin-top:12px}
-</style>
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+      margin: 0;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .header {
+      text-align: center; /* название по центру */
+      margin-bottom: 12px;
+    }
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      font-size: 26px;
+    }
+
+    .progress {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 12px 16px;
+      margin: 10px auto;
+      max-width: 900px;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .progress-label { color: var(--muted); font-size: 13px; }
+    .progress-value { font-weight: 700; font-size: 16px; }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    button, .btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: var(--btn-radius);
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.2s ease, border-color 0.2s ease;
+      box-shadow: var(--shadow);
+      font-weight: 600;
+    }
+    button:hover, .btn:hover { transform: translateY(-1px); }
+    button.primary { background: var(--primary); color: #fff; border-color: transparent; }
+    button.success { background: var(--success); color: #fff; border-color: transparent; }
+    button.error { background: var(--error); color: #fff; border-color: transparent; }
+
+    .tabs {
+      display: flex;
+      justify-content: center; /* вкладки по центру */
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      min-height: 220px;
+    }
+
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .muted { color: var(--muted); }
+    .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      min-width: 260px;
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      position: relative;
+      width: 100%;
+    }
+
+    /* Тест: одна колонка — 4 строки */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .option {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--shadow);
+      user-select: none;
+    }
+    .option.correct { background: var(--accent-2); border-color: var(--success); }
+    .option.wrong { background: var(--accent-3); border-color: var(--error); }
+    .option.selected { outline: 2px solid var(--primary); }
+
+    /* Карточки: flip */
+    .flip {
+      perspective: 800px;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .flip-inner {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    .flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      width: 100%;
+      backface-visibility: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      box-shadow: var(--shadow);
+      min-height: 140px;
+      display: grid;
+      place-items: center;
+    }
+    .flip-back { transform: rotateY(180deg); background: var(--accent-1); }
+
+    /* Сопоставление: две колонки списков */
+    .match-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .field { display: flex; gap: 8px; align-items: center; }
+    input[type="text"], select {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 10px; text-align: left; }
+    th.center, td.center { text-align: center; }
+    tr.learned-row { background: rgba(52,199,89,0.10); }
+
+    .pill {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--accent-1);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+    .empty { text-align: center; color: var(--muted); padding: 20px; }
+
+    @media (max-width: 640px) {
+      .match-columns { grid-template-columns: 1fr; }
+      .progress { flex-direction: column; align-items: center; }
+    }
+  </style>
 </head>
-
 <body>
-<div class="app">
-
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Words Easy</h1>
-    <div class="header-mini">
-      <div class="mini-counter" id="miniCounter">— / —</div>
-      <button class="mini-theme" id="miniTheme">🌙</button>
+  <div class="app">
+    <div class="header">
+      <div class="brand-title">Words Easy</div>
+      <div class="progress" id="progressBar">
+        <div class="progress-item">
+          <div class="progress-label">Осталось к изучению</div>
+          <div class="progress-value" id="remainingCount">—</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">Всего слов</div>
+          <div class="progress-value" id="totalCount">—</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="toggleTranscription">Показать транскрипцию</button>
+        <button class="btn" id="themeSwitch">Переключить тему</button>
+        <button class="btn error" id="resetAll">Полный сброс</button>
+      </div>
     </div>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="panel" id="panel"></div>
   </div>
 
-  <!-- TABS + PANEL -->
-  <div class="tabs" id="tabs"></div>
-  <div class="panel" id="panel"></div>
+  <script>
+    // ---------- Data & Storage ----------
+    const STORAGE_KEY = 'words_easy_final_v1';
+    const SETTINGS_KEY = 'words_easy_settings_final_v1';
 
-</div>
+    const initialWords = [
+      { en: 'here', ru: 'здесь', tr: 'хиа' },
+      { en: 'there', ru: 'там', tr: 'зэа' },
+      { en: 'at school', ru: 'в школе', tr: 'эт скул' },
 
-<script>
-/* === ДАННЫЕ (БЕЗ ИЗМЕНЕНИЙ) === */
-const words = [
- {en:'understand',ru:'понимать',tr:'андэстэнд'},
- {en:'describe',ru:'описывать',tr:'дискрайб'},
- {en:'enough',ru:'достаточно',tr:'инаф'},
- {en:'they need',ru:'им нужно',tr:'зэй нид'}
-].map(w=>({...w,streak:0,errors:0}));
+      { en: 'understand', ru: 'понимать', tr: 'андэстэнд' },
+      { en: 'know', ru: 'знать', tr: 'ноу' },
+      { en: 'eat', ru: 'есть', tr: 'ит' },
+      { en: 'drink', ru: 'пить', tr: 'дринк' },
+      { en: 'sleep', ru: 'спать', tr: 'слип' },
+      { en: 'ask', ru: 'спрашивать', tr: 'аск' },
+      { en: 'read', ru: 'читать', tr: 'рид' },
+      { en: 'write', ru: 'писать', tr: 'райт' },
+      { en: 'describe', ru: 'описывать', tr: 'дискрайб' },
+      { en: 'analyse', ru: 'анализировать', tr: 'энэлайз' },
+      { en: 'think', ru: 'думать', tr: 'синк' },
+      { en: 'wait', ru: 'ждать', tr: 'вэйт' },
+      { en: 'buy', ru: 'покупать', tr: 'бай' },
+      { en: 'play', ru: 'играть', tr: 'плей' },
+      { en: 'want', ru: 'хотеть', tr: 'вонт' },
+      { en: 'explain', ru: 'объяснять', tr: 'иксплейн' },
+      { en: 'study', ru: 'учиться', tr: 'стади' },
+      { en: 'work', ru: 'работать', tr: 'вёк' },
+      { en: 'take', ru: 'брать', tr: 'тэйк' },
+      { en: 'arrive', ru: 'прибывать', tr: 'эрайв' },
+      { en: 'interrupt', ru: 'перебивать', tr: 'интерапт' },
 
-/* === ВКЛАДКИ === */
-const tabs=[
- {id:'test',label:'Тест'},
- {id:'cards',label:'Карточки'}
-];
-let activeTab='test';
-const tabsEl=document.getElementById('tabs');
-const panelEl=document.getElementById('panel');
+      { en: 'I need', ru: 'мне нужно', tr: 'ай нид' },
+      { en: 'you need', ru: 'тебе / вам нужно', tr: 'ю нид' },
+      { en: 'we need', ru: 'нам нужно', tr: 'ви нид' },
+      { en: 'they need', ru: 'им нужно', tr: 'зэй нид' },
+      { en: 'he needs', ru: 'ему нужно', tr: 'хи нидз' },
+      { en: 'she needs', ru: 'ей нужно', tr: 'ши нидз' },
 
-function renderTabs(){
- tabsEl.innerHTML=tabs.map(t=>
-  `<button class="tab-btn ${t.id===activeTab?'active':''}" data-tab="${t.id}">${t.label}</button>`
- ).join('');
- tabsEl.querySelectorAll('button').forEach(b=>{
-  b.onclick=()=>{activeTab=b.dataset.tab;renderPanel();}
- });
-}
+      { en: 'I like', ru: 'мне нравится', tr: 'ай лайк' },
+      { en: 'you like', ru: 'тебе / вам нравится', tr: 'ю лайк' },
+      { en: 'we like', ru: 'нам нравится', tr: 'ви лайк' },
+      { en: 'they like', ru: 'им нравится', tr: 'зэй лайк' },
+      { en: 'he likes', ru: 'ему нравится', tr: 'хи лайкс' },
+      { en: 'she likes', ru: 'ей нравится', tr: 'ши лайкс' },
 
-/* === ПРОГРЕСС === */
-function updateProgress(){
- document.getElementById('miniCounter').textContent=`${words.filter(w=>w.streak<3).length} / ${words.length}`;
-}
+      { en: 'use', ru: 'пользоваться', tr: 'юз' },
+      { en: 'collect', ru: 'коллекционировать', tr: 'колэкт' },
+      { en: 'confuse', ru: 'путать', tr: 'конфьюз' },
+      { en: 'apologise', ru: 'извиняться', tr: 'эполоджайз' },
+      { en: 'forgive', ru: 'прощать', tr: 'фогив' },
+      { en: 'forget', ru: 'забывать', tr: 'фогет' },
 
-/* === ТЕСТ === */
-let testIndex=0;
-function renderTest(){
- const w=words[testIndex%words.length];
- const options=[w.ru,...words.filter(x=>x!==w).map(x=>x.ru)].slice(0,4).sort(()=>Math.random()-.5);
+      { en: 'start', ru: 'начинать', tr: 'старт' },
+      { en: 'begin', ru: 'начинать', tr: 'бигин' },
+      { en: 'continue', ru: 'продолжать', tr: 'континью' },
+      { en: 'finish', ru: 'заканчивать', tr: 'финиш' },
 
- panelEl.innerHTML=`
- <div class="card">
-   <div id="testWord" style="font-size:22px;font-weight:700;cursor:pointer">${w.en}</div>
-   <div id="testTr" class="muted" style="display:none;margin-top:6px">/${w.tr}/</div>
- </div>
- <div class="options">
-   ${options.map(o=>`<div class="option" data-v="${o}">${o}</div>`).join('')}
- </div>
- `;
+      { en: 'busy', ru: 'занятый', tr: 'бизи' },
+      { en: 'cosy', ru: 'уютный', tr: 'кози' },
+      { en: 'enough', ru: 'достаточно', tr: 'инаф' },
+      { en: 'rich', ru: 'богатый', tr: 'рич' },
+      { en: 'poor', ru: 'бедный', tr: 'пур' },
+      { en: 'possible', ru: 'возможно', tr: 'поссибл' },
+      { en: 'impossible', ru: 'невозможно', tr: 'импоссибл' },
 
- document.getElementById('testWord').onclick=()=>{
-  const tr=document.getElementById('testTr');
-  tr.style.display=tr.style.display==='none'?'block':'none';
- };
+      { en: 'I’m busy', ru: 'я занят', tr: 'айм бизи' },
+      { en: 'it’s cosy', ru: 'это уютно', tr: 'итс кози' },
+      { en: 'it’s enough', ru: 'этого достаточно', tr: 'итс инаф' },
+      { en: 'he’s rich', ru: 'он богатый', tr: 'хиз рич' },
+      { en: 'she’s poor', ru: 'она бедная', tr: 'шиз пур' },
+      { en: 'it’s possible', ru: 'это возможно', tr: 'итс поссибл' },
+      { en: 'it’s impossible', ru: 'это невозможно', tr: 'итс импоссибл' },
 
- panelEl.querySelectorAll('.option').forEach(o=>{
-  o.onclick=()=>{
-   if(o.dataset.v===w.ru){o.classList.add('correct');w.streak++}
-   else{o.classList.add('wrong');w.errors++;w.streak=0}
-   updateProgress();
-   setTimeout(()=>{testIndex++;renderTest()},600);
-  };
- });
-}
+      { en: 'you’re right', ru: 'ты / вы правы', tr: 'юр райт' },
+      { en: 'we’re right', ru: 'мы правы', tr: 'вир райт' },
+      { en: 'they’re right', ru: 'они правы', tr: 'зэйр райт' },
 
-/* === КАРТОЧКИ (ВОЗВРАЩЕНЫ КАК БЫЛИ) === */
-let cardIndex=0;
-function renderCards(){
- const w=words[cardIndex%words.length];
- panelEl.innerHTML=`
- <div class="card">
-  <div style="font-size:22px;font-weight:700">${w.en}</div>
-  <div class="muted" style="margin-top:8px">${w.ru}</div>
- </div>
- <div class="row">
-  <button id="dontKnow">Не знаю</button>
-  <button id="know">Знаю</button>
- </div>
- `;
- document.getElementById('dontKnow').onclick=()=>{
-  w.errors++;w.streak=0;cardIndex++;updateProgress();renderCards();
- };
- document.getElementById('know').onclick=()=>{
-  w.streak++;cardIndex++;updateProgress();renderCards();
- };
-}
+      { en: 'why', ru: 'почему', tr: 'уай' },
+      { en: 'who', ru: 'кто / кого', tr: 'ху' },
+      { en: 'where', ru: 'где / куда', tr: 'вэа' },
+      { en: 'what', ru: 'что', tr: 'вот' },
+      { en: 'when', ru: 'когда', tr: 'вэн' },
+      { en: 'how often', ru: 'как часто', tr: 'хау офн' },
+      { en: 'how regularly', ru: 'как регулярно', tr: 'хау рэгьюлэли' },
+      { en: 'how many', ru: 'сколько', tr: 'хау мэни' },
+      { en: 'how much', ru: 'сколько', tr: 'хау мач' },
 
-/* === РЕНДЕР === */
-function renderPanel(){
- renderTabs();
- updateProgress();
- if(activeTab==='test')renderTest();
- if(activeTab==='cards')renderCards();
-}
+      { en: 'get to', ru: 'добираться до', tr: 'гет ту' },
+      { en: 'get home', ru: 'добираться домой', tr: 'гет хоум' },
+      { en: 'get there', ru: 'добираться туда', tr: 'гет зэа' },
+      { en: 'get here', ru: 'добираться сюда', tr: 'гет хиа' },
+      { en: 'get back', ru: 'добираться обратно', tr: 'гет бэк' },
 
-document.getElementById('miniTheme').onclick=()=>{
- document.documentElement.dataset.theme=
- document.documentElement.dataset.theme==='light'?'dark':'light';
-};
+      { en: 'expensive', ru: 'дорого', tr: 'экспэнсив' },
+      { en: 'cheap', ru: 'дёшево', tr: 'чип' },
+      { en: 'strong', ru: 'сильный', tr: 'стронг' },
+      { en: 'weak', ru: 'слабый', tr: 'уик' },
+      { en: 'creative', ru: 'творческий', tr: 'криэйтив' },
+      { en: 'hardworking', ru: 'трудолюбивый', tr: 'хардворкинг' },
+      { en: 'patient', ru: 'терпеливый', tr: 'пэйшент' },
+      { en: 'punctual', ru: 'пунктуальный', tr: 'панкчюал' },
+    ].map((w, i) => ({
+      id: i+1,
+      en: w.en,
+      ru: w.ru,
+      tr: w.tr || '',
+      streak: 0,
+      errors: 0,
+      manual: false
+    }));
 
-renderPanel();
-</script>
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          const byKey = new Map(data.map(d => [d.en + '|' + d.ru, d]));
+          return initialWords.map(w => {
+            const k = w.en + '|' + w.ru;
+            return byKey.has(k) ? Object.assign({}, w, byKey.get(k)) : w;
+          });
+        } catch { return initialWords.slice(); }
+      }
+      return initialWords.slice();
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+      updateProgress();
+    }
+
+    function loadSettings() {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (raw) { try { return JSON.parse(raw); } catch { return { showTr: false, theme: 'light' }; } }
+      return { showTr: false, theme: 'light' };
+    }
+
+    function saveSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      document.documentElement.setAttribute('data-theme', settings.theme);
+      updateProgress();
+    }
+
+    let words = loadState();
+    let settings = loadSettings();
+    document.documentElement.setAttribute('data-theme', settings.theme);
+
+    // ---------- Helpers ----------
+    const tabs = [
+      { id: 'test', label: 'Тест' },
+      { id: 'cards', label: 'Карточки' },
+      { id: 'repeat', label: 'Повтор' },
+      { id: 'input', label: 'Ввод' },
+      { id: 'dict', label: 'Словарь' },
+      { id: 'match', label: 'Сопоставление' },
+    ];
+    let activeTab = 'test';
+
+    function isLearned(w) { return w.streak >= 3 || w.manual; }
+    function getUnlearned() { return words.filter(w => !isLearned(w)); }
+
+    function updateProgress() {
+      const total = words.length;
+      const remaining = words.filter(w => !isLearned(w)).length;
+      document.getElementById('totalCount').textContent = total;
+      document.getElementById('remainingCount').textContent = remaining;
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickRandom(arr, n, excludeItem) {
+      const filtered = excludeItem !== undefined ? arr.filter(x => x !== excludeItem) : arr.slice();
+      return shuffle(filtered).slice(0, n);
+    }
+
+    function nextOf(list, indexRef) {
+      if (!list.length) return null;
+      indexRef.value = (indexRef.value + 1) % list.length;
+      return list[indexRef.value];
+    }
+
+    // ---------- UI Mount ----------
+    const tabsEl = document.getElementById('tabs');
+    const panelEl = document.getElementById('panel');
+
+    function renderTabs() {
+      tabsEl.innerHTML = tabs.map(t => `
+        <button class="tab-btn ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">
+          ${t.label}
+        </button>
+      `).join('');
+      tabsEl.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => { activeTab = btn.dataset.tab; renderPanel(); };
+      });
+    }
+
+    // Global controls
+    const trBtn = document.getElementById('toggleTranscription');
+    trBtn.onclick = () => {
+      if (activeTab !== 'test') return; // только в тесте
+      settings.showTr = !settings.showTr;
+      trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
+      saveSettings();
+      renderTest(false); // не менять слово
+    };
+    trBtn.textContent = settings.showTr ? 'Скрыть транскрипцию' : 'Показать транскрипцию';
+
+    document.getElementById('themeSwitch').onclick = () => {
+      settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+      saveSettings();
+    };
+
+    document.getElementById('resetAll').onclick = () => {
+      if (!confirm('Точно сбросить весь прогресс?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      words = loadState();
+      saveState();
+      renderPanel();
+    };
+
+    // ---------- Tab: Test ----------
+    let testIdx = { value: -1 };
+    let currentTestWord = null;
+
+    function renderTest(pickNew = true) {
+      document.getElementById('toggleTranscription').style.display = 'inline-block';
+      const pool = getUnlearned();
+      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
+      if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
+
+      const current = currentTestWord;
+      const correctRu = current.ru;
+      const distractors = pickRandom(words.map(w => w.ru), 3, correctRu);
+      const options = shuffle([correctRu, ...distractors]);
+
+      panelEl.innerHTML = `
+        <div class="card">
+          <div style="font-size:22px; font-weight:700">${current.en}</div>
+          <div class="muted" style="margin-top:8px">${settings.showTr && current.tr ? `/${current.tr}/` : ''}</div>
+        </div>
+        <div class="options">
+          ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
+        </div>
+      `;
+
+      let answered = false;
+      panelEl.querySelectorAll('.option').forEach(opt => {
+        opt.onclick = () => {
+          if (answered) return;
+          answered = true;
+          const val = opt.dataset.val;
+          const isCorrect = val === correctRu;
+          if (isCorrect) {
+            opt.classList.add('correct', 'selected');
+            current.streak = (current.streak || 0) + 1;
+          } else {
+            opt.classList.add('wrong', 'selected');
+            current.errors = (current.errors || 0) + 1;
+            current.streak = 0;
+            panelEl.querySelectorAll('.option').forEach(o => {
+              if (o.dataset.val === correctRu) o.classList.add('correct');
+            });
+          }
+          saveState();
+          setTimeout(() => { currentTestWord = null; renderTest(true); }, 700);
+        };
+      });
+    }
+
+    // ---------- Tab: Cards ----------
+    let cardsIdx = { value: -1 };
+    let flipped = false;
+    function renderCards() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+      const pool = getUnlearned();
+      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`; return; }
+      const current = nextOf(pool, cardsIdx) || pool[0];
+
+      panelEl.innerHTML = `
+        <div class="flip ${flipped ? 'flipped' : ''}" id="flip">
+          <div class="flip-inner">
+            <div class="flip-face">
+              <div style="font-size:22px; font-weight:700">${current.en}</div>
+              <div class="muted" style="margin-top:8px">${settings.showTr && current.tr ? `/${current.tr}/` : ''}</div>
+              <div class="pill" style="margin-top:10px">Кликните для переворота</div>
+            </div>
+            <div class="flip-face flip-back">
+              <div style="font-size:22px; font-weight:700">${current.ru}</div>
+              <div class="row" style="margin-top:16px; justify-content:center">
+                <button class="btn success" id="cardKnow">Знаю</button>
+                <button class="btn" id="cardDontKnow">Не знаю</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      const flipEl = document.getElementById('flip');
+      flipEl.onclick = (e) => {
+        if (e.target.id === 'cardKnow' || e.target.id === 'cardDontKnow') return;
+        flipped = !flipped;
+        flipEl.classList.toggle('flipped', flipped);
+      };
+      document.getElementById('cardKnow').onclick = () => {
+        current.streak += 1;
+        saveState();
+        flipped = false;
+        setTimeout(renderCards, 400);
+      };
+      document.getElementById('cardDontKnow').onclick = () => {
+        current.errors += 1;
+        current.streak = 0;
+        saveState();
+        flipped = false;
+        setTimeout(renderCards, 400);
+      };
+    }
+
+    // ---------- Tab: Repeat ----------
+    let repeatIdx = { value: -1 };
+    function renderRepeat() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+      const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
+      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Пока нет слов для повтора. Ошибок нет — супер!</div>`; return; }
+      const current = nextOf(pool, repeatIdx) || pool[0];
+
+      panelEl.innerHTML = `
+        <div class="card">
+          <div style="font-size:22px; font-weight:700">${current.en}</div>
+          <div class="muted" style="margin-top:8px">${settings.showTr && current.tr ? `/${current.tr}/` : ''}</div>
+          <div class="row" style="margin-top:16px; justify-content:center">
+            <button class="btn success" id="repKnow">Знаю</button>
+            <button class="btn" id="repDontKnow">Не знаю</button>
+          </div>
+          <div class="muted" style="margin-top:12px">Ошибок: ${current.errors}, Серия: ${current.streak}</div>
+        </div>
+      `;
+      document.getElementById('repKnow').onclick = () => {
+        current.errors = Math.max(0, current.errors - 1);
+        current.streak += 1;
+        saveState();
+        setTimeout(renderRepeat, 400);
+      };
+      document.getElementById('repDontKnow').onclick = () => {
+        current.errors += 1;
+        current.streak = 0;
+        saveState();
+        setTimeout(renderRepeat, 400);
+      };
+    }
+
+    // ---------- Tab: Input ----------
+    let inputIdx = { value: -1 };
+    function renderInput() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+      const pool = getUnlearned();
+      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`; return; }
+      const current = nextOf(pool, inputIdx) || pool[0];
+
+      panelEl.innerHTML = `
+        <div class="card" style="max-width:680px; margin:0 auto">
+          <div class="muted">Перевод:</div>
+          <div style="font-size:22px; font-weight:700">${current.ru}</div>
+          <div class="muted" style="margin-top:8px">${settings.showTr && current.tr ? `/${current.tr}/` : ''}</div>
+        </div>
+        <div class="field" style="max-width:680px; margin:12px auto 0">
+          <input type="text" id="inputAnswer" placeholder="Введите английское слово..." autocomplete="off" />
+          <button class="btn primary" id="inputCheck">Проверить</button>
+        </div>
+        <div id="inputFeedback" class="muted" style="max-width:680px; margin:10px auto 0; text-align:center"></div>
+      `;
+      const inEl = document.getElementById('inputAnswer');
+      const fbEl = document.getElementById('inputFeedback');
+      inEl.focus();
+
+      function check() {
+        const val = (inEl.value || '').trim();
+        const target = current.en.trim();
+        const ok = val.toLowerCase() === target.toLowerCase();
+        if (ok) {
+          fbEl.innerHTML = `<span style="color: var(--success)">Верно!</span>`;
+          current.streak += 1;
+        } else {
+          fbEl.innerHTML = `<span style="color: var(--error)">Неверно. Правильно: ${current.en}</span>`;
+          current.errors += 1;
+          current.streak = 0;
+        }
+        saveState();
+        setTimeout(renderInput, 700);
+      }
+
+      document.getElementById('inputCheck').onclick = check;
+      inEl.onkeydown = (e) => { if (e.key === 'Enter') check(); };
+    }
+
+    // ---------- Tab: Dictionary ----------
+    let dictFilter = 'all';
+    let dictQuery = '';
+    function renderDict() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+
+      const header = `
+        <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+          <div class="field" style="flex:2; min-width:240px">
+            <input type="text" id="dictSearch" placeholder="Поиск по слову, переводу или транскрипции..." value="${dictQuery}">
+          </div>
+          <div class="field" style="flex:1; min-width:200px">
+            <select id="dictFilter">
+              <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
+              <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
+              <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
+            </select>
+          </div>
+          <div class="field">
+            <button class="btn success" id="markAll">Отметить всё выученным</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+      `;
+
+      let list = words.slice();
+      if (dictQuery.trim()) {
+        const q = dictQuery.toLowerCase();
+        list = list.filter(w =>
+          w.en.toLowerCase().includes(q) ||
+          w.ru.toLowerCase().includes(q) ||
+          (w.tr || '').toLowerCase().includes(q)
+        );
+      }
+      if (dictFilter === 'learned') list = list.filter(isLearned);
+      if (dictFilter === 'unlearned') list = list.filter(w => !isLearned(w));
+
+      const rows = list.map((w, idx) => `
+        <tr class="${isLearned(w)?'learned-row':''}">
+          <td class="center">${idx+1}</td>
+          <td>${w.en}</td>
+          <td>${w.ru}</td>
+          <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+          <td class="center" style="width:100px">${w.streak}</td>
+          <td class="center" style="width:100px">${w.errors}</td>
+          <td class="center" style="width:100px">
+            <input type="checkbox" ${w.manual?'checked':''} data-id="${w.id}" class="dictManual">
+          </td>
+        </tr>
+      `).join('');
+
+      panelEl.innerHTML = header + `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center" style="width:70px">№</th>
+                <th>Английское</th>
+                <th>Перевод</th>
+                <th class="center" style="width:160px">Транскрипция</th>
+                <th class="center" style="width:120px">Правильно подряд</th>
+                <th class="center" style="width:120px">Ошибки</th>
+                <th class="center" style="width:140px">Выучено</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows || `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      document.getElementById('dictSearch').oninput = (e) => { dictQuery = e.target.value; renderDict(); };
+      document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
+      panelEl.querySelectorAll('.dictManual').forEach(ch => {
+        ch.onchange = () => {
+          const id = Number(ch.dataset.id);
+          const w = words.find(x => x.id === id);
+          w.manual = ch.checked;
+          saveState();
+          renderDict();
+        };
+      });
+      document.getElementById('markAll').onclick = () => {
+        words.forEach(w => { w.manual = true; });
+        saveState();
+        renderDict();
+      };
+    }
+
+    // ---------- Tab: Match ----------
+    let matchSet = [];
+    let matchPicked = null;
+
+    function makeMatchSet(size = 4) {
+      const pool = getUnlearned();
+      const base = (pool.length ? pool : words);
+      const chosen = pickRandom(base, Math.min(size, base.length));
+      matchSet = chosen.map(w => ({ id: w.id, en: w.en, ru: w.ru }));
+    }
+
+    function renderMatch() {
+      document.getElementById('toggleTranscription').style.display = 'none';
+
+      if (!matchSet.length) makeMatchSet(4);
+      if (!matchSet.length) { panelEl.innerHTML = `<div class="empty">Слова недоступны для сопоставления.</div>`; return; }
+
+      const ens = shuffle(matchSet.map(m => ({ type: 'en', id: m.id, text: m.en })));
+      const rus = shuffle(matchSet.map(m => ({ type: 'ru', id: m.id, text: m.ru })));
+
+      panelEl.innerHTML = `
+        <div class="match-columns">
+          <div>
+            <div class="muted" style="margin-bottom:8px; text-align:center">Английские</div>
+            <div class="grid" id="matchEn">
+              ${ens.map(e => `<div class="option" data-id="${e.id}" data-type="en">${e.text}</div>`).join('')}
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="margin-bottom:8px; text-align:center">Русские</div>
+            <div class="grid" id="matchRu">
+              ${rus.map(r => `<div class="option" data-id="${r.id}" data-type="ru">${r.text}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const all = panelEl.querySelectorAll('.option');
+      all.forEach(el => {
+        el.onclick = () => {
+          const id = Number(el.dataset.id);
+          const type = el.dataset.type;
+          if (!matchPicked) {
+            if (type !== 'en') return; // сначала выбираем английское слово
+            matchPicked = id;
+            el.classList.add('selected');
+          } else {
+            if (type !== 'ru') return;
+            const pairId = id;
+            const correct = pairId === matchPicked;
+            const enEl = panelEl.querySelector(`.option[data-type="en"][data-id="${matchPicked}"]`);
+            const ruEl = el;
+            if (correct) {
+              enEl.classList.add('correct');
+              ruEl.classList.add('correct');
+              const w = words.find(x => x.id === matchPicked);
+              if (w) w.streak += 1;
+              // удалить пару сразу
+              matchSet = matchSet.filter(m => m.id !== matchPicked);
+              saveState();
+            } else {
+              enEl.classList.add('wrong');
+              ruEl.classList.add('wrong');
+              const w = words.find(x => x.id === matchPicked);
+              if (w) { w.errors += 1; w.streak = 0; }
+              saveState();
+            }
+            matchPicked = null;
+            setTimeout(() => {
+              if (!matchSet.length) { makeMatchSet(4); }
+              renderMatch();
+            }, 500);
+          }
+        };
+      });
+    }
+
+    // ---------- Mount ----------
+    function renderPanel() {
+      renderTabs();
+      updateProgress();
+      document.getElementById('toggleTranscription').style.display = activeTab === 'test' ? 'inline-block' : 'none';
+      switch (activeTab) {
+        case 'test': renderTest(); break;
+        case 'cards': renderCards(); break;
+        case 'repeat': renderRepeat(); break;
+        case 'input': renderInput(); break;
+        case 'dict': renderDict(); break;
+        case 'match': renderMatch(); break;
+      }
+    }
+
+    renderTabs();
+    renderPanel();
+  </script>
 </body>
 </html>
