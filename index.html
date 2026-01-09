@@ -581,37 +581,36 @@ document.getElementById('miniTheme').textContent =
     let cardsIdx = { value: -1 };
     let flipped = false;
     function renderCards() {
-const trBtn2 = document.getElementById('toggleTranscription');
-if (trBtn2) {
-  trBtn2.style.display = activeTab === 'test' ? 'inline-block' : 'none';
+  if (!words.length) {
+    panelEl.innerHTML = '<div class="muted">Нет слов</div>';
+    return;
+  }
+
+  const current = words[cardIndex];
+
+  panelEl.innerHTML = `
+    <div class="card">
+      <div class="word">${current.en}</div>
+      <div class="muted">${current.ru}</div>
+    </div>
+
+    <div class="actions">
+      <button id="dontKnow">Не знаю</button>
+      <button id="know">Знаю</button>
+    </div>
+  `;
+
+  document.getElementById('dontKnow').onclick = () => {
+    cardIndex = (cardIndex + 1) % words.length;
+    renderCards();
+  };
+
+  document.getElementById('know').onclick = () => {
+    learned++;
+    cardIndex = (cardIndex + 1) % words.length;
+    renderCards();
+  };
 }
-      const pool = getUnlearned();
-      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`; return; }
-      const current = nextOf(pool, cardsIdx) || pool[0];
-
-     panelEl.innerHTML = `
-  <div class="card">
-    <div
-      id="testWord"
-      style="font-size:22px; font-weight:700; cursor:pointer"
-      title="Нажмите, чтобы показать транскрипцию"
-    >
-      ${current.en}
-    </div>
-
-    <div
-      id="testTr"
-      class="muted"
-      style="margin-top:8px; display:none"
-    >
-      ${current.tr ? `/${current.tr}/` : ''}
-    </div>
-  </div>
-
-  <div class="options">
-    ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
-  </div>
-`;
 
 
       const flipEl = document.getElementById('flip');
