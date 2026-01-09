@@ -493,14 +493,14 @@
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
-    function updateProgress() {
-      const total = words.length;
-      const remaining = words.filter(w => !isLearned(w)).length;
-      document.getElementById('totalCount').textContent = total;
-      document.getElementById('remainingCount').textContent = remaining;
+ function updateProgress() {
+  const total = words.length;
+  const remaining = words.filter(w => !isLearned(w)).length;
+
   const mini = document.getElementById('miniCounter');
   if (mini) mini.textContent = `${total - remaining} / ${total}`;
 }
+
     function shuffle(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -915,7 +915,6 @@ document.getElementById('resetAll').onclick = () => {
 
     // ---------- Mount ----------
     function renderPanel() {
-      renderTabs();
       updateProgress();
       switch (activeTab) {
         case 'test': renderTest(); break;
