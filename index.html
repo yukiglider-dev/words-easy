@@ -498,6 +498,65 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
       updateProgress();
     }
+// ===============================
+// 🔹 IMPORT / EXPORT (ВНЕДРЕНО)
+// ===============================
+
+// EXPORT
+function exportWords() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    words: words
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: 'application/json' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'words-easy-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// IMPORT
+function importWords(file) {
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+
+      if (!data.words || !Array.isArray(data.words)) {
+        alert('Неверный файл');
+        return;
+      }
+
+      // аккуратный merge по en|ru
+      const map = new Map(
+        data.words.map(w => [w.en + '|' + w.ru, w])
+      );
+
+      words = words.map(w => {
+        const key = w.en + '|' + w.ru;
+        return map.has(key)
+          ? { ...w, ...map.get(key) }
+          : w;
+      });
+
+      saveState();
+      alert('Импорт завершён ✅');
+    } catch {
+      alert('Ошибка чтения файла');
+    }
+  };
+
+  reader.readAsText(file);
+}
 
     function loadSettings() {
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -878,6 +937,16 @@ if (!pool.length) {
   </div>
   <div class="divider"></div>
 `;
+document.getElementById('exportWords').onclick = exportWords;
+
+document.getElementById('importWords').onclick = () => {
+  document.getElementById('importFile').click();
+};
+
+document.getElementById('importFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) importWords(file);
+};
 
 
       let list = words.slice();
