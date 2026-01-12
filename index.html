@@ -9,7 +9,6 @@
   --bg: #f5f7fb;
   --surface: #ffffff;
   --card: #ffffff;
-
   --text: #0b1220;
   --muted: #5f6b7a;
 
@@ -1005,13 +1004,6 @@ list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
           </td>
         </tr>
       `).join('');
-if (keepFocus) {
-  const input = document.getElementById('dictSearch');
-  if (input) {
-    const pos = input.value.length;
-    input.focus();
-    input.setSelectionRange(pos, pos);
-  }
 }
 
       panelEl.innerHTML = header + `
@@ -1044,43 +1036,42 @@ if (searchInput) {
 const searchInput = document.getElementById('dictSearch');
 const filterSelect = document.getElementById('dictFilter');
 
-searchInput.addEventListener('input', () => {
+searchInput.oninput = () => {
   dictQuery = searchInput.value;
-  updateDictTable();
-});
+  renderDict();
+};
 
-filterSelect.addEventListener('change', () => {
+filterSelect.onchange = () => {
   dictFilter = filterSelect.value;
-  updateDictTable();
-});
-
-const filterSelect = document.getElementById('dictFilter');
-if (filterSelect) {
-  filterSelect.onchange = (e) => {
-    dictFilter = e.target.value;
-    renderDict();
-  };
-}
+  renderDict();
+};
 
 document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
-
   words.forEach(w => {
     w.streak = 0;
     w.errors = 0;
     w.manual = false;
   });
-const searchInput = document.getElementById('dictSearch');
-if (searchInput) {
-  searchInput.oninput = () => {
-    dictQuery = searchInput.value;
-    renderDict(true);
-  };
-}
-
   saveState();
   renderDict();
 };
+
+document.getElementById('markAll').onclick = () => {
+  words.forEach(w => w.manual = true);
+  saveState();
+  renderDict();
+};
+
+panelEl.querySelectorAll('.dictManual').forEach(ch => {
+  ch.onchange = () => {
+    const w = words.find(x => x.id === Number(ch.dataset.id));
+    if (w) w.manual = ch.checked;
+    saveState();
+    renderDict();
+  };
+});
+
 
 document.getElementById('dictFilter').onchange = (e) => {
   dictFilter = e.target.value;
