@@ -1774,76 +1774,120 @@ function renderIrregulars() {
   });
 }
 function renderIrAssembly() {
-  const panelEl = document.getElementById('panel');
-
-  // берём только невыученные
   const pool = irregulars.filter(v => !v.learned);
 
   if (!pool.length) {
     panelEl.innerHTML = `
-      <div class="center muted">
-        🎉 Все неправильные глаголы выучены!
+      <div class="card center">
+        <h3>🎉 Все неправильные глаголы выучены!</h3>
       </div>
     `;
     return;
   }
 
-  // случайный глагол
-  const verb = pool[Math.floor(Math.random() * pool.length)];
+  // 🎯 случайный глагол
+  const current = pool[Math.floor(Math.random() * pool.length)];
+
+  // 🧠 генерация вариантов
+  function getOptions(correct, field) {
+    const others = irregulars
+      .filter(v => v !== current)
+      .map(v => v[field])
+      .filter(v => v && v !== correct);
+
+    const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
+    return [...shuffled, correct].sort(() => Math.random() - 0.5);
+  }
+
+  const pastOptions = getOptions(current.past, 'past');
+  const ppOptions = getOptions(current.pp, 'pp');
 
   panelEl.innerHTML = `
-    <div class="card center">
-      <h2 style="font-size:32px">${verb.base}</h2>
-      <div class="muted">${verb.ru}</div>
-
-      <div class="field" style="margin-top:20px">
-        <input id="irPast" placeholder="Past (V2)">
+    <div class="card">
+      <div class="center" style="font-size:24px; font-weight:700">
+        ${current.base}
       </div>
 
-      <div class="field">
-        <input id="irPP" placeholder="Past Participle (V3)">
+      <div class="center muted" style="margin-top:6px">
+        ${current.ru}
       </div>
 
-      <button class="btn primary" id="checkIrAssembly">
-        Проверить
-      </button>
+      <div class="divider"></div>
 
-      <div id="irResult" class="muted" style="margin-top:12px"></div>
+      <div>
+        <div class="muted">Past Simple</div>
+        <div class="options">
+          ${pastOptions.map(v =>
+            `<button class="option" data-type="past" data-val="${v}">${v}</button>`
+          ).join('')}
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="muted">Past Participle</div>
+        <div class="options">
+          ${ppOptions.map(v =>
+            `<button class="option" data-type="pp" data-val="${v}">${v}</button>`
+          ).join('')}
+        </div>
+      </div>
+
+      <div class="center" style="margin-top:16px">
+        <button class="btn primary" id="checkIrAssembly">Проверить</button>
+      </div>
+
+      <div id="assemblyResult" class="center muted" style="margin-top:10px"></div>
     </div>
   `;
 
+  let selected = { past: null, pp: null };
+
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.onclick = () => {
+      const type = btn.dataset.type;
+      selected[type] = btn.dataset.val;
+
+      document.querySelectorAll(`.option[data-type="${type}"]`)
+        .forEach(b => b.classList.remove('active'));
+
+      btn.classList.add('active');
+    };
+  });
+
   document.getElementById('checkIrAssembly').onclick = () => {
-    const past = document.getElementById('irPast').value.trim().toLowerCase();
-    const pp = document.getElementById('irPP').value.trim().toLowerCase();
+    if (!selected.past || !selected.pp) {
+      alert('Выбери оба варианта');
+      return;
+    }
 
-    const okPast = verb.past.toLowerCase();
-    const okPP = verb.pp.toLowerCase();
+    const ok =
+      selected.past === current.past &&
+      selected.pp === current.pp;
 
-    if (past === okPast && pp === okPP) {
-      verb.streak = (verb.streak || 0) + 1;
+    const resultEl = document.getElementById('assemblyResult');
 
-      if (verb.streak >= 3) {
-        verb.learned = true;
+    if (ok) {
+      current.streak = (current.streak || 0) + 1;
+
+      resultEl.innerHTML = `✅ Верно! Серия: ${current.streak}`;
+
+      if (current.streak >= 3) {
+        current.learned = true;
+        resultEl.innerHTML = `🎉 Выучено!`;
       }
-
-      document.getElementById('irResult').innerHTML = `
-        ✅ Правильно (${verb.streak}/3)
-      `;
     } else {
-      verb.errors = (verb.errors || 0) + 1;
-      verb.streak = 0;
+      current.errors = (current.errors || 0) + 1;
+      current.streak = 0;
 
-      document.getElementById('irResult').innerHTML = `
+      resultEl.innerHTML = `
         ❌ Ошибка<br>
-        Past: <b>${verb.past}</b><br>
-        PP: <b>${verb.pp}</b>
+        Past: <b>${current.past}</b><br>
+        PP: <b>${current.pp}</b>
       `;
     }
 
     saveIrregulars();
-    updateProgress();
-
-    setTimeout(renderIrAssembly, 1000);
+    setTimeout(renderIrAssembly, 1200);
   };
 }
 
