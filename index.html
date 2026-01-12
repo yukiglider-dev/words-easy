@@ -1707,10 +1707,10 @@ function bindIrregularActions() {
 }
 function renderIrregulars() {
   const panel = document.getElementById('panel');
-
-  window.irQuery = window.irQuery ?? '';
+ window.irQuery = window.irQuery ?? '';
   window.irFilter = window.irFilter ?? 'all';
 
+  // ===== РАЗМЕТКА (ОДИН РАЗ) =====
   panel.innerHTML = `
     <div class="row" style="gap:12px; flex-wrap:wrap; align-items:center">
 
@@ -1728,6 +1728,7 @@ function renderIrregulars() {
         <option value="unlearned">Невыученные</option>
       </select>
 
+      <button class="btn primary" id="addIrregular">+ Add</button>
       <button class="btn success" id="markAllIrregulars">Отметить всё</button>
       <button class="btn error" id="resetIrregulars">Сброс</button>
     </div>
@@ -1746,6 +1747,7 @@ function renderIrregulars() {
             <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
+            <th class="center">Удалить</th>
           </tr>
         </thead>
         <tbody id="irTbody"></tbody>
@@ -1754,6 +1756,14 @@ function renderIrregulars() {
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
+function normalizeIrregulars() {
+  irregulars.forEach(v => {
+    if (v.streak >= 3) v.learned = true;
+  });
+  saveIrregulars();
+}
+
+  
 
   function updateTable() {
     let list = irregulars.slice();
