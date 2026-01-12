@@ -22,21 +22,9 @@
 
   --card-radius: 18px;
   --btn-radius: 14px;
-}
-
-
-  /* 🔴 ВАЖНО: радиусы */
-  --card-radius: 18px;
-  --btn-radius: 14px;
   --input-radius: 14px;
-
-  --shadow: 0 10px 30px rgba(31,48,66,0.12);
 }
 
-
-  --border: rgba(255,255,255,0.08);
-  --shadow: 0 20px 60px rgba(0,0,0,0.45);
-}
 
 [data-theme="dark"] {
   --bg: radial-gradient(
@@ -47,6 +35,8 @@
   );
 
   --surface: #152233;
+  --card: #14243c;
+
   --text: #eaf1f9;
   --muted: #b3c0cc;
 
@@ -61,6 +51,7 @@
   --border: #233244;
   --shadow: 0 12px 36px rgba(0,0,0,0.45);
 }
+
 
 
 html, body {
@@ -135,11 +126,12 @@ html, body {
     button.success { background: var(--success); color: #fff; border-color: transparent; }
     button.error { background: var(--error); color: #fff; border-color: transparent; }
 .container {
-  background: linear-gradient(180deg, #0f1b2d, #0b1220);
-  border-radius: 18px;
+  background: var(--surface);
+  border-radius: var(--card-radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
 }
+
 
     .tabs {
       display: flex;
