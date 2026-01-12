@@ -1116,18 +1116,19 @@ panelEl.innerHTML = `
 
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th class="center">№</th>
-            <th>Английское</th>
-            <th>Перевод</th>
-            <th class="center">Транскрипция</th>
-            <th class="center">Серия</th>
-            <th class="center">Ошибки</th>
-            <th class="center">Выучено</th>
-            <th class="center">Удалить</th>
-          </tr>
-        </thead>
+<thead>
+  <tr>
+    <th>№</th>
+    <th>Английское</th>
+    <th>Перевод</th>
+    <th>Транскрипция</th>
+    <th>Серия</th>
+    <th>Ошибки</th>
+    <th>Выучено</th>
+    <th>Удалить</th>
+  </tr>
+</thead>
+
         <tbody id="dict-body"></tbody>
       </table>
     </div>
@@ -1139,44 +1140,29 @@ panelEl.innerHTML = `
 
 function renderDict() {
   const tbody = document.getElementById("dict-body");
-  tbody.innerHTML = "";
+tbody.innerHTML = "";
 
-  const search = document.getElementById("dict-search").value.toLowerCase();
-  const filter = document.getElementById("dict-filter").value;
+list.forEach((w, i) => {
+  const tr = document.createElement("tr");
 
-  const filtered = words.filter(w => {
-    const text =
-      w.en.toLowerCase().includes(search) ||
-      w.ru.toLowerCase().includes(search);
+  tr.innerHTML = `
+    <td>${i + 1}</td>
+    <td>${w.en}</td>
+    <td>${w.ru}</td>
+    <td>${w.transcription || ""}</td>
+    <td class="center">${w.streak || 0}</td>
+    <td class="center">${w.errors || 0}</td>
+    <td class="center">
+      <input type="checkbox" ${w.learned ? "checked" : ""}>
+    </td>
+    <td class="center">
+      <button class="btn danger">✕</button>
+    </td>
+  `;
 
-    if (filter === "learned") return text && w.learned;
-    if (filter === "not_learned") return text && !w.learned;
-    return text;
-  });
+  tbody.appendChild(tr);
+});
 
-  filtered.forEach((w, i) => {
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${w.en}</td>
-      <td>${w.ru}</td>
-      <td>${w.tr || ""}</td>
-      <td>${w.streak || 0}</td>
-      <td>${w.errors || 0}</td>
-      <td>
-        <input type="checkbox"
-          ${w.learned ? "checked" : ""}
-          onchange="toggleLearned(${w.id})">
-      </td>
-      <td>
-        <button class="delete-btn" onclick="deleteWord(${w.id})">✖</button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
 
 function bindDictActions() {
   // чекбоксы "выучено"
