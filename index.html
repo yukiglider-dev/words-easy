@@ -50,7 +50,7 @@
     }
 
     .header {
-      text-align: center;
+      text-align: center; /* название по центру */
       margin-bottom: 12px;
     }
     .brand-title {
@@ -104,22 +104,13 @@
     button.success { background: var(--success); color: #fff; border-color: transparent; }
     button.error { background: var(--error); color: #fff; border-color: transparent; }
 
-    .tabs-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 12px 0;
-    }
-
     .tabs {
-      flex: 1;
       display: flex;
-      justify-content: center;
+      justify-content: center; /* вкладки по центру */
       gap: 8px;
       flex-wrap: wrap;
+      margin: 12px 0;
     }
-    
     .tab-btn {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -144,44 +135,31 @@
     .muted { color: var(--muted); }
     .divider { height: 1px; background: var(--border); margin: 12px 0; }
 
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      min-width: 260px;
-      min-height: 120px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      position: relative;
-      width: 100%;
-      box-sizing: border-box;
-    }
+   .card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  min-width: 260px;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-    .card .empty {
-      align-content: center;
-    }
+.card .empty {
+  align-content: center;
+}
 
-    .test-transcription {
-      margin-top: 6px;
-      margin-bottom: 10px;
-      font-size: 18px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
+   .test-transcription {
+  margin-top: 6px; /* было 10 — уменьшили */
+}
 
-    .test-transcription.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
 
-    .test-word {
-      cursor: pointer;
-      padding: 40px 0px 20px 0px;
-    }
-
+    /* Тест: одна колонка — 4 строки */
     .options {
       display: flex;
       flex-direction: column;
@@ -202,6 +180,7 @@
     .option.wrong { background: var(--accent-3); border-color: var(--error); }
     .option.selected { outline: 2px solid var(--primary); }
 
+    /* Карточки: flip */
     .flip {
       perspective: 800px;
       width: 100%;
@@ -228,6 +207,7 @@
     }
     .flip-back { transform: rotateY(180deg); background: var(--accent-1); }
 
+    /* Сопоставление: две колонки списков */
     .match-columns {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -240,7 +220,7 @@
     }
 
     .field { display: flex; gap: 8px; align-items: center; }
-    input[type="text"], select, textarea {
+    input[type="text"], select {
       background: var(--surface);
       color: var(--text);
       border: 1px solid var(--border);
@@ -248,12 +228,6 @@
       padding: 10px 12px;
       box-shadow: var(--shadow);
       width: 100%;
-    }
-    
-    textarea {
-      font-family: inherit;
-      resize: vertical;
-      min-height: 100px;
     }
 
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
@@ -272,202 +246,124 @@
     }
     .empty { text-align: center; color: var(--muted); padding: 20px; }
     
-    .mini-ui.inline {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .mini-counter {
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .mini-theme {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      line-height: 1;
-      box-shadow: var(--shadow);
-    }
-
-    .tabs {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    
-    .tab-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: transparent;
-    }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--card-radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      min-height: 220px;
-    }
-
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .muted { color: var(--muted); }
-    .divider { height: 1px; background: var(--border); margin: 12px 0; }
-
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      min-width: 260px;
-      min-height: 120px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      position: relative;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .card .empty {
-      align-content: center;
-    }
-
-    .test-transcription {
-      margin-top: 6px;
-      margin-bottom: 10px;
-      font-size: 18px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .test-transcription.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .test-word {
-      cursor: pointer;
-      padding: 40px 0px 20px 0px;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .option {
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      cursor: pointer;
-      text-align: center;
-      box-shadow: var(--shadow);
-      user-select: none;
-    }
-    .option.correct { background: var(--accent-2); border-color: var(--success); }
-    .option.wrong { background: var(--accent-3); border-color: var(--error); }
-    .option.selected { outline: 2px solid var(--primary); }
-    
-    .import-section {
-      background: var(--accent-1);
-      border: 1px solid var(--border);
-      border-radius: var(--card-radius);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    
-    .import-section h3 {
-      margin: 0 0 12px 0;
-      font-size: 18px;
-    }
-    
-    .import-section p {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0 0 12px 0;
-    }
-    
-    .file-input-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-    
-    input[type="file"] {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .file-input-label {
-      display: inline-block;
-      padding: 10px 14px;
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: var(--btn-radius);
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      transition: transform 0.05s ease;
-    }
-    
-    .file-input-label:hover {
-      transform: translateY(-1px);
-    }
-    
     @media (max-width: 640px) {
       .match-columns { grid-template-columns: 1fr; }
       .progress { flex-direction: column; align-items: center; }
-      .tabs-bar {
-        flex-direction: column;
-        align-items: center;
-      }
     }
+    /* ===== MINI UI ===== */
+
+
+.mini-counter {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.mini-theme {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+.mini-theme {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.test-transcription {
+  margin-bottom: 10px;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.test-transcription.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.test-word {
+  cursor: pointer;
+  padding: 40px 0px 20px 0px;
+}
+
+.card {
+  box-sizing: border-box;
+}
+.tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+/* вкладки по центру */
+.tabs {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* mini ui теперь не fixed */
+
+@media (max-width: 640px) {
+  .tabs-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.mini-ui.inline {
+  display: flex;
+  flex-direction: row;      /* ВАЖНО */
+  align-items: center;      /* выравнивание по вертикали */
+  gap: 8px;
+}
+
   </style>
 </head>
 <body>
+
+
   <div class="app">
     <div class="header">
       <div class="brand-title">Words Easy</div>
     </div>
 
-    <div class="tabs-bar">
-      <div class="tabs" id="tabs"></div>
+<div class="tabs-bar">
+  <div class="tabs" id="tabs"></div>
 
-      <div class="mini-ui inline">
-        <div class="mini-counter" id="miniCounter">— / —</div>
-        <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
-      </div>
-    </div>
+  <div class="mini-ui inline">
+    <div class="mini-counter" id="miniCounter">— / —</div>
+    <button class="mini-theme" id="miniTheme" title="Сменить тему">🌙</button>
+  </div>
+</div>
     <div class="panel" id="panel"></div>
   </div>
 
@@ -490,7 +386,7 @@
       { en: 'read', ru: 'читать', tr: 'рид' },
       { en: 'write', ru: 'писать', tr: 'райт' },
       { en: 'describe', ru: 'описывать', tr: 'дискрайб' },
-      { en: 'analyse', ru: 'анализировать', tr: 'эналайз' },
+      { en: 'analyse', ru: 'анализировать', tr: 'энэлайз' },
       { en: 'think', ru: 'думать', tr: 'синк' },
       { en: 'wait', ru: 'ждать', tr: 'вэйт' },
       { en: 'buy', ru: 'покупать', tr: 'бай' },
@@ -520,7 +416,7 @@
       { en: 'use', ru: 'пользоваться', tr: 'юз' },
       { en: 'collect', ru: 'коллекционировать', tr: 'колэкт' },
       { en: 'confuse', ru: 'путать', tr: 'конфьюз' },
-      { en: 'apologise', ru: 'извиняться', tr: 'аполоджайз' },
+      { en: 'apologise', ru: 'извиняться', tr: 'эполоджайз' },
       { en: 'forgive', ru: 'прощать', tr: 'фогив' },
       { en: 'forget', ru: 'забывать', tr: 'фогет' },
 
@@ -537,17 +433,17 @@
       { en: 'possible', ru: 'возможно', tr: 'поссибл' },
       { en: 'impossible', ru: 'невозможно', tr: 'импоссибл' },
 
-      { en: 'I'm busy', ru: 'я занят', tr: 'айм бизи' },
-      { en: 'it's cosy', ru: 'это уютно', tr: 'итс кози' },
-      { en: 'it's enough', ru: 'этого достаточно', tr: 'итс инаф' },
-      { en: 'he's rich', ru: 'он богатый', tr: 'хиз рич' },
-      { en: 'she's poor', ru: 'она бедная', tr: 'шиз пур' },
-      { en: 'it's possible', ru: 'это возможно', tr: 'итс поссибл' },
-      { en: 'it's impossible', ru: 'это невозможно', tr: 'итс импоссибл' },
+      { en: 'I’m busy', ru: 'я занят', tr: 'айм бизи' },
+      { en: 'it’s cosy', ru: 'это уютно', tr: 'итс кози' },
+      { en: 'it’s enough', ru: 'этого достаточно', tr: 'итс инаф' },
+      { en: 'he’s rich', ru: 'он богатый', tr: 'хиз рич' },
+      { en: 'she’s poor', ru: 'она бедная', tr: 'шиз пур' },
+      { en: 'it’s possible', ru: 'это возможно', tr: 'итс поссибл' },
+      { en: 'it’s impossible', ru: 'это невозможно', tr: 'итс импоссибл' },
 
-      { en: 'you're right', ru: 'ты / вы правы', tr: 'юр райт' },
-      { en: 'we're right', ru: 'мы правы', tr: 'вир райт' },
-      { en: 'they're right', ru: 'они правы', tr: 'зэйр райт' },
+      { en: 'you’re right', ru: 'ты / вы правы', tr: 'юр райт' },
+      { en: 'we’re right', ru: 'мы правы', tr: 'вир райт' },
+      { en: 'they’re right', ru: 'они правы', tr: 'зэйр райт' },
 
       { en: 'why', ru: 'почему', tr: 'уай' },
       { en: 'who', ru: 'кто / кого', tr: 'ху' },
@@ -565,7 +461,7 @@
       { en: 'get here', ru: 'добираться сюда', tr: 'гет хиа' },
       { en: 'get back', ru: 'добираться обратно', tr: 'гет бэк' },
 
-      { en: 'expensive', ru: 'дорого', tr: 'экспенсив' },
+      { en: 'expensive', ru: 'дорого', tr: 'экспэнсив' },
       { en: 'cheap', ru: 'дёшево', tr: 'чип' },
       { en: 'strong', ru: 'сильный', tr: 'стронг' },
       { en: 'weak', ru: 'слабый', tr: 'уик' },
@@ -619,19 +515,19 @@
     let settings = loadSettings();
     document.documentElement.setAttribute('data-theme', settings.theme);
 
-    // ---------- Helpers ----------
+    // ---------- Helpers ----------я
     let activeTab = 'test';
 
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
-    function updateProgress() {
-      const total = words.length;
-      const remaining = words.filter(w => !isLearned(w)).length;
+ function updateProgress() {
+  const total = words.length;
+  const remaining = words.filter(w => !isLearned(w)).length;
 
-      const mini = document.getElementById('miniCounter');
-      if (mini) mini.textContent = `${total - remaining} / ${total}`;
-    }
+  const mini = document.getElementById('miniCounter');
+  if (mini) mini.textContent = `${total - remaining} / ${total}`;
+}
 
     function shuffle(arr) {
       const a = arr.slice();
@@ -656,33 +552,37 @@
     // ---------- UI Mount ----------
     const tabsEl = document.getElementById('tabs');
     const panelEl = document.getElementById('panel');
+console.log('renderTabs работает');
 
-    function renderTabs() {
-      const tabs = [
-        { id: 'test', label: 'Тест' },
-        { id: 'cards', label: 'Карточки' },
-        { id: 'repeat', label: 'Повтор' },
-        { id: 'input', label: 'Ввод' },
-        { id: 'match', label: 'Сопоставление' },
-        { id: 'dict', label: 'Словарь' },
-        { id: 'manage', label: 'Управление' }
-      ];
+function renderTabs() {
+  const tabs = [
+    { id: 'test', label: 'Тест' },
+    { id: 'cards', label: 'Карточки' },
+    { id: 'repeat', label: 'Повтор' },
+    { id: 'input', label: 'Ввод' },
+    { id: 'match', label: 'Сопоставление' },
+    { id: 'dict', label: 'Словарь' }
+  ];
 
-      tabsEl.innerHTML = tabs.map(tab => `
-        <button
-          class="tab-btn ${activeTab === tab.id ? 'active' : ''}"
-          onclick="switchTab('${tab.id}')"
-        >
-          ${tab.label}
-        </button>
-      `).join('');
-    }
+  tabsEl.innerHTML = tabs.map(tab => `
+    <button
+      class="tab-btn ${activeTab === tab.id ? 'active' : ''}"
+      onclick="switchTab('${tab.id}')"
+    >
+      ${tab.label}
+    </button>
+  `).join('');
+}
 
-    function switchTab(tabId) {
-      activeTab = tabId;
-      renderTabs();
-      renderPanel();
-    }
+
+function switchTab(tabId) {
+  activeTab = tabId;
+  renderTabs();
+  renderPanel();
+}
+
+    
+  
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
@@ -698,29 +598,29 @@
       const distractors = pickRandom(words.map(w => w.ru), 3, correctRu);
       const options = shuffle([correctRu, ...distractors]);
 
-      panelEl.innerHTML = `
-        <div class="card">
-          <div class="test-word" id="testWord" style="font-size:22px; font-weight:700">
-            ${current.en}
-          </div>
-          <div class="test-transcription" id="testTranscription">
-            ${current.tr ? `/${current.tr}/` : ''}
-          </div>
-        </div>
-        <div class="options">
-          ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
-        </div>
-      `;
+   panelEl.innerHTML = `
+  <div class="card">
+    <div class="test-word" id="testWord" style="font-size:22px; font-weight:700">
+      ${current.en}
+    </div>
+    <div class="test-transcription" id="testTranscription">
+      ${current.tr ? `/${current.tr}/` : ''}
+    </div>
+  </div>
+  <div class="options">
+    ${options.map(o => `<div class="option" data-val="${o}">${o}</div>`).join('')}
+  </div>
+`;
+const wordEl = document.getElementById('testWord');
+const trEl = document.getElementById('testTranscription');
 
-      const wordEl = document.getElementById('testWord');
-      const trEl = document.getElementById('testTranscription');
+if (wordEl && trEl) {
+  trEl.classList.remove('show');
+  wordEl.onclick = () => {
+    trEl.classList.toggle('show');
+  };
+}
 
-      if (wordEl && trEl) {
-        trEl.classList.remove('show');
-        wordEl.onclick = () => {
-          trEl.classList.toggle('show');
-        };
-      }
 
       let answered = false;
       panelEl.querySelectorAll('.option').forEach(opt => {
@@ -796,23 +696,23 @@
     let repeatIdx = { value: -1 };
     function renderRepeat() {
       const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
-      if (!pool.length) {
-        panelEl.innerHTML = `
-          <div style="
-            height: 100%;
-            min-height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-          ">
-            <div class="empty">
-              Пока нет слов для повтора. Ошибок нет — супер!
-            </div>
-          </div>
-        `;
-        return;
-      }
+if (!pool.length) {
+  panelEl.innerHTML = `
+    <div style="
+      height: 100%;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    ">
+      <div class="empty">
+        Пока нет слов для повтора. Ошибок нет — супер!
+      </div>
+    </div>
+  `;
+  return;
+}
       const current = nextOf(pool, repeatIdx) || pool[0];
 
       panelEl.innerHTML = `
@@ -884,35 +784,37 @@
     let dictFilter = 'all';
     let dictQuery = '';
     function renderDict() {
-      const header = `
-        <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
-          <div class="field" style="flex:2; min-width:240px">
-            <input type="text" id="dictSearch"
-              placeholder="Поиск по слову, переводу или транскрипции..."
-              value="${dictQuery}">
-          </div>
+  const header = `
+  <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+    <div class="field" style="flex:2; min-width:240px">
+      <input type="text" id="dictSearch"
+        placeholder="Поиск по слову, переводу или транскрипции..."
+        value="${dictQuery}">
+    </div>
 
-          <div class="field" style="flex:1; min-width:200px">
-            <select id="dictFilter">
-              <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
-              <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
-              <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
-            </select>
-          </div>
-<div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
+    <div class="field" style="flex:1; min-width:200px">
+      <select id="dictFilter">
+        <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
+        <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
+        <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
+      </select>
+    </div>
+
+    <div class="field" style="display:flex; gap:8px">
+     <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
   <button class="btn success" id="markAll">Отметить всё выученным</button>
   <button class="btn" id="exportWords">Экспорт</button>
   <button class="btn" id="importWords">Импорт</button>
   <button class="btn error" id="resetAll">Полный сброс</button>
   <input type="file" id="importFile" accept=".json" style="display:none">
 </div>
+  </div>
+  <div class="divider"></div>
+`;
 
-        </div>
-        <div class="divider"></div>
-      `;
 
       let list = words.slice();
-      list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
       if (dictQuery.trim()) {
         const q = dictQuery.toLowerCase();
         list = list.filter(w =>
@@ -937,29 +839,6 @@
           </td>
         </tr>
       `).join('');
-      }
-
-      // аккуратно маппим по en|ru
-      const imported = data.words;
-      const map = new Map(imported.map(w => [w.en + '|' + w.ru, w]));
-
-      words = words.map(w => {
-        const key = w.en + '|' + w.ru;
-        return map.has(key)
-          ? { ...w, ...map.get(key) }
-          : w;
-      });
-
-      saveState();
-      renderDict();
-      alert('Импорт завершён ✅');
-    } catch {
-      alert('Ошибка при чтении файла');
-    }
-  };
-
-  reader.readAsText(file);
-};
 
       panelEl.innerHTML = header + `
         <div class="table-wrap">
@@ -981,7 +860,7 @@
           </table>
         </div>
       `;
-       // ===== EXPORT =====
+      // ===== EXPORT =====
 document.getElementById('exportWords').onclick = () => {
   const data = {
     version: 1,
@@ -989,9 +868,7 @@ document.getElementById('exportWords').onclick = () => {
     exportedAt: new Date().toISOString()
   };
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: 'application/json'
-  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
@@ -1021,13 +898,15 @@ document.getElementById('importFile').onchange = (e) => {
         return;
       }
 
-      const map = new Map(
-        data.words.map(w => [w.en + '|' + w.ru, w])
-      );
+      // аккуратно маппим по en|ru
+      const imported = data.words;
+      const map = new Map(imported.map(w => [w.en + '|' + w.ru, w]));
 
       words = words.map(w => {
         const key = w.en + '|' + w.ru;
-        return map.has(key) ? { ...w, ...map.get(key) } : w;
+        return map.has(key)
+          ? { ...w, ...map.get(key) }
+          : w;
       });
 
       saveState();
@@ -1041,19 +920,18 @@ document.getElementById('importFile').onchange = (e) => {
   reader.readAsText(file);
 };
 
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('Точно сбросить весь прогресс?')) return;
 
-      document.getElementById('resetAll').onclick = () => {
-        if (!confirm('Точно сбросить весь прогресс?')) return;
+  words.forEach(w => {
+    w.streak = 0;
+    w.errors = 0;
+    w.manual = false;
+  });
 
-        words.forEach(w => {
-          w.streak = 0;
-          w.errors = 0;
-          w.manual = false;
-        });
-
-        saveState();
-        renderDict();
-      };
+  saveState();
+  renderDict();
+};
 
       document.getElementById('dictSearch').oninput = (e) => { dictQuery = e.target.value; renderDict(); };
       document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
@@ -1114,7 +992,7 @@ document.getElementById('importFile').onchange = (e) => {
           const id = Number(el.dataset.id);
           const type = el.dataset.type;
           if (!matchPicked) {
-            if (type !== 'en') return;
+            if (type !== 'en') return; // сначала выбираем английское слово
             matchPicked = id;
             el.classList.add('selected');
           } else {
@@ -1128,6 +1006,7 @@ document.getElementById('importFile').onchange = (e) => {
               ruEl.classList.add('correct');
               const w = words.find(x => x.id === matchPicked);
               if (w) w.streak += 1;
+              // удалить пару сразу
               matchSet = matchSet.filter(m => m.id !== matchPicked);
               saveState();
             } else {
@@ -1147,171 +1026,6 @@ document.getElementById('importFile').onchange = (e) => {
       });
     }
 
-    // ---------- Tab: Manage (Import/Export) ----------
-    function renderManage() {
-      panelEl.innerHTML = `
-        <!-- Экспорт -->
-        <div class="import-section">
-          <h3>📤 Экспорт словаря</h3>
-          <p>Сохраните текущий словарь в JSON файл</p>
-          <button class="btn primary" id="exportBtn">Скачать словарь (JSON)</button>
-        </div>
-
-        <!-- Импорт -->
-        <div class="import-section">
-          <h3>📥 Импорт словаря</h3>
-          <p>Загрузите JSON файл со словами (заменит текущий словарь)</p>
-          <div class="file-input-wrapper">
-            <input type="file" id="importFile" accept=".json">
-            <label for="importFile" class="file-input-label">Выбрать файл</label>
-          </div>
-          <div id="importStatus" style="margin-top:10px; color: var(--muted); font-size: 14px;"></div>
-        </div>
-
-        <!-- Добавление слова -->
-        <div class="import-section">
-          <h3>➕ Добавить слово вручную</h3>
-          <div class="field">
-            <input type="text" id="addEn" placeholder="Английское слово">
-          </div>
-          <div class="field" style="margin-top:8px">
-            <input type="text" id="addRu" placeholder="Русский перевод">
-          </div>
-          <div class="field" style="margin-top:8px">
-            <input type="text" id="addTr" placeholder="Транскрипция (опционально)">
-          </div>
-          <button class="btn success" id="addWordBtn" style="margin-top:12px">Добавить слово</button>
-        </div>
-
-        <!-- Очистка -->
-        <div class="import-section">
-          <h3>🗑️ Удалить все слова</h3>
-          <p style="color: var(--error)">Внимание! Это действие удалит все слова без возможности восстановления</p>
-          <button class="btn error" id="clearAllBtn">Удалить весь словарь</button>
-        </div>
-
-        <!-- Формат файла -->
-        <div class="import-section">
-          <h3>ℹ️ Формат JSON файла</h3>
-          <p>Файл должен содержать массив объектов:</p>
-          <textarea readonly>[
-  {
-    "en": "hello",
-    "ru": "привет",
-    "tr": "хэлоу"
-  },
-  {
-    "en": "world",
-    "ru": "мир",
-    "tr": "ворлд"
-  }
-]</textarea>
-        </div>
-      `;
-
-      // Экспорт
-      document.getElementById('exportBtn').onclick = () => {
-        const exportData = words.map(w => ({
-          en: w.en,
-          ru: w.ru,
-          tr: w.tr || ''
-        }));
-        
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `words-easy-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      // Импорт
-      document.getElementById('importFile').onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        const status = document.getElementById('importStatus');
-        
-        reader.onload = (event) => {
-          try {
-            const imported = JSON.parse(event.target.result);
-            
-            if (!Array.isArray(imported)) {
-              status.innerHTML = '<span style="color: var(--error)">❌ Ошибка: файл должен содержать массив</span>';
-              return;
-            }
-
-            const newWords = imported.map((w, i) => ({
-              id: Date.now() + i,
-              en: w.en || '',
-              ru: w.ru || '',
-              tr: w.tr || '',
-              streak: 0,
-              errors: 0,
-              manual: false
-            }));
-
-            if (confirm(`Импортировать ${newWords.length} слов? Текущий словарь будет заменён.`)) {
-              words = newWords;
-              saveState();
-              status.innerHTML = `<span style="color: var(--success)">✅ Импортировано ${newWords.length} слов</span>`;
-              setTimeout(() => {
-                switchTab('dict');
-              }, 1500);
-            }
-          } catch (error) {
-            status.innerHTML = `<span style="color: var(--error)">❌ Ошибка: неверный формат JSON</span>`;
-          }
-        };
-        
-        reader.readAsText(file);
-      };
-
-      // Добавление слова
-      document.getElementById('addWordBtn').onclick = () => {
-        const en = document.getElementById('addEn').value.trim();
-        const ru = document.getElementById('addRu').value.trim();
-        const tr = document.getElementById('addTr').value.trim();
-
-        if (!en || !ru) {
-          alert('Заполните английское слово и перевод');
-          return;
-        }
-
-        const newWord = {
-          id: Date.now(),
-          en: en,
-          ru: ru,
-          tr: tr,
-          streak: 0,
-          errors: 0,
-          manual: false
-        };
-
-        words.push(newWord);
-        saveState();
-        
-        document.getElementById('addEn').value = '';
-        document.getElementById('addRu').value = '';
-        document.getElementById('addTr').value = '';
-        
-        alert(`Слово "${en}" добавлено!`);
-      };
-
-      // Очистка всех слов
-      document.getElementById('clearAllBtn').onclick = () => {
-        if (!confirm('Вы уверены? Все слова будут удалены без возможности восстановления!')) return;
-        if (!confirm('Это последнее предупреждение. Удалить ВСЕ слова?')) return;
-        
-        words = [];
-        saveState();
-        alert('Все слова удалены');
-        renderManage();
-      };
-    }
-
     // ---------- Mount ----------
     function renderPanel() {
       updateProgress();
@@ -1322,26 +1036,26 @@ document.getElementById('importFile').onchange = (e) => {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
-        case 'manage': renderManage(); break;
       }
     }
+const miniThemeBtn = document.getElementById('miniTheme');
 
-    const miniThemeBtn = document.getElementById('miniTheme');
+function updateThemeIcon() {
+  miniThemeBtn.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
+}
 
-    function updateThemeIcon() {
-      miniThemeBtn.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
-    }
+miniThemeBtn.onclick = () => {
+  settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', settings.theme);
+  saveSettings();
+  updateThemeIcon();
+};
 
-    miniThemeBtn.onclick = () => {
-      settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', settings.theme);
-      saveSettings();
-      updateThemeIcon();
-    };
+// при загрузке страницы
+updateThemeIcon();
 
-    updateThemeIcon();
     renderTabs();
     renderPanel();
   </script>
 </body>
-</html>
+</html> 
