@@ -806,10 +806,9 @@ function renderIrregularOptions() {
     ...getRandomForms(2)
   ]);
 
-  return forms.map(f =>
-<button class="option" onclick="checkIrregular('${f}')">${f}</button>
-  ).join("");
-}
+return forms.map(f => `
+  <button class="option" onclick="checkIrregular('${f}')">${f}</button>
+`).join("");
 
 function getRandomForms(n) {
   return shuffle(
@@ -1283,8 +1282,10 @@ function updateDictTable() {
   <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
 </td>
 <td class="center">
-  <buttonupdateDictTabledata-id="${w.id}">✕</button>
+  <button class="btn error btn-del" data-id="${w.id}">✕</button>
 </td>
+
+
 
 
       </tr>
