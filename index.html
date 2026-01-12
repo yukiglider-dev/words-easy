@@ -1071,12 +1071,20 @@ function renderRepeat() {
 
   // если повтор пуст
   if (!repeatList.length) {
-    panel.innerHTML = `
-      <div class="card center">
-        <h2>🎉 Повтор пуст</h2>
-        <div class="muted">Ошибок нет — так держать</div>
-      </div>
-    `;
+  panel.innerHTML = `
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+  ">
+    <div class="card center">
+      <h2>🎉 Повтор пуст</h2>
+      <div class="muted">Ошибок нет — так держать</div>
+    </div>
+  </div>
+`;
+
     return;
   }
 
@@ -1633,61 +1641,31 @@ function bindIrregularActions() {
 }
 
 function renderIrregulars() {
-  const panelEl = document.getElementById('panel');
-
-  // ===== СОСТОЯНИЯ =====
+  // сохраняем состояние
   window.irQuery = window.irQuery ?? '';
   window.irFilter = window.irFilter ?? 'all';
 
-  let list = irregulars.slice();
+  // ===== РАЗМЕТКА (ОДИН РАЗ) =====
+  panel.innerHTML = `
+    <div class="row" style="gap:12px; flex-wrap:wrap; align-items:center">
 
-  // ===== 🔍 ПОИСК (по любой букве) =====
-  if (window.irQuery.trim()) {
-    const q = window.irQuery.toLowerCase();
-    list = list.filter(v =>
-      v.base.toLowerCase().includes(q) ||
-      v.past.toLowerCase().includes(q) ||
-      v.pp.toLowerCase().includes(q) ||
-      v.ru.toLowerCase().includes(q)
-    );
-  }
+      <input
+        id="irSearch"
+        class="input"
+        style="flex:2; min-width:220px"
+        placeholder="Поиск неправильного глагола..."
+        value="${window.irQuery}"
+      >
 
-  // ===== 🎯 ФИЛЬТР =====
-  if (window.irFilter === 'learned') {
-    list = list.filter(v => v.learned);
-  }
-  if (window.irFilter === 'unlearned') {
-    list = list.filter(v => !v.learned);
-  }
+      <select id="irFilter" class="input" style="flex:1; min-width:160px">
+        <option value="all">Все</option>
+        <option value="learned">Выученные</option>
+        <option value="unlearned">Невыученные</option>
+      </select>
 
-  // ===== 🔤 АЛФАВИТ =====
-  list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
-
-  // ===== 🧩 РЕНДЕР =====
-  panelEl.innerHTML = `
-    <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
-      <div class="field" style="flex:2; min-width:240px">
-        <input
-          id="irSearch"
-          type="text"
-          placeholder="Поиск неправильного глагола..."
-          value="${window.irQuery}"
-        >
-      </div>
-
-      <div class="field" style="flex:1; min-width:200px">
-        <select id="irFilter">
-          <option value="all" ${window.irFilter === 'all' ? 'selected' : ''}>Все</option>
-          <option value="learned" ${window.irFilter === 'learned' ? 'selected' : ''}>Выученные</option>
-          <option value="unlearned" ${window.irFilter === 'unlearned' ? 'selected' : ''}>Невыученные</option>
-        </select>
-      </div>
-
-      <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn primary" id="addIrregular">+ Add</button>
-        <button class="btn success" id="markAllIrregulars">Отметить всё</button>
-        <button class="btn error" id="resetIrregulars">Сброс</button>
-      </div>
+      <button class="btn primary" id="addIrregular">+ Add</button>
+      <button class="btn success" id="markAllIrregulars">Отметить всё</button>
+      <button class="btn error" id="resetIrregulars">Сброс</button>
     </div>
 
     <div class="divider"></div>
@@ -1707,118 +1685,133 @@ function renderIrregulars() {
             <th class="center">Удалить</th>
           </tr>
         </thead>
-        <tbody>
-          ${
-            list.length
-              ? list.map((v, i) => `
-                <tr class="${v.learned ? 'learned-row' : ''}">
-                  <td>${i + 1}</td>
-                  <td>${v.base}</td>
-                  <td>${v.past}</td>
-                  <td>${v.pp}</td>
-                  <td>${v.ru}</td>
-                  <td class="center">${v.streak || 0}</td>
-                  <td class="center">${v.errors || 0}</td>
-                  <td class="center">
-                    <input type="checkbox" class="irLearned" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
-                  </td>
-                  <td class="center">
-                    <button class="btn error irDel" data-id="${v.id}">✕</button>
-                  </td>
-                </tr>
-              `).join('')
-              : `<tr><td colspan="9" class="center muted">Ничего не найдено</td></tr>`
-          }
-        </tbody>
+        <tbody id="irTbody"></tbody>
       </table>
     </div>
   `;
 
-  // ===== ОБРАБОТЧИКИ =====
+  document.getElementById('irFilter').value = window.irFilter;
 
-  // 🔍 поиск (по буквам, без залипания)
-  document.getElementById('irSearch').oninput = e => {
+  // ===== ОТРИСОВКА ТАБЛИЦЫ =====
+  function updateTable() {
+    let list = irregulars.slice();
+
+    // поиск
+    if (window.irQuery.trim()) {
+      const q = window.irQuery.toLowerCase();
+      list = list.filter(v =>
+        v.base.toLowerCase().includes(q) ||
+        v.past.toLowerCase().includes(q) ||
+        v.pp.toLowerCase().includes(q) ||
+        v.ru.toLowerCase().includes(q)
+      );
+    }
+
+    // фильтр
+    if (window.irFilter === 'learned') {
+      list = list.filter(v => v.learned);
+    }
+    if (window.irFilter === 'unlearned') {
+      list = list.filter(v => !v.learned);
+    }
+
+    // сортировка
+    list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
+
+    const tbody = document.getElementById('irTbody');
+
+    tbody.innerHTML = list.length
+      ? list.map((v, i) => `
+          <tr class="${v.learned ? 'learned-row' : ''}">
+            <td>${i + 1}</td>
+            <td>${v.base}</td>
+            <td>${v.past}</td>
+            <td>${v.pp}</td>
+            <td>${v.ru}</td>
+            <td class="center">${v.streak ?? 0}</td>
+            <td class="center">${v.errors ?? 0}</td>
+            <td class="center">
+              <input type="checkbox" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
+            </td>
+            <td class="center">
+              <button class="btn error btn-del" data-id="${v.id}">✕</button>
+            </td>
+          </tr>
+        `).join('')
+      : `<tr><td colspan="9" class="center muted">Ничего не найдено</td></tr>`;
+
+    // чекбоксы
+    tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = () => {
+        const item = irregulars.find(v => v.id == cb.dataset.id);
+        item.learned = cb.checked;
+        saveIrregulars();
+        updateTable();
+      };
+    });
+
+    // удаление
+    tbody.querySelectorAll('.btn-del').forEach(btn => {
+      btn.onclick = () => {
+        if (!confirm('Удалить глагол?')) return;
+        irregulars = irregulars.filter(v => v.id != btn.dataset.id);
+        saveIrregulars();
+        updateTable();
+      };
+    });
+  }
+
+  // ===== СОБЫТИЯ =====
+  document.getElementById('irSearch').addEventListener('input', e => {
     window.irQuery = e.target.value;
-    renderIrregulars();
-  };
+    updateTable();
+  });
 
-  // 🎯 фильтр
   document.getElementById('irFilter').onchange = e => {
     window.irFilter = e.target.value;
-    renderIrregulars();
+    updateTable();
   };
 
-  // ✅ отметить все
   document.getElementById('markAllIrregulars').onclick = () => {
     irregulars.forEach(v => v.learned = true);
     saveIrregulars();
-    renderIrregulars();
-    updateProgress();
+    updateTable();
   };
 
-  // 🔄 сброс
   document.getElementById('resetIrregulars').onclick = () => {
-    if (!confirm('Сбросить прогресс неправильных глаголов?')) return;
+    if (!confirm('Сбросить прогресс?')) return;
     irregulars.forEach(v => {
       v.learned = false;
       v.streak = 0;
       v.errors = 0;
     });
     saveIrregulars();
-    renderIrregulars();
-    updateProgress();
+    updateTable();
   };
 
-  // ➕ добавить
   document.getElementById('addIrregular').onclick = () => {
-    const base = prompt('Base (go)');
-    const past = prompt('Past (went)');
-    const pp = prompt('PP (gone)');
+    const base = prompt('Base');
+    const past = prompt('Past');
+    const pp = prompt('PP');
     const ru = prompt('Перевод');
     if (!base || !past || !pp || !ru) return;
 
     irregulars.push({
       id: Date.now(),
-      base,
-      past,
-      pp,
-      ru,
+      base, past, pp, ru,
       streak: 0,
       errors: 0,
       learned: false
     });
 
     saveIrregulars();
-    renderIrregulars();
-    updateProgress();
+    updateTable();
   };
 
-  // ✅ чекбоксы "Выучено"
-  document.querySelectorAll('.irLearned').forEach(cb => {
-    cb.onchange = () => {
-      const id = Number(cb.dataset.id);
-      const v = irregulars.find(x => x.id === id);
-      if (!v) return;
-
-      v.learned = cb.checked;
-      saveIrregulars();
-      updateProgress();
-    };
-  });
-
-  // ❌ удаление
-  document.querySelectorAll('.irDel').forEach(btn => {
-    btn.onclick = () => {
-      const id = Number(btn.dataset.id);
-      if (!confirm('Удалить глагол?')) return;
-
-      irregulars = irregulars.filter(v => v.id !== id);
-      saveIrregulars();
-      renderIrregulars();
-      updateProgress();
-    };
-  });
+  // первый рендер
+  updateTable();
 }
+
 function renderIrAssembly() {
   const pool = irregulars.filter(v => !v.learned);
 
