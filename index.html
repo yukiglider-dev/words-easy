@@ -498,65 +498,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
       updateProgress();
     }
-// ===============================
-// 🔹 IMPORT / EXPORT (ВНЕДРЕНО)
-// ===============================
-
-// EXPORT
-function exportWords() {
-  const data = {
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    words: words
-  };
-
-  const blob = new Blob(
-    [JSON.stringify(data, null, 2)],
-    { type: 'application/json' }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'words-easy-backup.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// IMPORT
-function importWords(file) {
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-
-      if (!data.words || !Array.isArray(data.words)) {
-        alert('Неверный файл');
-        return;
-      }
-
-      // аккуратный merge по en|ru
-      const map = new Map(
-        data.words.map(w => [w.en + '|' + w.ru, w])
-      );
-
-      words = words.map(w => {
-        const key = w.en + '|' + w.ru;
-        return map.has(key)
-          ? { ...w, ...map.get(key) }
-          : w;
-      });
-
-      saveState();
-      alert('Импорт завершён ✅');
-    } catch {
-      alert('Ошибка чтения файла');
-    }
-  };
-
-  reader.readAsText(file);
-}
 
     function loadSettings() {
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -621,7 +562,6 @@ function renderTabs() {
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
     { id: 'dict', label: 'Словарь' }
-    { id: 'add', label: 'Добавить' } 
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -705,72 +645,6 @@ if (wordEl && trEl) {
         };
       });
     }
-// ---------- Tab: Add Word ----------
-function renderAdd() {
-  panelEl.innerHTML = `
-    <div class="card" style="max-width:520px; margin:0 auto">
-      <div style="font-size:22px; font-weight:700; margin-bottom:12px">
-        Добавить новое слово
-      </div>
-
-      <div class="field">
-        <input type="text" id="addEn" placeholder="English word">
-      </div>
-
-      <div class="field" style="margin-top:10px">
-        <input type="text" id="addRu" placeholder="Перевод">
-      </div>
-
-      <div class="field" style="margin-top:10px">
-        <input type="text" id="addTr" placeholder="Транскрипция (необязательно)">
-      </div>
-
-      <div class="row" style="margin-top:16px; justify-content:center">
-        <button class="btn success" id="addWordBtn">Добавить слово</button>
-      </div>
-
-      <div id="addFeedback" class="muted" style="margin-top:12px; text-align:center"></div>
-    </div>
-  `;
-
-  document.getElementById('addWordBtn').onclick = () => {
-    const en = document.getElementById('addEn').value.trim();
-    const ru = document.getElementById('addRu').value.trim();
-    const tr = document.getElementById('addTr').value.trim();
-
-    const fb = document.getElementById('addFeedback');
-
-    if (!en || !ru) {
-      fb.innerHTML = `<span style="color: var(--error)">Введите английское слово и перевод</span>`;
-      return;
-    }
-
-    // проверка на дубликат
-    if (words.some(w => w.en.toLowerCase() === en.toLowerCase() && w.ru.toLowerCase() === ru.toLowerCase())) {
-      fb.innerHTML = `<span style="color: var(--error)">Такое слово уже существует</span>`;
-      return;
-    }
-
-    const newWord = {
-      id: words.length ? Math.max(...words.map(w => w.id)) + 1 : 1,
-      en,
-      ru,
-      tr,
-      streak: 0,
-      errors: 0,
-      manual: false
-    };
-
-    words.push(newWord);
-    saveState();
-
-    fb.innerHTML = `<span style="color: var(--success)">Слово добавлено ✅</span>`;
-
-    document.getElementById('addEn').value = '';
-    document.getElementById('addRu').value = '';
-    document.getElementById('addTr').value = '';
-  };
-}
 
     // ---------- Tab: Cards ----------
     let cardsIdx = { value: -1 };
@@ -927,26 +801,12 @@ if (!pool.length) {
     </div>
 
     <div class="field" style="display:flex; gap:8px">
-     <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
-  <button class="btn success" id="markAll">Отметить всё выученным</button>
-  <button class="btn" id="exportWords">Экспорт</button>
-  <button class="btn" id="importWords">Импорт</button>
-  <button class="btn error" id="resetAll">Полный сброс</button>
-  <input type="file" id="importFile" accept=".json" style="display:none">
-</div>
+      <button class="btn success" id="markAll">Отметить всё выученным</button>
+<button class="btn error" id="resetAll">Полный сброс</button>
+    </div>
   </div>
   <div class="divider"></div>
 `;
-document.getElementById('exportWords').onclick = exportWords;
-
-document.getElementById('importWords').onclick = () => {
-  document.getElementById('importFile').click();
-};
-
-document.getElementById('importFile').onchange = (e) => {
-  const file = e.target.files[0];
-  if (file) importWords(file);
-};
 
 
       let list = words.slice();
@@ -996,66 +856,6 @@ list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
           </table>
         </div>
       `;
-      // ===== EXPORT =====
-document.getElementById('exportWords').onclick = () => {
-  const data = {
-    version: 1,
-    words: words,
-    exportedAt: new Date().toISOString()
-  };
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'words-easy-backup.json';
-  a.click();
-
-  URL.revokeObjectURL(url);
-};
-
-// ===== IMPORT =====
-document.getElementById('importWords').onclick = () => {
-  document.getElementById('importFile').click();
-};
-
-document.getElementById('importFile').onchange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-
-      if (!data.words || !Array.isArray(data.words)) {
-        alert('Неверный файл');
-        return;
-      }
-
-      // аккуратно маппим по en|ru
-      const imported = data.words;
-      const map = new Map(imported.map(w => [w.en + '|' + w.ru, w]));
-
-      words = words.map(w => {
-        const key = w.en + '|' + w.ru;
-        return map.has(key)
-          ? { ...w, ...map.get(key) }
-          : w;
-      });
-
-      saveState();
-      renderDict();
-      alert('Импорт завершён ✅');
-    } catch {
-      alert('Ошибка при чтении файла');
-    }
-  };
-
-  reader.readAsText(file);
-};
-
 document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
 
@@ -1172,7 +972,6 @@ document.getElementById('resetAll').onclick = () => {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
-        case 'add': renderAdd(); break;  
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
