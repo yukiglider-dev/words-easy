@@ -1444,6 +1444,15 @@ function updateDictTable() {
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
+// === второй мини-счетчик (неправильные глаголы) ===
+const miniUI = document.querySelector('.mini-ui.inline');
+
+const miniIrCounter = document.createElement('div');
+miniIrCounter.className = 'mini-counter';
+miniIrCounter.id = 'miniIrCounter';
+miniIrCounter.textContent = '— / —';
+
+miniUI.insertBefore(miniIrCounter, document.getElementById('miniTheme'));
 
 function updateThemeIcon() {
   miniThemeBtn.textContent = settings.theme === 'dark' ? '☀️' : '🌙';
