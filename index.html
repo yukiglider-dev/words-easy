@@ -458,6 +458,18 @@ html, body {
   justify-content: center;  /* горизонталь */
 }
 
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.options {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
 
 
   </style>
@@ -623,6 +635,13 @@ html, body {
   errors: 0,
   manual: false
 }));
+const IRREGULAR_VERBS = [
+  { id: 1, base: "go", past: "went", p2: "gone", ru: "идти", streak: 0, errors: 0 },
+  { id: 2, base: "drink", past: "drank", p2: "drunk", ru: "пить", streak: 0, errors: 0 },
+  { id: 3, base: "see", past: "saw", p2: "seen", ru: "видеть", streak: 0, errors: 0 },
+  { id: 4, base: "take", past: "took", p2: "taken", ru: "брать", streak: 0, errors: 0 }
+];
+
 
 
 function loadState() {
@@ -730,7 +749,8 @@ function renderTabs() {
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' }
+    { id: 'dict', label: 'Словарь' },
+      { id: 'irregular', label: 'Неправильные глаголы' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -750,8 +770,71 @@ function switchTab(tabId) {
   renderPanel();
 }
 
-    
-  
+    let currentIrregular = null;
+
+function renderIrregular() {
+  const box = document.getElementById("irregular-box");
+
+  currentIrregular = pickRandomIrregular();
+
+  box.innerHTML = `
+    <div class="card center">
+      <h2>${currentIrregular.base}</h2>
+      <p class="muted">${currentIrregular.ru}</p>
+
+      <div class="options">
+        ${renderIrregularOptions()}
+      </div>
+
+      <div id="irregular-result"></div>
+    </div>
+  `;
+}
+function pickRandomIrregular() {
+  return IRREGULAR_VERBS[Math.floor(Math.random() * IRREGULAR_VERBS.length)];
+}
+function renderIrregularOptions() {
+  const forms = shuffle([
+    currentIrregular.past,
+    currentIrregular.p2,
+    ...getRandomForms(2)
+  ]);
+
+  return forms.map(f =>
+    `<button onclick="checkIrregular('${f}')">${f}</button>`
+  ).join("");
+}
+
+function getRandomForms(n) {
+  return shuffle(
+    IRREGULAR_VERBS
+      .filter(v => v.id !== currentIrregular.id)
+      .flatMap(v => [v.past, v.p2])
+  ).slice(0, n);
+}
+function checkIrregular(answer) {
+  const ok = [currentIrregular.past, currentIrregular.p2].includes(answer);
+  const result = document.getElementById("irregular-result");
+
+  if (ok) {
+    currentIrregular.streak++;
+    result.innerHTML = "✅ Правильно";
+  } else {
+    currentIrregular.errors++;
+    currentIrregular.streak = 0;
+    result.innerHTML = `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
+  }
+
+  setTimeout(renderIrregular, 900);
+}
+
+  function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+function isIrregularLearned(v) {
+  return v.streak >= 3;
+}
+
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
@@ -922,7 +1005,7 @@ panelEl.innerHTML = `
 `;
 
 
-  document.getElementById('repKnow').onclick = () => {
+  document.getElementById('repKnow').onclick = () => { 
     current.errors = Math.max(0, current.errors - 1);
     current.streak += 1;
     saveState();
@@ -1089,7 +1172,7 @@ function renderDict() {
                     <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
                   </td>
                   <td class="center">
-                    <button class="btn error btn-del" data-id="${w.id}">✕</button>
+                   class="btn error btn-del" data-id="${w.id}">✕</button>
                   </td>
                 </tr>
               `).join('')
@@ -1289,6 +1372,8 @@ function updateDictTable() {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
+          case 'irregular': renderIrregular(); break;
+
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
