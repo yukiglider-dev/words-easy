@@ -1493,6 +1493,70 @@ document.getElementById('confirmAddWord').onclick = () => {
   document.getElementById('modalRu').value = '';
   document.getElementById('modalTr').value = '';
 };
+function updateIrregularsTable() {
+  let list = irregulars.slice();
+
+  if (window.irQuery.trim()) {
+    const q = window.irQuery.toLowerCase();
+    list = list.filter(v =>
+      v.base.toLowerCase().includes(q) ||
+      v.past.toLowerCase().includes(q) ||
+      v.pp.toLowerCase().includes(q) ||
+      v.ru.toLowerCase().includes(q)
+    );
+  }
+
+  if (window.irFilter === 'learned') {
+    list = list.filter(v => v.learned);
+  }
+  if (window.irFilter === 'unlearned') {
+    list = list.filter(v => !v.learned);
+  }
+
+  list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
+
+  const tbody = document.querySelector('.table-wrap tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = list.length
+    ? list.map((v, i) => `
+      <tr class="${v.learned ? 'learned-row' : ''}">
+        <td>${i + 1}</td>
+        <td>${v.base}</td>
+        <td>${v.past}</td>
+        <td>${v.pp}</td>
+        <td>${v.ru}</td>
+        <td class="center">${v.streak}</td>
+        <td class="center">${v.errors}</td>
+        <td class="center">
+          <input type="checkbox" class="irLearned" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
+        </td>
+        <td class="center">
+          <button class="btn error btn-del irDel" data-id="${v.id}">✕</button>
+        </td>
+      </tr>
+    `).join('')
+    : `<tr><td colspan="9" class="center muted">Ничего не найдено</td></tr>`;
+
+  bindIrregularActions();
+}
+function bindIrregularActions() {
+  document.querySelectorAll('.irLearned').forEach(ch => {
+    ch.onchange = () => {
+      const v = irregulars.find(x => x.id == ch.dataset.id);
+      if (v) v.learned = ch.checked;
+      saveIrregulars();
+    };
+  });
+
+  document.querySelectorAll('.irDel').forEach(btn => {
+    btn.onclick = () => {
+      irregulars = irregulars.filter(v => v.id != btn.dataset.id);
+      saveIrregulars();
+      updateIrregularsTable();
+    };
+  });
+}
 
 function renderIrregulars() {
   // состояния (НЕ пересоздаются при каждом вводе)
@@ -1597,10 +1661,10 @@ function renderIrregulars() {
   // ===== ОБРАБОТЧИКИ =====
 
   // 🔍 поиск — БЕЗ перерендера всей функции
-  document.getElementById('irSearch').oninput = e => {
-    window.irQuery = e.target.value;
-    renderIrregulars();
-  };
+document.getElementById('irSearch').oninput = e => {
+  window.irQuery = e.target.value;
+  updateIrregularsTable(); // ✅ ТОЛЬКО ТАБЛИЦА
+};
 
   // 🎯 фильтр
   document.getElementById('irFilter').onchange = e => {
