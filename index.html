@@ -762,8 +762,10 @@ const initialIrregulars  = [
   ...v,
   streak: 0,
   errors: 0,
-  learned: false
+  learned: false,
+  needRepeat: false // 👈 ВАЖНО
 }));
+
 
 function loadIrregulars() {
   const raw = localStorage.getItem(IRREGULARS_KEY);
@@ -1050,7 +1052,14 @@ if (wordEl && trEl) {
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
    function renderRepeat() {
-  const pool = words.filter(w => w.errors > 0 && !isLearned(w) && !w.manual);
+const wordPool = words.filter(
+  w => w.errors > 0 && !isLearned(w) && !w.manual
+);
+const irPool = irregulars.filter(v => v.needRepeat);
+const pool = [
+  ...wordPool.map(w => ({ type: 'word', data: w })),
+  ...irPool.map(v => ({ type: 'ir', data: v }))
+];
 
   // ✅ если нет слов для повтора
   if (!pool.length) {
@@ -1064,13 +1073,17 @@ if (wordEl && trEl) {
     return;
   }
 
-  const current = nextOf(pool, repeatIdx) || pool[0];
+const currentItem = nextOf(pool, repeatIdx) || pool[0];
+const current = currentItem.data;
 
 panelEl.innerHTML = `
   <div class="panel-center">
     <div class="card" style="max-width:520px">
       <div style="font-size:22px; font-weight:700">
-        ${current.en}
+${currentItem.type === 'ir'
+  ? `${current.base} — ${current.ru}`
+  : current.en
+}
       </div>
 
       <div class="row" style="margin-top:16px; justify-content:center">
@@ -1085,6 +1098,30 @@ panelEl.innerHTML = `
   </div>
 `;
 
+document.getElementById('repKnow').onclick = () => {
+  current.streak += 1;
+
+  if (currentItem.type === 'ir' && current.streak >= 3) {
+    current.learned = true;
+    current.needRepeat = false;
+  }
+
+  saveState();
+  saveIrregulars();
+  setTimeout(renderRepeat, 400);
+};
+document.getElementById('repDontKnow').onclick = () => {
+  current.errors += 1;
+  current.streak = 0;
+
+  if (currentItem.type === 'ir') {
+    current.needRepeat = true;
+  }
+
+  saveState();
+  saveIrregulars();
+  setTimeout(renderRepeat, 400);
+};
 
   document.getElementById('repKnow').onclick = () => {
     current.errors = Math.max(0, current.errors - 1);
@@ -1877,25 +1914,31 @@ function renderIrAssembly() {
     if (ok) {
       current.streak = (current.streak || 0) + 1;
 
-      if (current.streak >= 3) {
-        current.learned = true;
-        resultEl.innerHTML = '🎉 Выучено!';
-      } else {
+if (current.streak >= 3) {
+  current.learned = true;
+  current.needRepeat = false; // ✅ УБРАЛИ ИЗ ПОВТОРА
+  resultEl.innerHTML = '🎉 Выучено!';
+} else {
         resultEl.innerHTML = `✅ Верно (${current.streak}/3)`;
       }
-    } else {
-      current.errors = (current.errors || 0) + 1;
-      current.streak = 0;
+} else {
+  current.errors = (current.errors || 0) + 1;
+  current.streak = 0;
 
-      resultEl.innerHTML = `
-        ❌ Ошибка<br>
-        <span class="muted">Past:</span> <b>${current.past}</b>,
-        <span class="muted">PP:</span> <b>${current.pp}</b>
-      `;
-    }
+  // 🚨 ОТПРАВЛЯЕМ В ПОВТОР
+  current.needRepeat = true;
+  current.learned = false;
+
+  resultEl.innerHTML = `
+    ❌ Ошибка<br>
+    <span class="muted">Past:</span> <b>${current.past}</b>,
+    <span class="muted">PP:</span> <b>${current.pp}</b>
+  `;
+}
+
 
     saveIrregulars();
-    setTimeout(renderIrAssembly, 1500);
+    setTimeout(renderIrAssembly, 1200);
   }
 }
 
