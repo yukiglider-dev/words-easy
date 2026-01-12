@@ -476,6 +476,20 @@ html, body {
   justify-content: center;
 }
 
+table {
+  table-layout: fixed;
+}
+
+th:nth-child(1), td:nth-child(1) { width: 50px; }
+th:nth-child(4), td:nth-child(4) { width: 130px; }
+th:nth-child(5), td:nth-child(5),
+th:nth-child(6), td:nth-child(6),
+th:nth-child(7), td:nth-child(7) {
+  width: 90px;
+}
+th:nth-child(8), td:nth-child(8) {
+  width: 70px;
+}
 
 th.center,
 td.center {
@@ -1162,8 +1176,9 @@ function renderDict() {
   const tbody = document.getElementById("dict-body");
   if (!tbody) return;
 
-  let list = words.slice();
+  let list = [...words];
 
+  // 🔍 поиск
   if (dictQuery.trim()) {
     const q = dictQuery.toLowerCase();
     list = list.filter(w =>
@@ -1173,12 +1188,16 @@ function renderDict() {
     );
   }
 
+  // 🎯 фильтр
   if (dictFilter === 'learned') {
     list = list.filter(w => isLearned(w));
   }
   if (dictFilter === 'not_learned') {
     list = list.filter(w => !isLearned(w));
   }
+
+  // 🔤 СОРТИРОВКА ПО АЛФАВИТУ
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
 
   tbody.innerHTML = list.length
     ? list.map((w, i) => `
@@ -1190,12 +1209,7 @@ function renderDict() {
         <td class="center">${w.streak}</td>
         <td class="center">${w.errors}</td>
         <td class="center">
-          <input
-            type="checkbox"
-            class="dictManual"
-            data-id="${w.id}"
-            ${w.manual ? 'checked' : ''}
-          >
+          <input type="checkbox" data-id="${w.id}" class="dictManual" ${w.manual ? 'checked' : ''}>
         </td>
         <td class="center">
           <button class="btn error btn-del" data-id="${w.id}">✕</button>
@@ -1206,6 +1220,7 @@ function renderDict() {
 
   bindDictActions();
 }
+
 
 
 function bindDictActions() {
