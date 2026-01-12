@@ -455,6 +455,22 @@ html, body {
   justify-content: center;  /* горизонталь */
 }
 
+.assembly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.options.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option.active {
+  background: var(--primary);
+  color: #fff;
+}
 
 
   </style>
@@ -883,14 +899,14 @@ console.log('renderTabs работает');
 
 function renderTabs() {
   const tabs = [
-    { id: 'test', label: 'Тест' },
-    { id: 'cards', label: 'Карточки' },
-    { id: 'repeat', label: 'Повтор' },
-    { id: 'input', label: 'Ввод' },
-    { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' },
-    { id: 'irregulars', label: 'Неправильные глаголы' },
-    { id: 'ir-assembly', label: 'Сборка (глаголы)' } // 👈 ВОТ ЭТО
+    { id: 'test', label: 'Test' },
+    { id: 'cards', label: 'Cards' },
+    { id: 'repeat', label: 'Repeat' },
+    { id: 'input', label: 'Enter' },
+    { id: 'match', label: 'Bingo' },
+    { id: 'dict', label: ' Glossary' },
+    { id: 'irregulars', label: 'Irregular verbs' },
+    { id: 'ir-assembly', label: 'Verb Assembly' } // 👈 ВОТ ЭТО
   ];
 
 
@@ -1785,18 +1801,16 @@ function renderIrAssembly() {
     return;
   }
 
-  // 🎯 случайный глагол
   const current = pool[Math.floor(Math.random() * pool.length)];
 
-  // 🧠 генерация вариантов
   function getOptions(correct, field) {
     const others = irregulars
       .filter(v => v !== current)
       .map(v => v[field])
       .filter(v => v && v !== correct);
 
-    const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
-    return [...shuffled, correct].sort(() => Math.random() - 0.5);
+    return [...others.sort(() => Math.random() - 0.5).slice(0, 3), correct]
+      .sort(() => Math.random() - 0.5);
   }
 
   const pastOptions = getOptions(current.past, 'past');
@@ -1804,76 +1818,72 @@ function renderIrAssembly() {
 
   panelEl.innerHTML = `
     <div class="card">
-      <div class="center" style="font-size:24px; font-weight:700">
+      <div class="center" style="font-size:26px; font-weight:700">
         ${current.base}
       </div>
 
-      <div class="center muted" style="margin-top:6px">
+      <div class="center muted" style="margin-bottom:14px">
         ${current.ru}
       </div>
 
-      <div class="divider"></div>
+      <div class="assembly-grid">
+        <div>
+          <div class="muted center">Past</div>
+          <div class="options vertical">
+            ${pastOptions.map(v =>
+              `<div class="option" data-type="past" data-val="${v}">${v}</div>`
+            ).join('')}
+          </div>
+        </div>
 
-      <div>
-        <div class="muted">Past Simple</div>
-        <div class="options">
-          ${pastOptions.map(v =>
-            `<button class="option" data-type="past" data-val="${v}">${v}</button>`
-          ).join('')}
+        <div>
+          <div class="muted center">PP</div>
+          <div class="options vertical">
+            ${ppOptions.map(v =>
+              `<div class="option" data-type="pp" data-val="${v}">${v}</div>`
+            ).join('')}
+          </div>
         </div>
       </div>
 
-      <div style="margin-top:12px">
-        <div class="muted">Past Participle</div>
-        <div class="options">
-          ${ppOptions.map(v =>
-            `<button class="option" data-type="pp" data-val="${v}">${v}</button>`
-          ).join('')}
-        </div>
-      </div>
-
-      <div class="center" style="margin-top:16px">
-        <button class="btn primary" id="checkIrAssembly">Проверить</button>
-      </div>
-
-      <div id="assemblyResult" class="center muted" style="margin-top:10px"></div>
+      <div id="assemblyResult" class="center muted" style="margin-top:12px"></div>
     </div>
   `;
 
   let selected = { past: null, pp: null };
 
-  document.querySelectorAll('.option').forEach(btn => {
-    btn.onclick = () => {
-      const type = btn.dataset.type;
-      selected[type] = btn.dataset.val;
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.onclick = () => {
+      const type = opt.dataset.type;
+      selected[type] = opt.dataset.val;
 
-      document.querySelectorAll(`.option[data-type="${type}"]`)
-        .forEach(b => b.classList.remove('active'));
+      document
+        .querySelectorAll(`.option[data-type="${type}"]`)
+        .forEach(o => o.classList.remove('active'));
 
-      btn.classList.add('active');
+      opt.classList.add('active');
+
+      if (selected.past && selected.pp) {
+        check();
+      }
     };
   });
 
-  document.getElementById('checkIrAssembly').onclick = () => {
-    if (!selected.past || !selected.pp) {
-      alert('Выбери оба варианта');
-      return;
-    }
+  function check() {
+    const resultEl = document.getElementById('assemblyResult');
 
     const ok =
       selected.past === current.past &&
       selected.pp === current.pp;
 
-    const resultEl = document.getElementById('assemblyResult');
-
     if (ok) {
       current.streak = (current.streak || 0) + 1;
 
-      resultEl.innerHTML = `✅ Верно! Серия: ${current.streak}`;
-
       if (current.streak >= 3) {
         current.learned = true;
-        resultEl.innerHTML = `🎉 Выучено!`;
+        resultEl.innerHTML = '🎉 Выучено!';
+      } else {
+        resultEl.innerHTML = `✅ Верно (${current.streak}/3)`;
       }
     } else {
       current.errors = (current.errors || 0) + 1;
@@ -1881,14 +1891,14 @@ function renderIrAssembly() {
 
       resultEl.innerHTML = `
         ❌ Ошибка<br>
-        Past: <b>${current.past}</b><br>
-        PP: <b>${current.pp}</b>
+        <span class="muted">Past:</span> <b>${current.past}</b>,
+        <span class="muted">PP:</span> <b>${current.pp}</b>
       `;
     }
 
     saveIrregulars();
-    setTimeout(renderIrAssembly, 1200);
-  };
+    setTimeout(renderIrAssembly, 900);
+  }
 }
 
 
