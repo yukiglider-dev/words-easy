@@ -1578,9 +1578,11 @@ function renderIrregulars() {
     </div>
   `;
 
-  document.getElementById('irSearch').oninput = e => {
-    window.irQuery = e.target.value note; renderIrregulars();
-  };
+document.getElementById('irSearch').oninput = e => {
+  window.irQuery = e.target.value;
+  renderIrregulars();
+};
+
 
   document.getElementById('irFilter').onchange = e => {
     window.irFilter = e.target.value; renderIrregulars();
