@@ -1500,6 +1500,13 @@ function renderIrregulars() {
   let list = irregulars.slice();
 
   if (window.irQuery.trim()) {
+    function renderIrregulars() {
+  window.irQuery = window.irQuery || '';
+  window.irFilter = window.irFilter || 'all';
+
+  let list = irregulars.slice();
+
+  if (window.irQuery.trim()) {
     const q = window.irQuery.toLowerCase();
     list = list.filter(v =>
       v.base.toLowerCase().includes(q) ||
@@ -1549,6 +1556,7 @@ function renderIrregulars() {
             <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
+            <th>Удалить</th>
             <th></th>
           </tr>
         </thead>
