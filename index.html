@@ -436,6 +436,14 @@ html, body {
   justify-content: center; /* по горизонтали */
   text-align: center;
 }
+.empty-center {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+}
 
   </style>
 </head>
@@ -778,7 +786,11 @@ if (wordEl && trEl) {
     let flipped = false;
     function renderCards() {
       const pool = getUnlearned();
-      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены — можно перейти к повторам или словарю.</div>`; return; }
+      if (!pool.length) {panelEl.innerHTML = `
+  <div class="empty-center">
+    Все слова выучены — можно перейти к повторам или словарю.
+  </div>
+`; return; }
       const current = nextOf(pool, cardsIdx) || pool[0];
 
       panelEl.innerHTML = `
@@ -870,7 +882,14 @@ if (!pool.length) {
     let inputIdx = { value: -1 };
     function renderInput() {
       const pool = getUnlearned();
-      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Можете тренироваться в других режимах.</div>`; return; }
+if (!pool.length) {
+  panelEl.innerHTML = `
+    <div class="empty-center">
+      Все слова выучены. Можете тренироваться в других режимах.
+    </div>
+  `;
+  return;
+}
       const current = nextOf(pool, inputIdx) || pool[0];
 
       panelEl.innerHTML = `
