@@ -956,130 +956,128 @@ function renderDict() {
   const panelEl = document.getElementById('panel');
   if (!panelEl) return;
 
-  const prevFocus = document.activeElement?.id || null;
-  const prevCursor =
-    document.activeElement?.selectionStart ?? null;
+  const query = (window.dictQuery || '').toLowerCase();
+  const filter = window.dictFilter || 'all';
 
-  let list = [...words];
+  let list = words.slice();
 
-  if (dictQuery) {
-    const q = dictQuery.toLowerCase();
+  // 🔍 поиск
+  if (query) {
     list = list.filter(w =>
-      w.en.toLowerCase().includes(q) ||
-      w.ru.toLowerCase().includes(q) ||
-      (w.tr && w.tr.toLowerCase().includes(q))
+      w.en.toLowerCase().includes(query) ||
+      w.ru.toLowerCase().includes(query)
     );
   }
 
-  if (dictFilter === 'learned') {
+  // 🔽 фильтр
+  if (filter === 'learned') {
     list = list.filter(w => w.manual);
-  } else if (dictFilter === 'unlearned') {
+  } else if (filter === 'unlearned') {
     list = list.filter(w => !w.manual);
   }
 
   panelEl.innerHTML = `
-    <div class="dict-top">
-      <input id="dictSearch" placeholder="Поиск..." value="${dictQuery}">
-      <select id="dictFilter">
-        <option value="all">Все слова</option>
-        <option value="learned">Выученные</option>
-        <option value="unlearned">Не выученные</option>
+    <div class="dict-controls">
+      <input
+        id="dictSearch"
+        class="dict-search"
+        placeholder="Поиск..."
+        value="${window.dictQuery || ''}"
+      >
+
+      <select id="dictFilter" class="dict-select">
+        <option value="all" ${filter === 'all' ? 'selected' : ''}>Все слова</option>
+        <option value="learned" ${filter === 'learned' ? 'selected' : ''}>Выученные</option>
+        <option value="unlearned" ${filter === 'unlearned' ? 'selected' : ''}>Не выученные</option>
       </select>
+
       <button id="addWordBtn">+ Add Word</button>
       <button id="markAll">Отметить всё выученным</button>
       <button id="resetAll">Полный сброс</button>
     </div>
 
-    <table class="dict-table">
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Английское</th>
-          <th>Перевод</th>
-          <th>Транскрипция</th>
-          <th>Правильно подряд</th>
-          <th>Ошибки</th>
-          <th>Выучено</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${
-          list.length
-            ? list.map((w, i) => `
-              <tr>
-                <td>${i + 1}</td>
-                <td>${w.en}</td>
-                <td>${w.ru}</td>
-                <td>${w.tr || ''}</td>
-                <td>${w.streak || 0}</td>
-                <td>${w.errors || 0}</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    class="dictManual"
-                    data-id="${w.id}"
-                    ${w.manual ? 'checked' : ''}
-                  >
-                </td>
-              </tr>
-            `).join('')
-            : `<tr><td colspan="7" style="text-align:center;padding:20px;">
-                Ничего не найдено
-              </td></tr>`
-        }
-      </tbody>
-    </table>
+    <div class="dict-table-wrap">
+      <table class="dict-table">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Английское</th>
+            <th>Перевод</th>
+            <th>Транскрипция</th>
+            <th>Правильно подряд</th>
+            <th>Ошибки</th>
+            <th>Выучено</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            list.length
+              ? list.map((w, i) => `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td>${w.en}</td>
+                  <td>${w.ru}</td>
+                  <td>${w.tr || ''}</td>
+                  <td>${w.streak || 0}</td>
+                  <td>${w.errors || 0}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      class="dictManual"
+                      data-id="${w.id}"
+                      ${w.manual ? 'checked' : ''}
+                    >
+                  </td>
+                </tr>
+              `).join('')
+              : `<tr>
+                  <td colspan="7" class="dict-empty">
+                    Ничего не найдено
+                  </td>
+                </tr>`
+          }
+        </tbody>
+      </table>
+    </div>
   `;
 
-  const searchInput = document.getElementById('dictSearch');
-  const filterSelect = document.getElementById('dictFilter');
-
-  filterSelect.value = dictFilter;
-
-  searchInput.oninput = () => {
-    dictQuery = searchInput.value;
+  // 🔧 обработчики (ВАЖНО — oninput, а не onchange)
+  document.getElementById('dictSearch').oninput = e => {
+    window.dictQuery = e.target.value;
     renderDict();
   };
 
-  filterSelect.onchange = () => {
-    dictFilter = filterSelect.value;
+  document.getElementById('dictFilter').onchange = e => {
+    window.dictFilter = e.target.value;
+    renderDict();
+  };
+
+  document.querySelectorAll('.dictManual').forEach(cb => {
+    cb.onchange = () => {
+      const w = words.find(x => x.id == cb.dataset.id);
+      if (w) w.manual = cb.checked;
+      saveWords();
+    };
+  });
+
+  document.getElementById('markAll').onclick = () => {
+    words.forEach(w => w.manual = true);
+    saveWords();
     renderDict();
   };
 
   document.getElementById('resetAll').onclick = () => {
-    if (!confirm('Точно сбросить весь прогресс?')) return;
+    if (!confirm('Сбросить весь прогресс?')) return;
     words.forEach(w => {
+      w.manual = false;
       w.streak = 0;
       w.errors = 0;
-      w.manual = false;
     });
-    saveState();
+    saveWords();
     renderDict();
   };
 
-  document.getElementById('markAll').onclick = () => {
-    words.forEach(w => (w.manual = true));
-    saveState();
-    renderDict();
-  };
-
-  panelEl.querySelectorAll('.dictManual').forEach(ch => {
-    ch.onchange = () => {
-      const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (w) w.manual = ch.checked;
-      saveState();
-    };
-  });
-
-  if (prevFocus) {
-    const el = document.getElementById(prevFocus);
-    if (el) {
-      el.focus();
-      if (prevCursor !== null && el.setSelectionRange) {
-        el.setSelectionRange(prevCursor, prevCursor);
-      }
-    }
-  }
+  document.getElementById('addWordBtn').onclick = openAddWordModal;
 }
 
 
