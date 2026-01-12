@@ -953,7 +953,7 @@ if (!pool.length) {
     // ---------- Tab: Dictionary ----------
     let dictFilter = 'all';
     let dictQuery = '';
-function renderDict(keepFocus = false) {
+function renderDict() {
   const header = `
   <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
     <div class="field" style="flex:2; min-width:240px">
@@ -1041,6 +1041,18 @@ if (searchInput) {
     renderDict(true);
   };
 }
+const searchInput = document.getElementById('dictSearch');
+const filterSelect = document.getElementById('dictFilter');
+
+searchInput.addEventListener('input', () => {
+  dictQuery = searchInput.value;
+  updateDictTable();
+});
+
+filterSelect.addEventListener('change', () => {
+  dictFilter = filterSelect.value;
+  updateDictTable();
+});
 
 const filterSelect = document.getElementById('dictFilter');
 if (filterSelect) {
