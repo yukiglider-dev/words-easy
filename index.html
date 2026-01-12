@@ -612,6 +612,37 @@ html, body {
       errors: 0,
       manual: false
     }));
+const RULES = {
+  present_simple_3rd: {
+    title: 'He / She / It + s',
+    levels: [
+      'С he / she / it к глаголу добавляется -s',
+      'He likes, she works, it starts',
+      'В Present Simple с he/she/it всегда используется -s'
+    ],
+    examples: ['he likes', 'she needs', 'it starts']
+  },
+
+  to_be_present: {
+    title: 'Глагол to be (am / is / are)',
+    levels: [
+      'I am, you are, he is',
+      'Форма to be зависит от подлежащего',
+      'To be изменяется по лицам и числам'
+    ],
+    examples: ['I am busy', 'he is rich', 'they are right']
+  },
+
+  adjectives: {
+    title: 'Прилагательные',
+    levels: [
+      'Прилагательные не изменяются',
+      'Прилагательное не зависит от лица',
+      'В английском прилагательные не склоняются'
+    ],
+    examples: ['rich', 'busy', 'possible']
+  }
+};
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -719,6 +750,7 @@ function renderTabs() {
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
     { id: 'dict', label: 'Словарь' }
+    { id: 'rules', label: 'Правила' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -1077,6 +1109,24 @@ function renderDict() {
 
   bindDictActions();
 }
+function renderRules() {
+  panelEl.innerHTML = `
+    <div class="card" style="max-width:720px; margin:0 auto">
+      <div style="font-size:22px; font-weight:800">
+        📘 Правила
+      </div>
+
+      <div class="muted" style="margin-top:12px">
+        Здесь будут показываться правила, которые помогут тебе понять
+        слова, с которыми возникают ошибки.
+      </div>
+
+      <div class="pill" style="margin-top:16px">
+        Скоро здесь появятся персональные объяснения ✨
+      </div>
+    </div>
+  `;
+}
 
 function bindDictActions() {
   // чекбоксы "выучено"
@@ -1237,6 +1287,7 @@ function updateDictTable() {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
+        case 'match': renderRules(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
