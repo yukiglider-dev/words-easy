@@ -851,7 +851,7 @@ function normalizeIrregulars() {
 }
 
 // ВАЖНО: вызываем сразу после загрузки
-recalcIrregulars();
+normalizeIrregulars();
 
 
 function loadState() {
@@ -1157,12 +1157,7 @@ panelEl.innerHTML = `
   }
 
   // берём первый (ВАЖНО: всегда первый, без зацикливания)
-const current = repeatList[0];
-if (current.type === 'ir') {
-  renderIrregularRepeatTest(current.item);
-  return;
-}
-
+  const current = repeatList[0];
   const data = current.item;
 
   // отображаем
@@ -1199,8 +1194,7 @@ renderRepeat();
   document.getElementById('repDontKnow').onclick = () => {
 data.errors = (data.errors || 0) + 1;
 data.streak = 0;
-data.needRepeat = true; // 🔥 ОСТАЁТСЯ В REPEAT
-
+data.needRepeat = false;
 
 recalcIrregulars();
 renderRepeat();
@@ -1565,79 +1559,6 @@ function updateDictTable() {
         };
       });
     }
-function renderIrregularRepeatTest(verb) {
-  // что спрашиваем (например: base → past)
-  const question = verb.base;
-  const correct = verb.past;
-
-  // варианты-отвлекалки
-  const distractors = pickRandom(
-    irregulars.map(v => v.past),
-    3,
-    correct
-  );
-
-  const options = shuffle([correct, ...distractors]);
-
-  panelEl.innerHTML = `
-    <div class="card">
-      <div style="font-size:22px; font-weight:700">
-        ${question}
-      </div>
-      <div class="muted" style="margin-top:6px">
-        Прошедшее время
-      </div>
-    </div>
-
-    <div class="options">
-      ${options.map(o => `
-        <div class="option" data-val="${o}">
-          ${o}
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  let answered = false;
-
-  panelEl.querySelectorAll('.option').forEach(opt => {
-    opt.onclick = () => {
-      if (answered) return;
-      answered = true;
-
-      const val = opt.dataset.val;
-      const isCorrect = val === correct;
-
-      if (isCorrect) {
-        opt.classList.add('correct');
-        verb.streak += 1;
-
-        // если правильно — убираем из повтора
-        verb.needRepeat = false;
-      } else {
-        opt.classList.add('wrong');
-    verb.errors += 1;
-verb.streak = 0;
-verb.needRepeat = true; // 🔥 ОБЯЗАТЕЛЬНО
-saveIrregulars();
-
-
-        // оставляем в repeat
-        verb.needRepeat = true;
-
-        panelEl.querySelectorAll('.option').forEach(o => {
-          if (o.dataset.val === correct) {
-            o.classList.add('correct');
-          }
-        });
-      }
-
-      recalcIrregulars();
-
-      setTimeout(renderRepeat, 800);
-    };
-  });
-}
 
     // ---------- Mount ----------
     function renderPanel() {
