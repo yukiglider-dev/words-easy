@@ -35,7 +35,7 @@
       --shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
 
-    html, body {
+    html,  {
       height: 100%;
       background: var(--bg);
       color: var(--text);
@@ -345,11 +345,94 @@
   align-items: center;      /* выравнивание по вертикали */
   gap: 8px;
 }
+/* ===== MODAL ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-backdrop.show {
+  display: flex;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.modal-desc {
+  margin: 6px 0 16px;
+  color: var(--muted);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
 
   </style>
 </head>
 <body>
 
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Word</div>
+      <button class="modal-close" id="closeAddModal">✕</button>
+    </div>
+
+    <div class="modal-desc">
+      Expand your vocabulary by adding a new word.
+    </div>
+
+    <div class="field">
+      <input type="text" id="modalEn" placeholder="English word (e.g. Magnificent)">
+    </div>
+
+    <div class="field" style="margin-top:10px">
+      <input type="text" id="modalRu" placeholder="Russian translation">
+    </div>
+
+    <div class="field" style="margin-top:10px">
+      <input type="text" id="modalTr" placeholder="Transcription (optional)">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="cancelAddWord">Cancel</button>
+      <button class="btn primary" id="confirmAddWord">Add Word</button>
+    </div>
+  </div>
+</div>
 
   <div class="app">
     <div class="header">
@@ -800,10 +883,11 @@ if (!pool.length) {
       </select>
     </div>
 
-    <div class="field" style="display:flex; gap:8px">
-      <button class="btn success" id="markAll">Отметить всё выученным</button>
-<button class="btn error" id="resetAll">Полный сброс</button>
-    </div>
+   <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
+  <button class="btn primary" id="openAddModal">+ Add Word</button>
+  <button class="btn success" id="markAll">Отметить всё выученным</button>
+  <button class="btn error" id="resetAll">Полный сброс</button>
+</div>
   </div>
   <div class="divider"></div>
 `;
@@ -985,6 +1069,60 @@ miniThemeBtn.onclick = () => {
   document.documentElement.setAttribute('data-theme', settings.theme);
   saveSettings();
   updateThemeIcon();
+};
+// ===== ADD WORD MODAL =====
+const addModal = document.getElementById('addModal');
+
+function openAddModal() {
+  addModal.classList.add('show');
+}
+
+function closeAddModal() {
+  addModal.classList.remove('show');
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'openAddModal') openAddModal();
+});
+
+document.getElementById('closeAddModal').onclick = closeAddModal;
+document.getElementById('cancelAddWord').onclick = closeAddModal;
+
+document.getElementById('confirmAddWord').onclick = () => {
+  const en = document.getElementById('modalEn').value.trim();
+  const ru = document.getElementById('modalRu').value.trim();
+  const tr = document.getElementById('modalTr').value.trim();
+
+  if (!en || !ru) {
+    alert('Введите английское слово и перевод');
+    return;
+  }
+
+  if (words.some(w =>
+    w.en.toLowerCase() === en.toLowerCase() &&
+    w.ru.toLowerCase() === ru.toLowerCase()
+  )) {
+    alert('Такое слово уже существует');
+    return;
+  }
+
+  words.push({
+    id: words.length ? Math.max(...words.map(w => w.id)) + 1 : 1,
+    en,
+    ru,
+    tr,
+    streak: 0,
+    errors: 0,
+    manual: false
+  });
+
+  saveState();
+  closeAddModal();
+  renderDict();
+
+  document.getElementById('modalEn').value = '';
+  document.getElementById('modalRu').value = '';
+  document.getElementById('modalTr').value = '';
 };
 
 // при загрузке страницы
