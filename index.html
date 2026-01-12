@@ -1251,40 +1251,52 @@ panelEl.innerHTML = `
     let dictQuery = '';
    function renderDictPanel() {
   panelEl.innerHTML = `
-    <div class="row" style="margin-bottom:12px">
-      <input
-        id="dict-search"
-        type="text"
-        placeholder="Поиск..."
-      />
+  <div class="row" style="margin-bottom:12px; gap:8px; flex-wrap:wrap">
 
-      <select id="dict-filter">
-        <option value="all">Все слова</option>
-        <option value="learned">Выученные</option>
-        <option value="not_learned">Не выученные</option>
-      </select>
+    <input
+      id="dict-search"
+      type="text"
+      placeholder="Поиск..."
+      style="max-width:220px"
+    />
 
-      <button class="btn primary" id="openAddModal">+ Add Word</button>
-    </div>
+    <select id="dict-filter" style="max-width:200px">
+      <option value="all">Все слова</option>
+      <option value="learned">Выученные</option>
+      <option value="not_learned">Не выученные</option>
+    </select>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>Английское</th>
-            <th>Перевод</th>
-            <th>Транскрипция</th>
-            <th class="center">Серия</th>
-            <th class="center">Ошибки</th>
-            <th class="center">Выучено</th>
-            <th class="center">Удалить</th>
-          </tr>
-        </thead>
-        <tbody id="dict-body"></tbody>
-      </table>
-    </div>
-  `;
+    <button class="btn primary" id="openAddModal">+ Add Word</button>
+
+    <button class="btn success" id="markAllLearned">
+      Отметить всё выученным
+    </button>
+
+    <button class="btn error" id="resetAll">
+      Полный сброс
+    </button>
+
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Английское</th>
+          <th>Перевод</th>
+          <th>Транскрипция</th>
+          <th class="center">Серия</th>
+          <th class="center">Ошибки</th>
+          <th class="center">Выучено</th>
+          <th class="center">Удалить</th>
+        </tr>
+      </thead>
+      <tbody id="dict-body"></tbody>
+    </table>
+  </div>
+`;
+
 
   document.getElementById('dict-search').oninput = (e) => {
     dictQuery = e.target.value;
@@ -1352,6 +1364,28 @@ function renderDict() {
 
   bindDictActions();
 }
+// отметить всё выученным
+document.getElementById('markAllLearned').onclick = () => {
+  if (!confirm('Отметить все слова как выученные?')) return;
+  words.forEach(w => {
+    w.manual = true;
+    w.streak = 3;
+  });
+  saveState();
+  renderDict();
+};
+
+// полный сброс
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('Сбросить ВСЮ статистику?')) return;
+  words.forEach(w => {
+    w.streak = 0;
+    w.errors = 0;
+    w.manual = false;
+  });
+  saveState();
+  renderDict();
+};
 
 function bindDictActions() {
   document.querySelectorAll('input[type="checkbox"][data-id]').forEach(ch => {
