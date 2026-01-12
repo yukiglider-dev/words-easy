@@ -959,17 +959,14 @@ if (!pool.length) {
     let dictFilter = 'all';
     let dictQuery = '';
 function renderDict() {
-  <th class="center" style="width:80px">Удалить</th>
   const panelEl = document.getElementById('panel');
   if (!panelEl) return;
 
-  // сохраняем состояние между рендерами
   window.dictQuery = window.dictQuery || '';
   window.dictFilter = window.dictFilter || 'all';
 
   let list = words.slice();
 
-  // поиск
   if (window.dictQuery.trim()) {
     const q = window.dictQuery.toLowerCase();
     list = list.filter(w =>
@@ -979,7 +976,6 @@ function renderDict() {
     );
   }
 
-  // фильтр
   if (window.dictFilter === 'learned') {
     list = list.filter(w => isLearned(w));
   }
@@ -992,26 +988,21 @@ function renderDict() {
   panelEl.innerHTML = `
     <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
       <div class="field" style="flex:2; min-width:240px">
-        <input
-          type="text"
-          id="dictSearch"
-          placeholder="Поиск..."
-          value="${window.dictQuery}"
-        >
+        <input id="dictSearch" type="text" placeholder="Поиск..." value="${window.dictQuery}">
       </div>
 
       <div class="field" style="flex:1; min-width:200px">
         <select id="dictFilter">
           <option value="all" ${window.dictFilter === 'all' ? 'selected' : ''}>Все слова</option>
-          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Только выученные</option>
-          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Только невыученные</option>
+          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Выученные</option>
+          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Невыученные</option>
         </select>
       </div>
 
       <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
         <button class="btn primary" id="openAddModal">+ Add Word</button>
-        <button class="btn success" id="markAll">Отметить всё выученным</button>
-        <button class="btn error" id="resetAll">Полный сброс</button>
+        <button class="btn success" id="markAll">Отметить всё</button>
+        <button class="btn error" id="resetAll">Сброс</button>
       </div>
     </div>
 
@@ -1025,9 +1016,10 @@ function renderDict() {
             <th>Английское</th>
             <th>Перевод</th>
             <th class="center">Транскрипция</th>
-            <th class="center">Правильно подряд</th>
+            <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
+            <th class="center" style="width:80px">Удалить</th>
           </tr>
         </thead>
         <tbody>
@@ -1044,34 +1036,27 @@ function renderDict() {
                   <td class="center">
                     <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
                   </td>
+                  <td class="center">
+                    <button class="btn error btn-del" data-id="${w.id}">✕</button>
+                  </td>
                 </tr>
               `).join('')
-              : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`
+              : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`
           }
         </tbody>
       </table>
     </div>
   `;
 
-  // 🔧 обработчики (ВАЖНО: oninput!)
-document.getElementById('dictSearch').addEventListener('input', e => {
-  window.dictQuery = e.target.value;
-  updateDictTable();
-});
-
+  document.getElementById('dictSearch').oninput = e => {
+    window.dictQuery = e.target.value;
+    updateDictTable();
+  };
 
   document.getElementById('dictFilter').onchange = e => {
     window.dictFilter = e.target.value;
     renderDict();
   };
-
-  document.querySelectorAll('.dictManual').forEach(ch => {
-    ch.onchange = () => {
-      const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (w) w.manual = ch.checked;
-      saveState();
-    };
-  });
 
   document.getElementById('markAll').onclick = () => {
     words.forEach(w => w.manual = true);
@@ -1080,7 +1065,7 @@ document.getElementById('dictSearch').addEventListener('input', e => {
   };
 
   document.getElementById('resetAll').onclick = () => {
-    if (!confirm('Точно сбросить весь прогресс?')) return;
+    if (!confirm('Сбросить весь прогресс?')) return;
     words.forEach(w => {
       w.streak = 0;
       w.errors = 0;
@@ -1089,7 +1074,10 @@ document.getElementById('dictSearch').addEventListener('input', e => {
     saveState();
     renderDict();
   };
+
+  bindDictActions();
 }
+
 function bindDictActions() {
   // чекбоксы "выучено"
   document.querySelectorAll('.dictManual').forEach(ch => {
