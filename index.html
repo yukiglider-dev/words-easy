@@ -763,7 +763,10 @@ function loadIrregulars() {
     return initialIrregulars.slice();
   }
 }
-
+if (irregulars.length < initialIrregulars.length) {
+  irregulars = initialIrregulars.slice();
+  localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
+}
 let irregulars = loadIrregulars();
 
 
