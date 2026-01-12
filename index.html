@@ -642,6 +642,10 @@ const RULES = {
 
   // ===== PRESENT =====
 
+ const RULES = {
+
+  // ===== PRESENT =====
+
   present_simple: {
     title: "Present Simple — факты и привычки",
     levels: [
@@ -650,9 +654,12 @@ const RULES = {
       "Всегда / обычно / каждый день → Present Simple."
     ],
     markers: ["always", "usually", "often", "every day"],
+    endings: {
+      base: "V",
+      highlight: [] // нет окончания
+    },
     examples: [
       "I live in Thailand",
-      "She works every day",
       "We usually eat at home"
     ]
   },
@@ -664,9 +671,17 @@ const RULES = {
       "Если подлежащее — он, она или оно, глагол меняется.",
       "ОН = +S → he works"
     ],
+    endings: {
+      base: "V",
+      highlight: ["s", "es"]
+    },
+    rules: [
+      "После s, sh, ch, x, o → +es",
+      "study → studies"
+    ],
     examples: [
-      "He likes coffee",
-      "She works here"
+      "He work<span class='hl'>s</span>",
+      "She go<span class='hl'>es</span>"
     ]
   },
 
@@ -678,9 +693,18 @@ const RULES = {
       "Сейчас → am / is / are + ing"
     ],
     markers: ["now", "at the moment"],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
+    rules: [
+      "make → making",
+      "run → running",
+      "lie → lying"
+    ],
     examples: [
-      "I am working now",
-      "They are watching TV"
+      "I am work<span class='hl'>ing</span> now",
+      "They are watch<span class='hl'>ing</span> TV"
     ]
   },
 
@@ -692,9 +716,13 @@ const RULES = {
       "Have / has + V3"
     ],
     markers: ["already", "just", "ever", "never"],
+    endings: {
+      base: "V3",
+      highlight: ["ed", "3rd form"]
+    },
     examples: [
-      "I have finished",
-      "She has already eaten"
+      "I have finish<span class='hl'>ed</span>",
+      "She has gone"
     ]
   },
 
@@ -706,9 +734,13 @@ const RULES = {
       "Have / has been + ing"
     ],
     markers: ["for", "since"],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
     examples: [
-      "I have been working for 2 hours",
-      "She has been studying since morning"
+      "I have been work<span class='hl'>ing</span> for 2 hours",
+      "She has been study<span class='hl'>ing</span> since morning"
     ]
   },
 
@@ -722,9 +754,17 @@ const RULES = {
       "Вчера / в прошлом → Past Simple"
     ],
     markers: ["yesterday", "last year", "ago"],
+    endings: {
+      base: "V2",
+      highlight: ["ed", "2nd form"]
+    },
+    rules: [
+      "play → play<span class='hl'>ed</span>",
+      "stop → stop<span class='hl'>ped</span>"
+    ],
     examples: [
-      "I visited Rome",
-      "She finished work"
+      "I visit<span class='hl'>ed</span> Rome",
+      "She went home"
     ]
   },
 
@@ -735,9 +775,13 @@ const RULES = {
       "Что-то происходило в тот момент.",
       "Was / were + ing"
     ],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
     examples: [
-      "I was working at 5 pm",
-      "They were watching TV"
+      "I was work<span class='hl'>ing</span> at 5 pm",
+      "They were watch<span class='hl'>ing</span> TV"
     ]
   },
 
@@ -748,8 +792,12 @@ const RULES = {
       "Сначала одно — потом другое.",
       "Had + V3"
     ],
+    endings: {
+      base: "V3",
+      highlight: ["ed", "3rd form"]
+    },
     examples: [
-      "I had finished before he came",
+      "I had finish<span class='hl'>ed</span> before he came",
       "She had left already"
     ]
   },
@@ -761,9 +809,12 @@ const RULES = {
       "Важно, сколько длилось действие.",
       "Had been + ing"
     ],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
     examples: [
-      "I had been working for hours",
-      "She had been waiting долго"
+      "I had been work<span class='hl'>ing</span> for hours"
     ]
   },
 
@@ -776,8 +827,12 @@ const RULES = {
       "Если решил только что — will.",
       "Сейчас решил → will"
     ],
+    endings: {
+      base: "V",
+      highlight: [] // нет окончания
+    },
     examples: [
-      "I will help you",
+      "I will work",
       "She will call later"
     ]
   },
@@ -789,6 +844,10 @@ const RULES = {
       "Если ты уже решил — going to.",
       "План → am / is / are going to"
     ],
+    endings: {
+      base: "V",
+      highlight: [] // нет окончания
+    },
     examples: [
       "I am going to travel",
       "She is going to study"
@@ -802,9 +861,12 @@ const RULES = {
       "Что-то будет происходить в определённый момент.",
       "Will be + ing"
     ],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
     examples: [
-      "I will be working at 6",
-      "They will be sleeping"
+      "I will be work<span class='hl'>ing</span> at 6"
     ]
   },
 
@@ -815,9 +877,12 @@ const RULES = {
       "Важно, что к моменту будет готово.",
       "Will have + V3"
     ],
+    endings: {
+      base: "V3",
+      highlight: ["ed", "3rd form"]
+    },
     examples: [
-      "I will have finished by 5",
-      "She will have left"
+      "I will have finish<span class='hl'>ed</span> by 5"
     ]
   },
 
@@ -828,9 +893,12 @@ const RULES = {
       "Важно, сколько времени будет длиться.",
       "Will have been + ing"
     ],
+    endings: {
+      base: "V",
+      highlight: ["ing"]
+    },
     examples: [
-      "I will have been working for 5 hours",
-      "She will have been studying all day"
+      "I will have been work<span class='hl'>ing</span> for 5 hours"
     ]
   }
 
