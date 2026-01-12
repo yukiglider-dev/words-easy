@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Words Easy</title>
   <style>
-    :root {
-      --bg: #f9fbfd;
-      --surface: #ffffff;
-      --text: #1f3042;
-      --muted: #5c6b7a;
-      --primary: #58a6ff;
-      --success: #34c759;
-      --error: #ff3b30;
-      --accent-1: #e6f2ff;
-      --accent-2: #e9ffe6;
-      --accent-3: #ffe9e9;
-      --border: #dde6ef;
-      --card-radius: 14px;
-      --btn-radius: 12px;
-      --shadow: 0 8px 24px rgba(31,48,66,0.08);
-    }
+ :root {
+  --bg: #0b1220;
+  --surface: #0f1b2d;
+  --card: #14243c;
+
+  --text: #ffffff;
+  --muted: #8fa3bf;
+
+  --primary: #5da9ff;
+  --success: #4ade80;
+  --error: #f87171;
+
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+
     [data-theme="dark"] {
       --bg: #0f1722;
       --surface: #152233;
@@ -103,6 +103,12 @@
     button.primary { background: var(--primary); color: #fff; border-color: transparent; }
     button.success { background: var(--success); color: #fff; border-color: transparent; }
     button.error { background: var(--error); color: #fff; border-color: transparent; }
+.container {
+  background: linear-gradient(180deg, #0f1b2d, #0b1220);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
 
     .tabs {
       display: flex;
@@ -130,6 +136,17 @@
       padding: 16px;
       min-height: 220px;
     }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(
+    1200px 600px at top,
+    #0f1b2d 0%,
+    #0b1220 55%,
+    #070d18 100%
+  );
+  color: var(--text);
+}
 
     .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .muted { color: var(--muted); }
