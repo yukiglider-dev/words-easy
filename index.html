@@ -1705,13 +1705,12 @@ function bindIrregularActions() {
     };
   });
 }
-
 function renderIrregulars() {
-  // сохраняем состояние
+  const panel = document.getElementById('panel');
+
   window.irQuery = window.irQuery ?? '';
   window.irFilter = window.irFilter ?? 'all';
 
-  // ===== РАЗМЕТКА (ОДИН РАЗ) =====
   panel.innerHTML = `
     <div class="row" style="gap:12px; flex-wrap:wrap; align-items:center">
 
@@ -1729,7 +1728,6 @@ function renderIrregulars() {
         <option value="unlearned">Невыученные</option>
       </select>
 
-      <button class="btn primary" id="addIrregular">+ Add</button>
       <button class="btn success" id="markAllIrregulars">Отметить всё</button>
       <button class="btn error" id="resetIrregulars">Сброс</button>
     </div>
@@ -1748,7 +1746,6 @@ function renderIrregulars() {
             <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
-            <th class="center">Удалить</th>
           </tr>
         </thead>
         <tbody id="irTbody"></tbody>
@@ -1757,7 +1754,92 @@ function renderIrregulars() {
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
-  updateIrregularsCounter();
+
+  function updateTable() {
+    let list = irregulars.slice();
+
+    if (window.irQuery.trim()) {
+      const q = window.irQuery.toLowerCase();
+      list = list.filter(v =>
+        v.base.toLowerCase().includes(q) ||
+        v.past.toLowerCase().includes(q) ||
+        v.pp.toLowerCase().includes(q) ||
+        v.ru.toLowerCase().includes(q)
+      );
+    }
+
+    if (window.irFilter === 'learned') {
+      list = list.filter(v => v.learned);
+    }
+    if (window.irFilter === 'unlearned') {
+      list = list.filter(v => !v.learned);
+    }
+
+    list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
+
+    const tbody = document.getElementById('irTbody');
+
+    tbody.innerHTML = list.length
+      ? list.map((v, i) => `
+        <tr class="${v.learned ? 'learned-row' : ''}">
+          <td>${i + 1}</td>
+          <td>${v.base}</td>
+          <td>${v.past}</td>
+          <td>${v.pp}</td>
+          <td>${v.ru}</td>
+          <td class="center">${v.streak}</td>
+          <td class="center">${v.errors}</td>
+          <td class="center">
+            <input type="checkbox" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
+          </td>
+        </tr>
+      `).join('')
+      : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`;
+
+    tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = () => {
+        const item = irregulars.find(v => v.id == cb.dataset.id);
+        item.learned = cb.checked;
+
+        saveIrregulars();
+        updateProgress(); // 🔥 ВАЖНО
+        updateTable();
+      };
+    });
+  }
+
+  document.getElementById('irSearch').oninput = e => {
+    window.irQuery = e.target.value;
+    updateTable();
+  };
+
+  document.getElementById('irFilter').onchange = e => {
+    window.irFilter = e.target.value;
+    updateTable();
+  };
+
+  document.getElementById('markAllIrregulars').onclick = () => {
+    irregulars.forEach(v => v.learned = true);
+    saveIrregulars();
+    updateProgress();
+    updateTable();
+  };
+
+  document.getElementById('resetIrregulars').onclick = () => {
+    if (!confirm('Сбросить прогресс?')) return;
+    irregulars.forEach(v => {
+      v.learned = false;
+      v.streak = 0;
+      v.errors = 0;
+    });
+    saveIrregulars();
+    updateProgress();
+    updateTable();
+  };
+
+  updateTable();
+}
+
 
 function normalizeIrregulars() {
   irregulars.forEach(v => {
