@@ -509,6 +509,14 @@ html, body {
 </div>
     <div class="panel" id="panel"></div>
   </div>
+const miniUI = document.querySelector('.mini-ui.inline');
+
+const miniIrCounter = document.createElement('div');
+miniIrCounter.className = 'mini-counter';
+miniIrCounter.id = 'miniIrCounter';
+miniIrCounter.textContent = '— / —';
+
+miniUI.insertBefore(miniIrCounter, document.getElementById('miniTheme'));
 
   <script>
     // ---------- Data & Storage ----------
@@ -842,13 +850,22 @@ function saveIrregulars() {
     function isLearned(w) { return w.streak >= 3 || w.manual; }
     function getUnlearned() { return words.filter(w => !isLearned(w)); }
 
- function updateProgress() {
-  const total = words.length;
-  const remaining = words.filter(w => !isLearned(w)).length;
+function updateProgress() {
+  // ===== СЛОВА =====
+  const totalWords = words.length;
+  const learnedWords = words.filter(w => isLearned(w)).length;
 
   const mini = document.getElementById('miniCounter');
-  if (mini) mini.textContent = `${total - remaining} / ${total}`;
+  if (mini) mini.textContent = `${learnedWords} / ${totalWords}`;
+
+  // ===== НЕПРАВИЛЬНЫЕ ГЛАГОЛЫ =====
+  const totalIr = irregulars.length;
+  const learnedIr = irregulars.filter(v => v.learned).length;
+
+  const miniIr = document.getElementById('miniIrCounter');
+  if (miniIr) miniIr.textContent = `${learnedIr} / ${totalIr}`;
 }
+
 
     function shuffle(arr) {
       const a = arr.slice();
