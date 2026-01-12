@@ -956,92 +956,97 @@ function renderDict() {
   const panelEl = document.getElementById('panel');
   if (!panelEl) return;
 
-  const query = (window.dictQuery || '').toLowerCase();
-  const filter = window.dictFilter || 'all';
+  // сохраняем состояние между рендерами
+  window.dictQuery = window.dictQuery || '';
+  window.dictFilter = window.dictFilter || 'all';
 
   let list = words.slice();
 
-  // 🔍 поиск
-  if (query) {
+  // поиск
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
     list = list.filter(w =>
-      w.en.toLowerCase().includes(query) ||
-      w.ru.toLowerCase().includes(query)
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
     );
   }
 
-  // 🔽 фильтр
-  if (filter === 'learned') {
-    list = list.filter(w => w.manual);
-  } else if (filter === 'unlearned') {
-    list = list.filter(w => !w.manual);
+  // фильтр
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
   }
 
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+
   panelEl.innerHTML = `
-    <div class="dict-controls">
-      <input
-        id="dictSearch"
-        class="dict-search"
-        placeholder="Поиск..."
-        value="${window.dictQuery || ''}"
-      >
+    <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+      <div class="field" style="flex:2; min-width:240px">
+        <input
+          type="text"
+          id="dictSearch"
+          placeholder="Поиск..."
+          value="${window.dictQuery}"
+        >
+      </div>
 
-      <select id="dictFilter" class="dict-select">
-        <option value="all" ${filter === 'all' ? 'selected' : ''}>Все слова</option>
-        <option value="learned" ${filter === 'learned' ? 'selected' : ''}>Выученные</option>
-        <option value="unlearned" ${filter === 'unlearned' ? 'selected' : ''}>Не выученные</option>
-      </select>
+      <div class="field" style="flex:1; min-width:200px">
+        <select id="dictFilter">
+          <option value="all" ${window.dictFilter === 'all' ? 'selected' : ''}>Все слова</option>
+          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Только выученные</option>
+          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Только невыученные</option>
+        </select>
+      </div>
 
-      <button id="addWordBtn">+ Add Word</button>
-      <button id="markAll">Отметить всё выученным</button>
-      <button id="resetAll">Полный сброс</button>
+      <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn primary" id="openAddModal">+ Add Word</button>
+        <button class="btn success" id="markAll">Отметить всё выученным</button>
+        <button class="btn error" id="resetAll">Полный сброс</button>
+      </div>
     </div>
 
-    <div class="dict-table-wrap">
-      <table class="dict-table">
+    <div class="divider"></div>
+
+    <div class="table-wrap">
+      <table>
         <thead>
           <tr>
-            <th>№</th>
+            <th class="center">№</th>
             <th>Английское</th>
             <th>Перевод</th>
-            <th>Транскрипция</th>
-            <th>Правильно подряд</th>
-            <th>Ошибки</th>
-            <th>Выучено</th>
+            <th class="center">Транскрипция</th>
+            <th class="center">Правильно подряд</th>
+            <th class="center">Ошибки</th>
+            <th class="center">Выучено</th>
           </tr>
         </thead>
         <tbody>
           ${
             list.length
               ? list.map((w, i) => `
-                <tr>
-                  <td>${i + 1}</td>
+                <tr class="${isLearned(w) ? 'learned-row' : ''}">
+                  <td class="center">${i + 1}</td>
                   <td>${w.en}</td>
                   <td>${w.ru}</td>
-                  <td>${w.tr || ''}</td>
-                  <td>${w.streak || 0}</td>
-                  <td>${w.errors || 0}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      class="dictManual"
-                      data-id="${w.id}"
-                      ${w.manual ? 'checked' : ''}
-                    >
+                  <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+                  <td class="center">${w.streak}</td>
+                  <td class="center">${w.errors}</td>
+                  <td class="center">
+                    <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
                   </td>
                 </tr>
               `).join('')
-              : `<tr>
-                  <td colspan="7" class="dict-empty">
-                    Ничего не найдено
-                  </td>
-                </tr>`
+              : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`
           }
         </tbody>
       </table>
     </div>
   `;
 
-  // 🔧 обработчики (ВАЖНО — oninput, а не onchange)
+  // 🔧 обработчики (ВАЖНО: oninput!)
   document.getElementById('dictSearch').oninput = e => {
     window.dictQuery = e.target.value;
     renderDict();
@@ -1052,33 +1057,32 @@ function renderDict() {
     renderDict();
   };
 
-  document.querySelectorAll('.dictManual').forEach(cb => {
-    cb.onchange = () => {
-      const w = words.find(x => x.id == cb.dataset.id);
-      if (w) w.manual = cb.checked;
-      saveWords();
+  document.querySelectorAll('.dictManual').forEach(ch => {
+    ch.onchange = () => {
+      const w = words.find(x => x.id === Number(ch.dataset.id));
+      if (w) w.manual = ch.checked;
+      saveState();
     };
   });
 
   document.getElementById('markAll').onclick = () => {
     words.forEach(w => w.manual = true);
-    saveWords();
+    saveState();
     renderDict();
   };
 
   document.getElementById('resetAll').onclick = () => {
-    if (!confirm('Сбросить весь прогресс?')) return;
+    if (!confirm('Точно сбросить весь прогресс?')) return;
     words.forEach(w => {
-      w.manual = false;
       w.streak = 0;
       w.errors = 0;
+      w.manual = false;
     });
-    saveWords();
+    saveState();
     renderDict();
   };
-
-  document.getElementById('addWordBtn').onclick = openAddWordModal;
 }
+
 
 
     // ---------- Tab: Match ----------
