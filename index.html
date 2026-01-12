@@ -891,8 +891,9 @@ if (wordEl && trEl) {
 
   const current = nextOf(pool, repeatIdx) || pool[0];
 
-  panelEl.innerHTML = `
-    <div class="card">
+panelEl.innerHTML = `
+  <div class="panel-center">
+    <div class="card" style="max-width:520px">
       <div style="font-size:22px; font-weight:700">
         ${current.en}
       </div>
@@ -906,7 +907,9 @@ if (wordEl && trEl) {
         Ошибок: ${current.errors}, Серия: ${current.streak}
       </div>
     </div>
-  `;
+  </div>
+`;
+
 
   document.getElementById('repKnow').onclick = () => {
     current.errors = Math.max(0, current.errors - 1);
