@@ -562,6 +562,7 @@ function renderTabs() {
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
     { id: 'dict', label: 'Словарь' }
+    { id: 'add', label: 'Добавить' } 
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -645,6 +646,72 @@ if (wordEl && trEl) {
         };
       });
     }
+// ---------- Tab: Add Word ----------
+function renderAdd() {
+  panelEl.innerHTML = `
+    <div class="card" style="max-width:520px; margin:0 auto">
+      <div style="font-size:22px; font-weight:700; margin-bottom:12px">
+        Добавить новое слово
+      </div>
+
+      <div class="field">
+        <input type="text" id="addEn" placeholder="English word">
+      </div>
+
+      <div class="field" style="margin-top:10px">
+        <input type="text" id="addRu" placeholder="Перевод">
+      </div>
+
+      <div class="field" style="margin-top:10px">
+        <input type="text" id="addTr" placeholder="Транскрипция (необязательно)">
+      </div>
+
+      <div class="row" style="margin-top:16px; justify-content:center">
+        <button class="btn success" id="addWordBtn">Добавить слово</button>
+      </div>
+
+      <div id="addFeedback" class="muted" style="margin-top:12px; text-align:center"></div>
+    </div>
+  `;
+
+  document.getElementById('addWordBtn').onclick = () => {
+    const en = document.getElementById('addEn').value.trim();
+    const ru = document.getElementById('addRu').value.trim();
+    const tr = document.getElementById('addTr').value.trim();
+
+    const fb = document.getElementById('addFeedback');
+
+    if (!en || !ru) {
+      fb.innerHTML = `<span style="color: var(--error)">Введите английское слово и перевод</span>`;
+      return;
+    }
+
+    // проверка на дубликат
+    if (words.some(w => w.en.toLowerCase() === en.toLowerCase() && w.ru.toLowerCase() === ru.toLowerCase())) {
+      fb.innerHTML = `<span style="color: var(--error)">Такое слово уже существует</span>`;
+      return;
+    }
+
+    const newWord = {
+      id: words.length ? Math.max(...words.map(w => w.id)) + 1 : 1,
+      en,
+      ru,
+      tr,
+      streak: 0,
+      errors: 0,
+      manual: false
+    };
+
+    words.push(newWord);
+    saveState();
+
+    fb.innerHTML = `<span style="color: var(--success)">Слово добавлено ✅</span>`;
+
+    document.getElementById('addEn').value = '';
+    document.getElementById('addRu').value = '';
+    document.getElementById('addTr').value = '';
+  };
+}
 
     // ---------- Tab: Cards ----------
     let cardsIdx = { value: -1 };
@@ -1036,6 +1103,7 @@ document.getElementById('resetAll').onclick = () => {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
+        case 'add': renderAdd(); break;  
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
