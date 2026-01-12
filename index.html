@@ -1047,10 +1047,11 @@ function renderDict() {
   `;
 
   // 🔧 обработчики (ВАЖНО: oninput!)
-  document.getElementById('dictSearch').oninput = e => {
-    window.dictQuery = e.target.value;
-    renderDict();
-  };
+document.getElementById('dictSearch').addEventListener('input', e => {
+  window.dictQuery = e.target.value;
+  updateDictTable();
+});
+
 
   document.getElementById('dictFilter').onchange = e => {
     window.dictFilter = e.target.value;
@@ -1083,6 +1084,46 @@ function renderDict() {
   };
 }
 
+function updateDictTable() {
+  let list = words.slice();
+
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
+    list = list.filter(w =>
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
+  }
+
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+
+  const tbody = document.querySelector('.table-wrap tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = list.length
+    ? list.map((w, i) => `
+      <tr class="${isLearned(w) ? 'learned-row' : ''}">
+        <td class="center">${i + 1}</td>
+        <td>${w.en}</td>
+        <td>${w.ru}</td>
+        <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+        <td class="center">${w.streak}</td>
+        <td class="center">${w.errors}</td>
+        <td class="center">
+          <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+        </td>
+      </tr>
+    `).join('')
+    : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
+}
 
 
     // ---------- Tab: Match ----------
