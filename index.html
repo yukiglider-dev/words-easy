@@ -1586,13 +1586,15 @@ function bindIrregularActions() {
 }
 
 function renderIrregulars() {
-  // состояния (НЕ пересоздаются при каждом вводе)
+  const panelEl = document.getElementById('panel');
+
+  // ===== СОСТОЯНИЯ =====
   window.irQuery = window.irQuery ?? '';
   window.irFilter = window.irFilter ?? 'all';
 
   let list = irregulars.slice();
 
-  // 🔍 ПОИСК
+  // ===== 🔍 ПОИСК (по любой букве) =====
   if (window.irQuery.trim()) {
     const q = window.irQuery.toLowerCase();
     list = list.filter(v =>
@@ -1603,7 +1605,7 @@ function renderIrregulars() {
     );
   }
 
-  // 🎯 ФИЛЬТР
+  // ===== 🎯 ФИЛЬТР =====
   if (window.irFilter === 'learned') {
     list = list.filter(v => v.learned);
   }
@@ -1611,10 +1613,10 @@ function renderIrregulars() {
     list = list.filter(v => !v.learned);
   }
 
-  // 🔤 АЛФАВИТ
+  // ===== 🔤 АЛФАВИТ =====
   list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
 
-  // 🧩 РЕНДЕР
+  // ===== 🧩 РЕНДЕР =====
   panelEl.innerHTML = `
     <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
       <div class="field" style="flex:2; min-width:240px">
@@ -1668,13 +1670,13 @@ function renderIrregulars() {
                   <td>${v.past}</td>
                   <td>${v.pp}</td>
                   <td>${v.ru}</td>
-                  <td class="center">${v.streak}</td>
-                  <td class="center">${v.errors}</td>
+                  <td class="center">${v.streak || 0}</td>
+                  <td class="center">${v.errors || 0}</td>
                   <td class="center">
                     <input type="checkbox" class="irLearned" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
                   </td>
                   <td class="center">
-                    <button class="btn error btn-del irDel" data-id="${v.id}">✕</button>
+                    <button class="btn error irDel" data-id="${v.id}">✕</button>
                   </td>
                 </tr>
               `).join('')
@@ -1687,11 +1689,11 @@ function renderIrregulars() {
 
   // ===== ОБРАБОТЧИКИ =====
 
-  // 🔍 поиск — БЕЗ перерендера всей функции
-document.getElementById('irSearch').oninput = e => {
-  window.irQuery = e.target.value;
-  updateIrregularsTable(); // ✅ ТОЛЬКО ТАБЛИЦА
-};
+  // 🔍 поиск (по буквам, без залипания)
+  document.getElementById('irSearch').oninput = e => {
+    window.irQuery = e.target.value;
+    renderIrregulars();
+  };
 
   // 🎯 фильтр
   document.getElementById('irFilter').onchange = e => {
@@ -1704,6 +1706,7 @@ document.getElementById('irSearch').oninput = e => {
     irregulars.forEach(v => v.learned = true);
     saveIrregulars();
     renderIrregulars();
+    updateProgress();
   };
 
   // 🔄 сброс
@@ -1716,6 +1719,7 @@ document.getElementById('irSearch').oninput = e => {
     });
     saveIrregulars();
     renderIrregulars();
+    updateProgress();
   };
 
   // ➕ добавить
@@ -1728,7 +1732,10 @@ document.getElementById('irSearch').oninput = e => {
 
     irregulars.push({
       id: Date.now(),
-      base, past, pp, ru,
+      base,
+      past,
+      pp,
+      ru,
       streak: 0,
       errors: 0,
       learned: false
@@ -1736,26 +1743,36 @@ document.getElementById('irSearch').oninput = e => {
 
     saveIrregulars();
     renderIrregulars();
+    updateProgress();
   };
 
-  // ☑️ чекбоксы
-  document.querySelectorAll('.irLearned').forEach(ch => {
-    ch.onchange = () => {
-      const v = irregulars.find(x => x.id == ch.dataset.id);
-      if (v) v.learned = ch.checked;
+  // ✅ чекбоксы "Выучено"
+  document.querySelectorAll('.irLearned').forEach(cb => {
+    cb.onchange = () => {
+      const id = Number(cb.dataset.id);
+      const v = irregulars.find(x => x.id === id);
+      if (!v) return;
+
+      v.learned = cb.checked;
       saveIrregulars();
+      updateProgress();
     };
   });
 
   // ❌ удаление
   document.querySelectorAll('.irDel').forEach(btn => {
     btn.onclick = () => {
-      irregulars = irregulars.filter(v => v.id != btn.dataset.id);
+      const id = Number(btn.dataset.id);
+      if (!confirm('Удалить глагол?')) return;
+
+      irregulars = irregulars.filter(v => v.id !== id);
       saveIrregulars();
       renderIrregulars();
+      updateProgress();
     };
   });
 }
+
 
     renderTabs();
     renderPanel();
