@@ -1493,19 +1493,14 @@ document.getElementById('confirmAddWord').onclick = () => {
   document.getElementById('modalRu').value = '';
   document.getElementById('modalTr').value = '';
 };
+
 function renderIrregulars() {
   window.irQuery = window.irQuery || '';
   window.irFilter = window.irFilter || 'all';
 
   let list = irregulars.slice();
 
-  if (window.irQuery.trim()) {
-    function renderIrregulars() {
-  window.irQuery = window.irQuery || '';
-  window.irFilter = window.irFilter || 'all';
-
-  let list = irregulars.slice();
-
+  // 🔍 поиск
   if (window.irQuery.trim()) {
     const q = window.irQuery.toLowerCase();
     list = list.filter(v =>
@@ -1516,10 +1511,20 @@ function renderIrregulars() {
     );
   }
 
-  if (window.irFilter === 'learned') list = list.filter(v => v.learned);
-  if (window.irFilter === 'unlearned') list = list.filter(v => !v.learned);
+  // 🎯 фильтр выучено / не выучено
+  if (window.irFilter === 'learned') {
+    list = list.filter(v => v.learned);
+  }
+  if (window.irFilter === 'unlearned') {
+    list = list.filter(v => !v.learned);
+  }
 
+  // 🔤 АЛФАВИТНАЯ СОРТИРОВКА
   list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
+
+  // ⬇️ дальше идёт panelEl.innerHTML = ...
+}
+
 
   panelEl.innerHTML = `
     <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
