@@ -132,9 +132,6 @@ html, body {
   border: 1px solid var(--border);
 }
 
-[data-theme="dark"] .container {
-  background: linear-gradient(180deg, #0f1b2d, #0b1220);
-}
 
 
     .tabs {
@@ -432,6 +429,13 @@ html, body {
   gap: 10px;
   margin-top: 18px;
 }
+.panel-center {
+  min-height: 220px;
+  display: flex;
+  align-items: center;   /* по вертикали */
+  justify-content: center; /* по горизонтали */
+  text-align: center;
+}
 
   </style>
 </head>
@@ -706,7 +710,14 @@ function switchTab(tabId) {
 
     function renderTest(pickNew = true) {
       const pool = getUnlearned();
-      if (!pool.length) { panelEl.innerHTML = `<div class="empty">Все слова выучены. Отличная работа!</div>`; return; }
+      if (!pool.length) { panelEl.innerHTML = `
+  <div class="panel-center">
+    <div class="empty">
+      Все слова выучены. Отличная работа!
+    </div>
+  </div>
+`;
+ return; }
       if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
 
       const current = currentTestWord;
