@@ -1049,90 +1049,87 @@ if (wordEl && trEl) {
 
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
-   function renderRepeat() {
-const wordPool = words.filter(
-  w => w.errors > 0 && !isLearned(w) && !w.manual
-);
-const irPool = irregulars.filter(v => v.needRepeat);
-const pool = [
-  ...wordPool.map(w => ({ type: 'word', data: w })),
-  ...irPool.map(v => ({ type: 'ir', data: v }))
-];
+function renderRepeat() {
+  const panel = document.getElementById('panel');
 
-  // ✅ если нет слов для повтора
-  if (!pool.length) {
-    panelEl.innerHTML = `
-      <div class="panel-center">
-        <div class="empty">
-          Нет слов для повтора 🎉
-        </div>
+  // собираем всё, что попало в repeat
+  const repeatList = [];
+
+  // обычные слова
+  words.forEach(w => {
+    if (w.needRepeat) {
+      repeatList.push({ type: 'word', item: w });
+    }
+  });
+
+  // неправильные глаголы
+  irregulars.forEach(v => {
+    if (v.needRepeat) {
+      repeatList.push({ type: 'ir', item: v });
+    }
+  });
+
+  // если повтор пуст
+  if (!repeatList.length) {
+    panel.innerHTML = `
+      <div class="card center">
+        <h2>🎉 Повтор пуст</h2>
+        <div class="muted">Ошибок нет — так держать</div>
       </div>
     `;
     return;
   }
 
-const currentItem = nextOf(pool, repeatIdx) || pool[0];
-const current = currentItem.data;
+  // берём первый (ВАЖНО: всегда первый, без зацикливания)
+  const current = repeatList[0];
+  const data = current.item;
 
-panelEl.innerHTML = `
-  <div class="panel-center">
-    <div class="card" style="max-width:520px">
-      <div style="font-size:22px; font-weight:700">
-${currentItem.type === 'ir'
-  ? `${current.base} — ${current.ru}`
-  : current.en
-}
-      </div>
+  // отображаем
+  panel.innerHTML = `
+    <div class="card center">
+      <h2>
+        ${current.type === 'ir'
+          ? `${data.base} — ${data.ru}`
+          : `${data.en} — ${data.ru}`}
+      </h2>
 
-      <div class="row" style="margin-top:16px; justify-content:center">
+      <div class="actions">
         <button class="btn success" id="repKnow">Знаю</button>
-        <button class="btn" id="repDontKnow">Не знаю</button>
+        <button class="btn error" id="repDontKnow">Не знаю</button>
       </div>
 
-      <div class="muted" style="margin-top:12px">
-        Ошибок: ${current.errors}, Серия: ${current.streak}
+      <div class="muted">
+        Ошибок: ${data.errors || 0},
+        Серия: ${data.streak || 0}
       </div>
     </div>
-  </div>
-`;
+  `;
 
-document.getElementById('repKnow').onclick = () => {
-  current.streak += 1;
-
-  if (currentItem.type === 'ir' && current.streak >= 3) {
-    current.learned = true;
-    current.needRepeat = false;
-  }
-
-  saveState();
-  saveIrregulars();
-  setTimeout(renderRepeat, 400);
-};
-document.getElementById('repDontKnow').onclick = () => {
-  current.errors += 1;
-  current.streak = 0;
-
-  if (currentItem.type === 'ir') {
-    current.needRepeat = true;
-  }
-
-  saveState();
-  saveIrregulars();
-  setTimeout(renderRepeat, 400);
-};
-
+  // ===== ЗНАЮ =====
   document.getElementById('repKnow').onclick = () => {
-    current.errors = Math.max(0, current.errors - 1);
-    current.streak += 1;
+    data.streak = (data.streak || 0) + 1;
+
+    // ❗ КЛЮЧЕВОЕ МЕСТО
+    data.needRepeat = false;
+
     saveState();
-    setTimeout(renderRepeat, 400);
+    saveIrregulars();
+
+    renderRepeat();
   };
 
+  // ===== НЕ ЗНАЮ =====
   document.getElementById('repDontKnow').onclick = () => {
-    current.errors += 1;
-    current.streak = 0;
+    data.errors = (data.errors || 0) + 1;
+    data.streak = 0;
+
+    // ❗ ТОЖЕ УБИРАЕМ ИЗ REPEAT
+    data.needRepeat = false;
+
     saveState();
-    setTimeout(renderRepeat, 400);
+    saveIrregulars();
+
+    renderRepeat();
   };
 }
 
