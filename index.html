@@ -667,7 +667,7 @@ function loadState() {
     let settings = loadSettings();
     document.documentElement.setAttribute('data-theme', settings.theme);
 
-    // ---------- Helpers ----------я
+    // ---------- Helpers ---------- 
     let activeTab = 'test';
 
     function isLearned(w) { return w.streak >= 3 || w.manual; }
@@ -978,15 +978,6 @@ function renderDict(keepFocus = false) {
   </div>
   <div class="divider"></div>
 `;
-if (keepFocus) {
-  const input = document.getElementById('dictSearch');
-  if (input) {
-    const pos = input.value.length;
-    input.focus();
-    input.setSelectionRange(pos, pos);
-  }
-}
-
 
       let list = words.slice();
 list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
@@ -1014,6 +1005,14 @@ list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
           </td>
         </tr>
       `).join('');
+if (keepFocus) {
+  const input = document.getElementById('dictSearch');
+  if (input) {
+    const pos = input.value.length;
+    input.focus();
+    input.setSelectionRange(pos, pos);
+  }
+}
 
       panelEl.innerHTML = header + `
         <div class="table-wrap">
@@ -1035,7 +1034,7 @@ list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
           </table>
         </div>
       `;
-document.getElementById('resetAll').onclick = () => {
+document.('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
 
   words.forEach(w => {
@@ -1043,12 +1042,22 @@ document.getElementById('resetAll').onclick = () => {
     w.errors = 0;
     w.manual = false;
   });
+const searchInput = document.getElementById('dictSearch');
+if (searchInput) {
+  searchInput.oninput = () => {
+    dictQuery = searchInput.value;
+    renderDict(true);
+  };
+}
 
   saveState();
   renderDict();
 };
 
-getElementById      document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
+document.getElementById('dictFilter').onchange = (e) => {
+  dictFilter = e.target.value;
+  renderDict();
+};
       panelEl.querySelectorAll('.dictManual').forEach(ch => {
         ch.onchange = () => {
           const id = Number(ch.dataset.id);
