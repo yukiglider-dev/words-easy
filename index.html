@@ -1757,6 +1757,8 @@ function renderIrregulars() {
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
+  updateIrregularsCounter();
+
 function normalizeIrregulars() {
   irregulars.forEach(v => {
     if (v.streak >= 3) v.learned = true;
@@ -1994,6 +1996,15 @@ if (current.streak >= 3) {
     <span class="muted">Past:</span> <b>${current.past}</b>,
     <span class="muted">PP:</span> <b>${current.pp}</b>
   `;
+}
+function updateIrregularsCounter() {
+  const total = irregulars.length;
+  const learned = irregulars.filter(v => v.learned).length;
+
+  const el = document.getElementById('irCounter');
+  if (!el) return;
+
+  el.textContent = `${learned} / ${total}`;
 }
 
 
