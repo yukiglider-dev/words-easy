@@ -635,6 +635,7 @@ html, body {
 }));
 
 const RULES = {
+  // ===== ГРАММАТИКА =====
   present_simple_3rd: {
     title: 'He / She / It + s',
     levels: [
@@ -642,7 +643,8 @@ const RULES = {
       'He likes, she works, it starts',
       'В Present Simple с he/she/it всегда используется -s'
     ],
-    examples: ['he likes', 'she needs', 'it starts']
+    examples: ['he likes', 'she needs', 'it starts'],
+    words: ['he likes', 'she likes', 'he needs']
   },
 
   to_be_present: {
@@ -652,7 +654,8 @@ const RULES = {
       'Форма to be зависит от подлежащего',
       'To be изменяется по лицам и числам'
     ],
-    examples: ['I am busy', 'he is rich', 'they are right']
+    examples: ['I am busy', 'he is rich', 'they are right'],
+    words: ['I’m busy', 'he’s rich', 'they’re right']
   },
 
   adjectives: {
@@ -662,28 +665,29 @@ const RULES = {
       'Прилагательное не зависит от лица',
       'В английском прилагательные не склоняются'
     ],
-    examples: ['rich', 'busy', 'possible']
-  }
-};
-const RULES = {
+    examples: ['rich', 'busy', 'possible'],
+    words: ['rich', 'busy', 'possible']
+  },
+
+  // ===== ПРОИЗНОШЕНИЕ =====
   ea_sound: {
-    title: "Буквы EA читаются как /иː/",
+    title: 'EA читается как /иː/',
     levels: [
-      "Сочетание <b>ea</b> часто читается как длинный звук <b>/иː/</b>.",
-      "Если видишь <b>ea</b>, чаще всего это звук <b>/иː/</b>, а не «е».",
-      "Пример: <b>cheap</b> — читается <b>/чип/</b>, не «чеап»."
+      'Сочетание ea часто читается как /иː/',
+      'Это не «е», а длинный звук «и»',
+      'Пример: cheap — /чип/'
     ],
-    words: ["cheap", "speak", "mean", "team"]
+    words: ['cheap', 'speak', 'mean', 'team']
   },
 
   ch_sound: {
-    title: "CH читается как /ч/",
+    title: 'CH читается как /ч/',
     levels: [
-      "<b>ch</b> обычно читается как <b>/ч/</b>.",
-      "Не <b>к</b> и не <b>х</b>, а именно <b>/ч/</b>.",
-      "Пример: <b>cheap</b>, <b>chair</b>, <b>check</b>."
+      'ch обычно читается как /ч/',
+      'Это не «к» и не «х»',
+      'Пример: cheap, chair, check'
     ],
-    words: ["cheap", "chair", "check"]
+    words: ['cheap', 'chair', 'check']
   }
 };
 let ruleStats = JSON.parse(localStorage.getItem("ruleStats") || "{}");
