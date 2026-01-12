@@ -1173,52 +1173,52 @@ panelEl.innerHTML = `
 }
 
 function renderDict() {
-  const tbody = document.getElementById("dict-body");
-  if (!tbody) return;
+  const tbody = document.getElementById("dictBody");
+  tbody.innerHTML = "";
 
-  let list = [...words];
+  const search = document.getElementById("searchInput").value.toLowerCase();
 
-  // 🔍 поиск
-  if (dictQuery.trim()) {
-    const q = dictQuery.toLowerCase();
-    list = list.filter(w =>
-      w.en.toLowerCase().includes(q) ||
-      w.ru.toLowerCase().includes(q) ||
-      (w.tr || '').toLowerCase().includes(q)
-    );
-  }
+  // 🔹 копия + сортировка по алфавиту
+  const sorted = [...words]
+    .filter(w =>
+      w.en.toLowerCase().includes(search) ||
+      w.ru.toLowerCase().includes(search)
+    )
+    .sort((a, b) => a.en.localeCompare(b.en));
 
-  // 🎯 фильтр
-  if (dictFilter === 'learned') {
-    list = list.filter(w => isLearned(w));
-  }
-  if (dictFilter === 'not_learned') {
-    list = list.filter(w => !isLearned(w));
-  }
+  sorted.forEach((w, i) => {
+    const tr = document.createElement("tr");
 
-  // 🔤 СОРТИРОВКА ПО АЛФАВИТУ
-  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${w.en}</td>
+      <td>${w.ru}</td>
+      <td>${w.tr || ""}</td>
+      <td>${w.streak || 0}</td>
+      <td>${w.errors || 0}</td>
+      <td>
+        <input type="checkbox" ${w.learned ? "checked" : ""}
+          onchange="toggleLearned(${w.id})">
+      </td>
+      <td>
+        <button class="del-btn" onclick="deleteWord(${w.id})">✖</button>
+      </td>
+    `;
 
-  tbody.innerHTML = list.length
-    ? list.map((w, i) => `
-      <tr class="${isLearned(w) ? 'learned-row' : ''}">
-        <td class="center">${i + 1}</td>
-        <td>${w.en}</td>
-        <td>${w.ru}</td>
-        <td>${w.tr ? `/${w.tr}/` : ''}</td>
-        <td class="center">${w.streak}</td>
-        <td class="center">${w.errors}</td>
-        <td class="center">
-          <input type="checkbox" data-id="${w.id}" class="dictManual" ${w.manual ? 'checked' : ''}>
-        </td>
-        <td class="center">
-          <button class="btn error btn-del" data-id="${w.id}">✕</button>
-        </td>
-      </tr>
-    `).join('')
-    : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`;
+    tbody.appendChild(tr);
+  });
+}
 
-  bindDictActions();
+function deleteWord(id) {
+  words = words.filter(w => w.id !== id);
+  saveWords();
+  renderDict();
+}
+
+function toggleLearned(id) {
+  const w = words.find(w => w.id === id);
+  if (w) w.learned = !w.learned;
+  saveWords();
 }
 
 
