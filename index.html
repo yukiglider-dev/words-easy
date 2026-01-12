@@ -220,15 +220,21 @@
     }
 
     .field { display: flex; gap: 8px; align-items: center; }
-    input[type="text"], select {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      box-shadow: var(--shadow);
-      width: 100%;
-    }
+  input[type="text"], select, textarea {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  width: 100%;
+}
+
+textarea {
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+}
 
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
     table { width: 100%; border-collapse: collapse; min-width: 700px; }
@@ -345,7 +351,53 @@
   align-items: center;      /* выравнивание по вертикали */
   gap: 8px;
 }
+.import-section {
+  background: var(--accent-1);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
 
+.import-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+.import-section p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 12px 0;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  transition: transform 0.05s ease;
+}
+
+.file-input-label:hover {
+  transform: translateY(-1px);
+}
   </style>
 </head>
 <body>
@@ -562,6 +614,7 @@ function renderTabs() {
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
     { id: 'dict', label: 'Словарь' }
+    { id: 'manage', label: 'Управление' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -961,7 +1014,171 @@ document.getElementById('resetAll').onclick = () => {
         };
       });
     }
+// ---------- Tab: Manage (Import/Export) ----------
+function renderManage() {
+  panelEl.innerHTML = `
+    <!-- Экспорт -->
+    <div class="import-section">
+      <h3>📤 Экспорт словаря</h3>
+      <p>Сохраните текущий словарь в JSON файл</p>
+      <button class="btn primary" id="exportBtn">Скачать словарь (JSON)</button>
+    </div>
 
+    <!-- Импорт -->
+    <div class="import-section">
+      <h3>📥 Импорт словаря</h3>
+      <p>Загрузите JSON файл со словами (заменит текущий словарь)</p>
+      <div class="file-input-wrapper">
+        <input type="file" id="importFile" accept=".json">
+        <label for="importFile" class="file-input-label">Выбрать файл</label>
+      </div>
+      <div id="importStatus" style="margin-top:10px; color: var(--muted); font-size: 14px;"></div>
+    </div>
+
+    <!-- Добавление слова -->
+    <div class="import-section">
+      <h3>➕ Добавить слово вручную</h3>
+      <div class="field">
+        <input type="text" id="addEn" placeholder="Английское слово">
+      </div>
+      <div class="field" style="margin-top:8px">
+        <input type="text" id="addRu" placeholder="Русский перевод">
+      </div>
+      <div class="field" style="margin-top:8px">
+        <input type="text" id="addTr" placeholder="Транскрипция (опционально)">
+      </div>
+      <button class="btn success" id="addWordBtn" style="margin-top:12px">Добавить слово</button>
+    </div>
+
+    <!-- Очистка -->
+    <div class="import-section">
+      <h3>🗑️ Удалить все слова</h3>
+      <p style="color: var(--error)">Внимание! Это действие удалит все слова без возможности восстановления</p>
+      <button class="btn error" id="clearAllBtn">Удалить весь словарь</button>
+    </div>
+
+    <!-- Формат файла -->
+    <div class="import-section">
+      <h3>ℹ️ Формат JSON файла</h3>
+      <p>Файл должен содержать массив объектов:</p>
+      <textarea readonly>
+[
+  {
+    "en": "hello",
+    "ru": "привет",
+    "tr": "хэлоу"
+  },
+  {
+    "en": "world",
+    "ru": "мир",
+    "tr": "ворлд"
+  }
+]</textarea>
+    </div>
+  `;
+
+  // Экспорт
+  document.getElementById('exportBtn').onclick = () => {
+    const exportData = words.map(w => ({
+      en: w.en,
+      ru: w.ru,
+      tr: w.tr || ''
+    }));
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `words-easy-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Импорт
+  document.getElementById('importFile').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    const status = document.getElementById('importStatus');
+    
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        
+        if (!Array.isArray(imported)) {
+          status.innerHTML = '<span style="color: var(--error)">❌ Ошибка: файл должен содержать массив</span>';
+          return;
+        }
+
+        const newWords = imported.map((w, i) => ({
+          id: Date.now() + i,
+          en: w.en || '',
+          ru: w.ru || '',
+          tr: w.tr || '',
+          streak: 0,
+          errors: 0,
+          manual: false
+        }));
+
+        if (confirm(`Импортировать ${newWords.length} слов? Текущий словарь будет заменён.`)) {
+          words = newWords;
+          saveState();
+          status.innerHTML = `<span style="color: var(--success)">✅ Импортировано ${newWords.length} слов</span>`;
+          setTimeout(() => {
+            switchTab('dict');
+          }, 1500);
+        }
+      } catch (error) {
+        status.innerHTML = `<span style="color: var(--error)">❌ Ошибка: неверный формат JSON</span>`;
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+
+  // Добавление слова
+  document.getElementById('addWordBtn').onclick = () => {
+    const en = document.getElementById('addEn').value.trim();
+    const ru = document.getElementById('addRu').value.trim();
+    const tr = document.getElementById('addTr').value.trim();
+
+    if (!en || !ru) {
+      alert('Заполните английское слово и перевод');
+      return;
+    }
+
+    const newWord = {
+      id: Date.now(),
+      en: en,
+      ru: ru,
+      tr: tr,
+      streak: 0,
+      errors: 0,
+      manual: false
+    };
+
+    words.push(newWord);
+    saveState();
+    
+    document.getElementById('addEn').value = '';
+    document.getElementById('addRu').value = '';
+    document.getElementById('addTr').value = '';
+    
+    alert(`Слово "${en}" добавлено!`);
+  };
+
+  // Очистка всех слов
+  document.getElementById('clearAllBtn').onclick = () => {
+    if (!confirm('Вы уверены? Все слова будут удалены без возможности восстановления!')) return;
+    if (!confirm('Это последнее предупреждение. Удалить ВСЕ слова?')) return;
+    
+    words = [];
+    saveState();
+    alert('Все слова удалены');
+    renderManage();
+  };
+}
     // ---------- Mount ----------
     function renderPanel() {
       updateProgress();
@@ -972,6 +1189,7 @@ document.getElementById('resetAll').onclick = () => {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
+        case 'manage': renderManage(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
