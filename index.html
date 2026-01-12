@@ -443,6 +443,12 @@ html, body {
   text-align: center;
   color: var(--muted);
 }
+.btn-del {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  line-height: 1;
+}
 
   </style>
 </head>
@@ -953,6 +959,7 @@ if (!pool.length) {
     let dictFilter = 'all';
     let dictQuery = '';
 function renderDict() {
+  <th class="center" style="width:80px">Удалить</th>
   const panelEl = document.getElementById('panel');
   if (!panelEl) return;
 
@@ -1083,6 +1090,33 @@ document.getElementById('dictSearch').addEventListener('input', e => {
     renderDict();
   };
 }
+function bindDictActions() {
+  // чекбоксы "выучено"
+  document.querySelectorAll('.dictManual').forEach(ch => {
+    ch.onchange = () => {
+      const w = words.find(x => x.id === Number(ch.dataset.id));
+      if (w) w.manual = ch.checked;
+      saveState();
+    };
+  });
+
+  // кнопки удаления
+  document.querySelectorAll('.btn-del').forEach(btn => {
+    btn.onclick = () => {
+      const id = Number(btn.dataset.id);
+      const w = words.find(x => x.id === id);
+      if (!w) return;
+
+      if (!confirm(`Удалить слово "${w.en}"?`)) return;
+
+      words = words.filter(x => x.id !== id);
+      saveState();
+      updateDictTable(); // ⚠️ НЕ renderDict
+      bindDictActions();
+
+    };
+  });
+}
 
 function updateDictTable() {
   let list = words.slice();
@@ -1118,8 +1152,12 @@ function updateDictTable() {
         <td class="center">${w.streak}</td>
         <td class="center">${w.errors}</td>
         <td class="center">
-          <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
-        </td>
+  <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+</td>
+<td class="center">
+  <button class="btn error btn-del" data-id="${w.id}">✕</button>
+</td>
+
       </tr>
     `).join('')
     : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
