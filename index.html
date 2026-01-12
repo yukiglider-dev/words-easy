@@ -470,6 +470,11 @@ html, body {
   gap: 12px;
   margin-top: 20px;
 }
+.panel-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 
   </style>
@@ -765,6 +770,12 @@ function switchTab(tabId) {
 }
 
     let currentIrregular = null;
+const IRREGULAR_VERBS = [
+  { id: 1, base: 'drink', past: 'drank', p2: 'drunk', ru: 'пить', streak: 0, errors: 0 },
+  { id: 2, base: 'go', past: 'went', p2: 'gone', ru: 'идти', streak: 0, errors: 0 },
+  { id: 3, base: 'eat', past: 'ate', p2: 'eaten', ru: 'есть', streak: 0, errors: 0 },
+  { id: 4, base: 'see', past: 'saw', p2: 'seen', ru: 'видеть', streak: 0, errors: 0 }
+];
 
 function renderIrregular() {
   currentIrregular = pickRandomIrregular();
@@ -796,7 +807,7 @@ function renderIrregularOptions() {
   ]);
 
   return forms.map(f =>
-    `<button onclick="checkIrregular('${f}')">${f}</button>`
+<button class="option" onclick="checkIrregular('${f}')">${f}</button>
   ).join("");
 }
 
@@ -1166,7 +1177,7 @@ function renderDict() {
                     <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
                   </td>
                   <td class="center">
-                   class="btn error btn-del" data-id="${w.id}">✕</button>
+ class="btn error btn-del" data-id="${w.id}">✕</button>
                   </td>
                 </tr>
               `).join('')
@@ -1272,7 +1283,7 @@ function updateDictTable() {
   <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
 </td>
 <td class="center">
-  <button class="btn error btn-del" data-id="${w.id}">✕</button>
+  <buttonupdateDictTabledata-id="${w.id}">✕</button>
 </td>
 
 
