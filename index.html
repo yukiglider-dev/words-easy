@@ -1095,6 +1095,48 @@ panelEl.innerHTML = `
     // ---------- Tab: Dictionary ----------
     let dictFilter = 'all';
     let dictQuery = '';
+    function renderDictPanel() {
+  panelEl.innerHTML = `
+    <div class="row" style="margin-bottom:12px">
+      <input
+        id="dict-search"
+        type="text"
+        placeholder="Поиск..."
+        oninput="renderDict()"
+      />
+
+      <select id="dict-filter" onchange="renderDict()">
+        <option value="all">Все слова</option>
+        <option value="learned">Выученные</option>
+        <option value="not_learned">Не выученные</option>
+      </select>
+
+      <button class="btn primary" id="openAddModal">+ Add Word</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="center">№</th>
+            <th>Английское</th>
+            <th>Перевод</th>
+            <th class="center">Транскрипция</th>
+            <th class="center">Серия</th>
+            <th class="center">Ошибки</th>
+            <th class="center">Выучено</th>
+            <th class="center">Удалить</th>
+          </tr>
+        </thead>
+        <tbody id="dict-body"></tbody>
+      </table>
+    </div>
+  `;
+
+  renderDict();
+  bindDictActions();
+}
+
 function renderDict() {
   const tbody = document.getElementById("dict-body");
   tbody.innerHTML = "";
@@ -1296,7 +1338,7 @@ function updateDictTable() {
         case 'cards': renderCards(); break;
         case 'repeat': renderRepeat(); break;
         case 'input': renderInput(); break;
-        case 'dict': renderDict(); break;
+case 'dict': renderDictPanel(); break;
         case 'match': renderMatch(); break;
           case 'irregular': renderIrregular(); break;
 
