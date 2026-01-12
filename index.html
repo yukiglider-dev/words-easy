@@ -450,12 +450,7 @@ html, body {
   border-radius: 10px;
   line-height: 1;
 }
-.rules-panel {
-  display: flex;
-  align-items: center;      /* по вертикали */
-  justify-content: center;  /* по горизонтали */
-  text-align: center;
-}
+
     /* Контейнер вкладки */
 .content.rules {
   display: flex;
@@ -463,15 +458,6 @@ html, body {
   justify-content: center;  /* горизонталь */
 }
 
-/* Сам блок с текстом */
-.rules-box {
-  text-align: center;
-  max-width: 600px;
-}
-.hl {
-  color: #5da9ff;
-  font-weight: 800;
-}
 
 
   </style>
@@ -638,286 +624,6 @@ html, body {
   manual: false
 }));
 
-const RULES = {
-
-  // ===== PRESENT =====
-
- const RULES = {
-
-  // ===== PRESENT =====
-
-  present_simple: {
-    title: "Present Simple — факты и привычки",
-    levels: [
-      "Используется для фактов и того, что происходит обычно.",
-      "Мы используем Present Simple для привычек и расписаний.",
-      "Всегда / обычно / каждый день → Present Simple."
-    ],
-    markers: ["always", "usually", "often", "every day"],
-    endings: {
-      base: "V",
-      highlight: [] // нет окончания
-    },
-    examples: [
-      "I live in Thailand",
-      "We usually eat at home"
-    ]
-  },
-
-  present_simple_3rd: {
-    title: "He / She / It + s",
-    levels: [
-      "С he, she, it к глаголу добавляется -s.",
-      "Если подлежащее — он, она или оно, глагол меняется.",
-      "ОН = +S → he works"
-    ],
-    endings: {
-      base: "V",
-      highlight: ["s", "es"]
-    },
-    rules: [
-      "После s, sh, ch, x, o → +es",
-      "study → studies"
-    ],
-    examples: [
-      "He work<span class='hl'>s</span>",
-      "She go<span class='hl'>es</span>"
-    ]
-  },
-
-  present_continuous: {
-    title: "Present Continuous — сейчас",
-    levels: [
-      "Используется для действий, которые происходят сейчас.",
-      "Если что-то происходит в момент речи — это Continuous.",
-      "Сейчас → am / is / are + ing"
-    ],
-    markers: ["now", "at the moment"],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    rules: [
-      "make → making",
-      "run → running",
-      "lie → lying"
-    ],
-    examples: [
-      "I am work<span class='hl'>ing</span> now",
-      "They are watch<span class='hl'>ing</span> TV"
-    ]
-  },
-
-  present_perfect: {
-    title: "Present Perfect — есть результат",
-    levels: [
-      "Используется, когда важен результат, а не время.",
-      "Действие произошло, и результат важен сейчас.",
-      "Have / has + V3"
-    ],
-    markers: ["already", "just", "ever", "never"],
-    endings: {
-      base: "V3",
-      highlight: ["ed", "3rd form"]
-    },
-    examples: [
-      "I have finish<span class='hl'>ed</span>",
-      "She has gone"
-    ]
-  },
-
-  present_perfect_continuous: {
-    title: "Present Perfect Continuous — началось раньше и продолжается",
-    levels: [
-      "Действие началось в прошлом и продолжается.",
-      "Важно, сколько времени длится действие.",
-      "Have / has been + ing"
-    ],
-    markers: ["for", "since"],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    examples: [
-      "I have been work<span class='hl'>ing</span> for 2 hours",
-      "She has been study<span class='hl'>ing</span> since morning"
-    ]
-  },
-
-  // ===== PAST =====
-
-  past_simple: {
-    title: "Past Simple — законченное прошлое",
-    levels: [
-      "Используется для действий, которые уже закончились.",
-      "Если действие было и закончилось — Past Simple.",
-      "Вчера / в прошлом → Past Simple"
-    ],
-    markers: ["yesterday", "last year", "ago"],
-    endings: {
-      base: "V2",
-      highlight: ["ed", "2nd form"]
-    },
-    rules: [
-      "play → play<span class='hl'>ed</span>",
-      "stop → stop<span class='hl'>ped</span>"
-    ],
-    examples: [
-      "I visit<span class='hl'>ed</span> Rome",
-      "She went home"
-    ]
-  },
-
-  past_continuous: {
-    title: "Past Continuous — процесс в прошлом",
-    levels: [
-      "Используется для процесса в определённый момент прошлого.",
-      "Что-то происходило в тот момент.",
-      "Was / were + ing"
-    ],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    examples: [
-      "I was work<span class='hl'>ing</span> at 5 pm",
-      "They were watch<span class='hl'>ing</span> TV"
-    ]
-  },
-
-  past_perfect: {
-    title: "Past Perfect — раньше другого прошлого",
-    levels: [
-      "Действие произошло раньше другого события в прошлом.",
-      "Сначала одно — потом другое.",
-      "Had + V3"
-    ],
-    endings: {
-      base: "V3",
-      highlight: ["ed", "3rd form"]
-    },
-    examples: [
-      "I had finish<span class='hl'>ed</span> before he came",
-      "She had left already"
-    ]
-  },
-
-  past_perfect_continuous: {
-    title: "Past Perfect Continuous — длительность до момента",
-    levels: [
-      "Действие длилось до определённого момента в прошлом.",
-      "Важно, сколько длилось действие.",
-      "Had been + ing"
-    ],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    examples: [
-      "I had been work<span class='hl'>ing</span> for hours"
-    ]
-  },
-
-  // ===== FUTURE =====
-
-  future_simple: {
-    title: "Future Simple — решение сейчас",
-    levels: [
-      "Используется для решений, принятых в момент речи.",
-      "Если решил только что — will.",
-      "Сейчас решил → will"
-    ],
-    endings: {
-      base: "V",
-      highlight: [] // нет окончания
-    },
-    examples: [
-      "I will work",
-      "She will call later"
-    ]
-  },
-
-  future_be_going_to: {
-    title: "Be going to — план",
-    levels: [
-      "Используется для планов и намерений.",
-      "Если ты уже решил — going to.",
-      "План → am / is / are going to"
-    ],
-    endings: {
-      base: "V",
-      highlight: [] // нет окончания
-    },
-    examples: [
-      "I am going to travel",
-      "She is going to study"
-    ]
-  },
-
-  future_continuous: {
-    title: "Future Continuous — процесс в будущем",
-    levels: [
-      "Используется для процесса в будущем.",
-      "Что-то будет происходить в определённый момент.",
-      "Will be + ing"
-    ],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    examples: [
-      "I will be work<span class='hl'>ing</span> at 6"
-    ]
-  },
-
-  future_perfect: {
-    title: "Future Perfect — будет завершено",
-    levels: [
-      "Действие завершится к определённому моменту.",
-      "Важно, что к моменту будет готово.",
-      "Will have + V3"
-    ],
-    endings: {
-      base: "V3",
-      highlight: ["ed", "3rd form"]
-    },
-    examples: [
-      "I will have finish<span class='hl'>ed</span> by 5"
-    ]
-  },
-
-  future_perfect_continuous: {
-    title: "Future Perfect Continuous — сколько будет длиться",
-    levels: [
-      "Показывает длительность действия к моменту в будущем.",
-      "Важно, сколько времени будет длиться.",
-      "Will have been + ing"
-    ],
-    endings: {
-      base: "V",
-      highlight: ["ing"]
-    },
-    examples: [
-      "I will have been work<span class='hl'>ing</span> for 5 hours"
-    ]
-  }
-
-};
-
-let ruleStats = JSON.parse(localStorage.getItem("ruleStats") || "{}");
-function saveRuleStats() {
-  localStorage.setItem("ruleStats", JSON.stringify(ruleStats));
-}
-function trackRuleError(wordEn) {
-  Object.entries(RULES).forEach(([ruleId, rule]) => {
-    if (rule.words.includes(wordEn)) {
-      ruleStats[ruleId] = (ruleStats[ruleId] || 0) + 1;
-    }
-  });
-
-  saveRuleStats();
-}
- 
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -1024,8 +730,7 @@ function renderTabs() {
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' },
-    { id: 'rules', label: 'Правила' }
+    { id: 'dict', label: 'Словарь' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -1384,47 +1089,6 @@ function renderDict() {
 
   bindDictActions();
 }
-function renderRules() {
-  let html = `
-    <div class="panel-center">
-      <div class="card" style="max-width:720px">
-        <div style="font-size:22px; font-weight:800; margin-bottom:16px">
-          📘 Правила
-        </div>
-  `;
-
-  for (const key in RULES) {
-    const rule = RULES[key];
-
-    html += `
-      <div class="rule-block" style="margin-bottom:18px; text-align:left">
-        <div style="font-weight:700; margin-bottom:6px">
-          ${rule.title}
-        </div>
-
-        <div class="muted">
-          ${rule.levels[0]}
-        </div>
-
-        ${
-          rule.examples
-            ? `<div class="pill" style="margin-top:6px">
-                 ${rule.examples.join(" · ")}
-               </div>`
-            : ""
-        }
-      </div>
-    `;
-  }
-
-  html += `
-      </div>
-    </div>
-  `;
-
-  panelEl.innerHTML = html;
-}
-
 
 function bindDictActions() {
   // чекбоксы "выучено"
@@ -1585,7 +1249,6 @@ function updateDictTable() {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
-  case 'rules': renderRules(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
