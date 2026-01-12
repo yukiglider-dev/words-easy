@@ -894,7 +894,9 @@ function loadState() {
 
 function saveIrregulars() {
   localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
+  updateProgress(); // 🔥 ОБЯЗАТЕЛЬНО
 }
+
 
 
     function saveState() {
@@ -1181,29 +1183,21 @@ panelEl.innerHTML = `
 
   // ===== ЗНАЮ =====
   document.getElementById('repKnow').onclick = () => {
-    data.streak = (data.streak || 0) + 1;
+ data.streak = (data.streak || 0) + 1;
+data.needRepeat = false;
 
-    // ❗ КЛЮЧЕВОЕ МЕСТО
-    data.needRepeat = false;
-
-    saveState();
-    saveIrregulars();
-
-    renderRepeat();
+recalcIrregulars();
+renderRepeat();
   };
 
   // ===== НЕ ЗНАЮ =====
   document.getElementById('repDontKnow').onclick = () => {
-    data.errors = (data.errors || 0) + 1;
-    data.streak = 0;
+data.errors = (data.errors || 0) + 1;
+data.streak = 0;
+data.needRepeat = false;
 
-    // ❗ ТОЖЕ УБИРАЕМ ИЗ REPEAT
-    data.needRepeat = false;
-
-    saveState();
-    saveIrregulars();
-
-    renderRepeat();
+recalcIrregulars();
+renderRepeat();
   };
 }
 
@@ -1426,6 +1420,23 @@ function bindDictActions() {
 
     };
   });
+}
+function recalcIrregulars() {
+  let changed = false;
+
+  irregulars.forEach(v => {
+    const shouldLearn = v.streak >= 3 || v.manual;
+    if (shouldLearn !== v.learned) {
+      v.learned = shouldLearn;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveIrregulars();
+  }
+
+  updateProgress();
 }
 
 function updateDictTable() {
