@@ -623,6 +623,21 @@ html, body {
   errors: 0,
   manual: false
 }));
+const IRREGULARS_KEY = 'words_easy_irregulars_v1';
+
+const initialIrregulars = [
+  { base: 'go', past: 'went', pp: 'gone', ru: 'идти' },
+  { base: 'see', past: 'saw', pp: 'seen', ru: 'видеть' },
+  { base: 'take', past: 'took', pp: 'taken', ru: 'брать' },
+  { base: 'come', past: 'came', pp: 'come', ru: 'приходить' },
+  { base: 'do', past: 'did', pp: 'done', ru: 'делать' },
+].map((v, i) => ({
+  id: i + 1,
+  ...v,
+  streak: 0,
+  errors: 0,
+  learned: false
+}));
 
 
 function loadState() {
@@ -660,6 +675,20 @@ function loadState() {
     console.error('Ошибка загрузки слов:', e);
     return initialWords.slice();
   }
+}
+function loadIrregulars() {
+  const raw = localStorage.getItem(IRREGULARS_KEY);
+  if (!raw) return initialIrregulars.slice();
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return initialIrregulars.slice();
+  }
+}
+let irregulars = loadIrregulars();
+
+function saveIrregulars() {
+  localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
 }
 
 
@@ -730,7 +759,8 @@ function renderTabs() {
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' }
+    { id: 'dict', label: 'Словарь' },
+    { id: 'irregulars', label: 'Неправильные глаголы' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -1278,6 +1308,7 @@ function updateDictTable() {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
+          case 'irregulars': renderIrregulars(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
@@ -1347,6 +1378,127 @@ document.getElementById('confirmAddWord').onclick = () => {
   document.getElementById('modalRu').value = '';
   document.getElementById('modalTr').value = '';
 };
+function renderIrregulars() {
+  window.irQuery = window.irQuery || '';
+  window.irFilter = window.irFilter || 'all';
+
+  let list = irregulars.slice();
+
+  if (window.irQuery.trim()) {
+    const q = window.irQuery.toLowerCase();
+    list = list.filter(v =>
+      v.base.toLowerCase().includes(q) ||
+      v.past.toLowerCase().includes(q) ||
+      v.pp.toLowerCase().includes(q) ||
+      v.ru.toLowerCase().includes(q)
+    );
+  }
+
+  if (window.irFilter === 'learned') {
+    list = list.filter(v => v.learned);
+  }
+  if (window.irFilter === 'unlearned') {
+    list = list.filter(v => !v.learned);
+  }
+
+  list.sort((a, b) => a.base.localeCompare(b.base, 'en'));
+
+  panel.innerHTML = `
+    <div class="row" style="gap:12px; flex-wrap:wrap">
+      <input id="irSearch" placeholder="Поиск..." value="${window.irQuery}">
+      <select id="irFilter">
+        <option value="all">Все</option>
+        <option value="learned">Выученные</option>
+        <option value="unlearned">Невыученные</option>
+      </select>
+      <button class="btn primary" id="addIr">+ Add Verb</button>
+      <button class="btn error" id="resetIr">Сброс</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Base</th>
+            <th>Past</th>
+            <th>PP</th>
+            <th>Перевод</th>
+            <th>Серия</th>
+            <th>Ошибки</th>
+            <th>Выучено</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            list.length ? list.map((v, i) => `
+              <tr class="${v.learned ? 'learned-row' : ''}">
+                <td>${i + 1}</td>
+                <td>${v.base}</td>
+                <td>${v.past}</td>
+                <td>${v.pp}</td>
+                <td>${v.ru}</td>
+                <td class="center">${v.streak}</td>
+                <td class="center">${v.errors}</td>
+                <td class="center">
+                  <input type="checkbox" data-id="${v.id}" class="irLearned" ${v.learned ? 'checked' : ''}>
+                </td>
+                <td>
+                  <button class="btn error irDel" data-id="${v.id}">✕</button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr><td colspan="9" class="center muted">Пусто</td></tr>
+            `
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+function bindIrregulars() {
+  document.getElementById('irSearch').oninput = e => {
+    window.irQuery = e.target.value;
+    renderIrregulars();
+  };
+
+  document.getElementById('irFilter').onchange = e => {
+    window.irFilter = e.target.value;
+    renderIrregulars();
+  };
+
+  document.querySelectorAll('.irLearned').forEach(ch => {
+    ch.onchange = () => {
+      const v = irregulars.find(x => x.id == ch.dataset.id);
+      if (v) v.learned = ch.checked;
+      saveIrregulars();
+    };
+  });
+
+  document.querySelectorAll('.irDel').forEach(btn => {
+    btn.onclick = () => {
+      irregulars = irregulars.filter(v => v.id != btn.dataset.id);
+      saveIrregulars();
+      renderIrregulars();
+    };
+  });
+
+  document.getElementById('resetIr').onclick = () => {
+    if (!confirm('Сбросить прогресс неправильных глаголов?')) return;
+    irregulars.forEach(v => {
+      v.streak = 0;
+      v.errors = 0;
+      v.learned = false;
+    });
+    saveIrregulars();
+    renderIrregulars();
+  };
+}
+
+  bindIrregulars();
+}
 
 // при загрузке страницы
 updateThemeIcon();
