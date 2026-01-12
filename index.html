@@ -767,7 +767,18 @@ function switchTab(tabId) {
   </div>
 `;
  return; }
-      if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
+// сильный рандом
+const shuffledPool = shuffle(pool);
+
+// 70% — случайное слово
+// 30% — следующее (чтобы всё-таки был прогресс)
+if (pickNew || !currentTestWord) {
+  if (Math.random() < 0.7) {
+    currentTestWord = shuffledPool[0];
+  } else {
+    currentTestWord = nextOf(shuffledPool, testIdx) || shuffledPool[0];
+  }
+}
 
       const current = currentTestWord;
       const correctRu = current.ru;
