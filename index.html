@@ -1034,7 +1034,7 @@ if (keepFocus) {
           </table>
         </div>
       `;
-document.('resetAll').onclick = () => {
+document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
 
   words.forEach(w => {
