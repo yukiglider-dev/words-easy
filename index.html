@@ -799,17 +799,6 @@ function renderIrregular() {
 function pickRandomIrregular() {
   return IRREGULAR_VERBS[Math.floor(Math.random() * IRREGULAR_VERBS.length)];
 }
-function renderIrregularOptions() {
-  const forms = shuffle([
-    currentIrregular.past,
-    currentIrregular.p2,
-    ...getRandomForms(2)
-  ]);
-
-return forms.map(f => `
-  <button class="option" onclick="checkIrregular('${f}')">${f}</button>
-`).join("");
-
 function getRandomForms(n) {
   return shuffle(
     IRREGULAR_VERBS
@@ -840,7 +829,8 @@ function checkIrregular(answer) {
   } else {
     currentIrregular.errors++;
     currentIrregular.streak = 0;
-    result.textContent = `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
+    result.textContent =
+      `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
   }
 
   setTimeout(renderIrregular, 900);
