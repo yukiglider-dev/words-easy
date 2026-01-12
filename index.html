@@ -953,7 +953,7 @@ if (!pool.length) {
     // ---------- Tab: Dictionary ----------
     let dictFilter = 'all';
     let dictQuery = '';
-    function renderDict() {
+function renderDict(keepFocus = false) {
   const header = `
   <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
     <div class="field" style="flex:2; min-width:240px">
@@ -978,6 +978,14 @@ if (!pool.length) {
   </div>
   <div class="divider"></div>
 `;
+if (keepFocus) {
+  const input = document.getElementById('dictSearch');
+  if (input) {
+    const pos = input.value.length;
+    input.focus();
+    input.setSelectionRange(pos, pos);
+  }
+}
 
 
       let list = words.slice();
@@ -1040,8 +1048,7 @@ document.getElementById('resetAll').onclick = () => {
   renderDict();
 };
 
-      document.getElementById('dictSearch').oninput = (e) => { dictQuery = e.target.value; renderDict(); };
-      document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
+getElementById      document.getElementById('dictFilter').onchange = (e) => { dictFilter = e.target.value; renderDict(); };
       panelEl.querySelectorAll('.dictManual').forEach(ch => {
         ch.onchange = () => {
           const id = Number(ch.dataset.id);
