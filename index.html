@@ -604,15 +604,17 @@ html, body {
       { en: 'patient', ru: 'терпеливый', tr: 'пэйшент' },
       { en: 'punctual', ru: 'пунктуальный', tr: 'панкчюал' },
       { en: 'he likes', ru: 'ему нравится', tr: 'хи лайкс', rule: 'present_simple_3rd' }
-    ].map((w, i) => ({
-      id: i+1,
-      en: w.en,
-      ru: w.ru,
-      tr: w.tr || '',
-      streak: 0,
-      errors: 0,
-      manual: false
-    }));
+.map((w, i) => ({
+  id: i + 1,
+  en: w.en,
+  ru: w.ru,
+  tr: w.tr || '',
+  rule: w.rule || null,
+  streak: 0,
+  errors: 0,
+  manual: false
+}));
+
 const RULES = {
   present_simple_3rd: {
     title: 'He / She / It + s',
@@ -750,7 +752,7 @@ function renderTabs() {
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' }
+    { id: 'dict', label: 'Словарь' },
     { id: 'rules', label: 'Правила' }
   ];
 
@@ -1288,7 +1290,7 @@ function updateDictTable() {
         case 'input': renderInput(); break;
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
-        case 'match': renderRules(); break;
+  case 'rules': renderRules(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
