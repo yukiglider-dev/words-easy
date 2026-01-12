@@ -1173,65 +1173,84 @@ panelEl.innerHTML = `
 }
 
 function renderDict() {
-  const tbody = document.getElementById("dictBody");
+  const tbody = document.getElementById("dict-body");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
-  const search = document.getElementById("searchInput").value.toLowerCase();
+  const search = (document.getElementById("dict-search")?.value || "").toLowerCase();
 
-  // 🔹 копия + сортировка по алфавиту
-  const sorted = [...words]
-    .filter(w =>
+  let list = [...words];
+
+  // фильтр
+  if (dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (dictFilter === 'not_learned') {
+    list = list.filter(w => !isLearned(w));
+  }
+
+  // поиск
+  if (search) {
+    list = list.filter(w =>
       w.en.toLowerCase().includes(search) ||
       w.ru.toLowerCase().includes(search)
-    )
-    .sort((a, b) => a.en.localeCompare(b.en));
+    );
+  }
 
-  sorted.forEach((w, i) => {
+  // сортировка по алфавиту
+  list.sort((a, b) => a.en.localeCompare(b.en));
+
+  list.forEach((w, i) => {
     const tr = document.createElement("tr");
+    if (isLearned(w)) tr.classList.add("learned-row");
 
     tr.innerHTML = `
       <td>${i + 1}</td>
       <td>${w.en}</td>
       <td>${w.ru}</td>
-      <td>${w.tr || ""}</td>
-      <td>${w.streak || 0}</td>
-      <td>${w.errors || 0}</td>
-      <td>
-        <input type="checkbox" ${w.learned ? "checked" : ""}
-          onchange="toggleLearned(${w.id})">
+      <td>${w.tr ? `/${w.tr}/` : ""}</td>
+      <td class="center">${w.streak}</td>
+      <td class="center">${w.errors}</td>
+      <td class="center">
+        <input type="checkbox" ${w.manual ? "checked" : ""} data-id="${w.id}">
       </td>
-      <td>
-        <button class="del-btn" onclick="deleteWord(${w.id})">✖</button>
+      <td class="center">
+        <button class="btn btn-del" data-id="${w.id}">✖</button>
       </td>
     `;
 
     tbody.appendChild(tr);
   });
+
+  bindDictActions();
 }
-
-function deleteWord(id) {
-  words = words.filter(w => w.id !== id);
-  saveWords();
-  renderDict();
-}
-
-function toggleLearned(id) {
-  const w = words.find(w => w.id === id);
-  if (w) w.learned = !w.learned;
-  saveWords();
-}
-
-
 
 function bindDictActions() {
-  document.querySelectorAll('.dictManual').forEach(ch => {
+  document.querySelectorAll('input[type="checkbox"][data-id]').forEach(ch => {
     ch.onchange = () => {
       const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (w) w.manual = ch.checked;
+      if (!w) return;
+      w.manual = ch.checked;
       saveState();
       renderDict();
     };
   });
+
+  document.querySelectorAll('.btn-del').forEach(btn => {
+    btn.onclick = () => {
+      const id = Number(btn.dataset.id);
+      const w = words.find(x => x.id === id);
+      if (!w) return;
+      if (!confirm(`Удалить слово "${w.en}"?`)) return;
+
+      words = words.filter(x => x.id !== id);
+      saveState();
+      renderDict();
+    };
+  });
+}
+
 
   document.querySelectorAll('.btn-del').forEach(btn => {
     btn.onclick = () => {
