@@ -767,23 +767,24 @@ function switchTab(tabId) {
     let currentIrregular = null;
 
 function renderIrregular() {
-  const box = document.getElementById("irregular-box");
-
   currentIrregular = pickRandomIrregular();
 
-  box.innerHTML = `
-    <div class="card center">
-      <h2>${currentIrregular.base}</h2>
-      <p class="muted">${currentIrregular.ru}</p>
+  panelEl.innerHTML = `
+    <div class="panel-center">
+      <div class="card center" style="max-width:520px">
+        <h2>${currentIrregular.base}</h2>
+        <p class="muted">${currentIrregular.ru}</p>
 
-      <div class="options">
-        ${renderIrregularOptions()}
+        <div class="options">
+          ${renderIrregularOptions()}
+        </div>
+
+        <div id="irregular-result" style="margin-top:12px"></div>
       </div>
-
-      <div id="irregular-result"></div>
     </div>
   `;
 }
+
 function pickRandomIrregular() {
   return IRREGULAR_VERBS[Math.floor(Math.random() * IRREGULAR_VERBS.length)];
 }
@@ -822,9 +823,8 @@ function checkIrregular(answer) {
   setTimeout(renderIrregular, 900);
 }
 
-  function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
+
+  
 function isIrregularLearned(v) {
   return v.streak >= 3;
 }
@@ -1274,6 +1274,7 @@ function updateDictTable() {
 <td class="center">
   <button class="btn error btn-del" data-id="${w.id}">✕</button>
 </td>
+
 
       </tr>
     `).join('')
