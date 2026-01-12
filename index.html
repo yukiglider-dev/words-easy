@@ -1034,6 +1034,22 @@ if (keepFocus) {
           </table>
         </div>
       `;
+  const searchInput = document.getElementById('dictSearch');
+if (searchInput) {
+  searchInput.oninput = () => {
+    dictQuery = searchInput.value;
+    renderDict(true);
+  };
+}
+
+const filterSelect = document.getElementById('dictFilter');
+if (filterSelect) {
+  filterSelect.onchange = (e) => {
+    dictFilter = e.target.value;
+    renderDict();
+  };
+}
+
 document.getElementById('resetAll').onclick = () => {
   if (!confirm('Точно сбросить весь прогресс?')) return;
 
