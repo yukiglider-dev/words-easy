@@ -753,7 +753,6 @@ const initialIrregulars  = [
   errors: 0,
   learned: false
 }));
-const IRREGULARS_KEY = 'words_easy_irregulars_v1';
 
 function loadIrregulars() {
   const raw = localStorage.getItem(IRREGULARS_KEY);
@@ -766,6 +765,7 @@ function loadIrregulars() {
 }
 
 let irregulars = loadIrregulars();
+
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -803,16 +803,7 @@ function loadState() {
     return initialWords.slice();
   }
 }
-function loadIrregulars() {
-  const raw = localStorage.getItem(IRREGULARS_KEY);
-  if (!raw) return initialIrregulars.slice();
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return initialIrregulars.slice();
-  }
-}
-let irregulars = loadIrregulars();
+
 
 function saveIrregulars() {
   localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
