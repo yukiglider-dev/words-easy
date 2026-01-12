@@ -889,8 +889,10 @@ function renderTabs() {
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
     { id: 'dict', label: 'Словарь' },
-    { id: 'irregulars', label: 'Неправильные глаголы' }
+    { id: 'irregulars', label: 'Неправильные глаголы' },
+    { id: 'ir-assembly', label: 'Сборка (глаголы)' } // 👈 ВОТ ЭТО
   ];
+
 
   tabsEl.innerHTML = tabs.map(tab => `
     <button
@@ -1438,6 +1440,7 @@ function updateDictTable() {
         case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
           case 'irregulars': renderIrregulars(); break;
+          case 'ir-assembly': renderIrAssembly(); break;
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
@@ -1769,6 +1772,79 @@ function renderIrregulars() {
       updateProgress();
     };
   });
+}
+function renderIrAssembly() {
+  const panelEl = document.getElementById('panel');
+
+  // берём только невыученные
+  const pool = irregulars.filter(v => !v.learned);
+
+  if (!pool.length) {
+    panelEl.innerHTML = `
+      <div class="center muted">
+        🎉 Все неправильные глаголы выучены!
+      </div>
+    `;
+    return;
+  }
+
+  // случайный глагол
+  const verb = pool[Math.floor(Math.random() * pool.length)];
+
+  panelEl.innerHTML = `
+    <div class="card center">
+      <h2 style="font-size:32px">${verb.base}</h2>
+      <div class="muted">${verb.ru}</div>
+
+      <div class="field" style="margin-top:20px">
+        <input id="irPast" placeholder="Past (V2)">
+      </div>
+
+      <div class="field">
+        <input id="irPP" placeholder="Past Participle (V3)">
+      </div>
+
+      <button class="btn primary" id="checkIrAssembly">
+        Проверить
+      </button>
+
+      <div id="irResult" class="muted" style="margin-top:12px"></div>
+    </div>
+  `;
+
+  document.getElementById('checkIrAssembly').onclick = () => {
+    const past = document.getElementById('irPast').value.trim().toLowerCase();
+    const pp = document.getElementById('irPP').value.trim().toLowerCase();
+
+    const okPast = verb.past.toLowerCase();
+    const okPP = verb.pp.toLowerCase();
+
+    if (past === okPast && pp === okPP) {
+      verb.streak = (verb.streak || 0) + 1;
+
+      if (verb.streak >= 3) {
+        verb.learned = true;
+      }
+
+      document.getElementById('irResult').innerHTML = `
+        ✅ Правильно (${verb.streak}/3)
+      `;
+    } else {
+      verb.errors = (verb.errors || 0) + 1;
+      verb.streak = 0;
+
+      document.getElementById('irResult').innerHTML = `
+        ❌ Ошибка<br>
+        Past: <b>${verb.past}</b><br>
+        PP: <b>${verb.pp}</b>
+      `;
+    }
+
+    saveIrregulars();
+    updateProgress();
+
+    setTimeout(renderIrAssembly, 1000);
+  };
 }
 
 
