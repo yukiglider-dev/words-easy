@@ -817,27 +817,35 @@ function getRandomForms(n) {
       .flatMap(v => [v.past, v.p2])
   ).slice(0, n);
 }
+
+function renderIrregularOptions() {
+  const forms = shuffle([
+    currentIrregular.past,
+    currentIrregular.p2,
+    ...getRandomForms(2)
+  ]);
+
+  return forms.map(f => `
+    <button class="option" onclick="checkIrregular('${f}')">${f}</button>
+  `).join("");
+}
+
 function checkIrregular(answer) {
   const ok = [currentIrregular.past, currentIrregular.p2].includes(answer);
   const result = document.getElementById("irregular-result");
 
   if (ok) {
     currentIrregular.streak++;
-    result.innerHTML = "✅ Правильно";
+    result.textContent = "✅ Правильно";
   } else {
     currentIrregular.errors++;
     currentIrregular.streak = 0;
-    result.innerHTML = `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
+    result.textContent = `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
   }
 
   setTimeout(renderIrregular, 900);
 }
 
-
-  
-function isIrregularLearned(v) {
-  return v.streak >= 3;
-}
 
 
     // ---------- Tab: Test ----------
@@ -1176,7 +1184,7 @@ function renderDict() {
                     <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
                   </td>
                   <td class="center">
- class="btn error btn-del" data-id="${w.id}">✕</button>
+  <button class="btn error btn-del" data-id="${w.id}">✕</button>
                   </td>
                 </tr>
               `).join('')
@@ -1290,7 +1298,7 @@ function updateDictTable() {
 
       </tr>
     `).join('')
-    : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
+    : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`;
 }
 
 
