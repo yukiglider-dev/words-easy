@@ -1164,8 +1164,9 @@ document.getElementById('dictFilter').onchange = (e) => {
 const miniThemeBtn = document.getElementById('miniTheme');
 
 function updateThemeIcon() {
-  miniThemeBtn.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
+  miniThemeBtn.textContent = settings.theme === 'dark' ? '☀️' : '🌙';
 }
+
 
 miniThemeBtn.onclick = () => {
   settings.theme = settings.theme === 'light' ? 'dark' : 'light';
