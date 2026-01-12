@@ -665,6 +665,41 @@ const RULES = {
     examples: ['rich', 'busy', 'possible']
   }
 };
+const RULES = {
+  ea_sound: {
+    title: "Буквы EA читаются как /иː/",
+    levels: [
+      "Сочетание <b>ea</b> часто читается как длинный звук <b>/иː/</b>.",
+      "Если видишь <b>ea</b>, чаще всего это звук <b>/иː/</b>, а не «е».",
+      "Пример: <b>cheap</b> — читается <b>/чип/</b>, не «чеап»."
+    ],
+    words: ["cheap", "speak", "mean", "team"]
+  },
+
+  ch_sound: {
+    title: "CH читается как /ч/",
+    levels: [
+      "<b>ch</b> обычно читается как <b>/ч/</b>.",
+      "Не <b>к</b> и не <b>х</b>, а именно <b>/ч/</b>.",
+      "Пример: <b>cheap</b>, <b>chair</b>, <b>check</b>."
+    ],
+    words: ["cheap", "chair", "check"]
+  }
+};
+let ruleStats = JSON.parse(localStorage.getItem("ruleStats") || "{}");
+function saveRuleStats() {
+  localStorage.setItem("ruleStats", JSON.stringify(ruleStats));
+}
+function trackRuleError(wordEn) {
+  Object.entries(RULES).forEach(([ruleId, rule]) => {
+    if (rule.words.includes(wordEn)) {
+      ruleStats[ruleId] = (ruleStats[ruleId] || 0) + 1;
+    }
+  });
+
+  saveRuleStats();
+}
+ 
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -1132,25 +1167,42 @@ function renderDict() {
   bindDictActions();
 }
 function renderRules() {
-  panelEl.innerHTML = `
-    <div class="panel-center">
-      <div class="card" style="max-width:720px">
-        <div style="font-size:22px; font-weight:800">
-          📘 Правила
-        </div>
+  const activeRules = Object.entries(RULES)
+    .filter(([id]) => ruleStats[id] > 0);
 
-        <div class="muted" style="margin-top:12px">
-          Здесь будут показываться правила, которые помогут тебе понять
-          слова, с которыми возникают ошибки.
-        </div>
-
-        <div class="pill" style="margin-top:16px">
-          Скоро здесь появятся персональные объяснения ✨
+  if (!activeRules.length) {
+    panelEl.innerHTML = `
+      <div class="panel-center">
+        <div class="card">
+          <div style="font-size:22px;font-weight:800">📘 Правила</div>
+          <div class="muted" style="margin-top:12px">
+            Пока нет ошибок — правила не нужны 🙂
+          </div>
         </div>
       </div>
+    `;
+    return;
+  }
+
+  panelEl.innerHTML = `
+    <div class="card" style="max-width:820px;margin:0 auto">
+      <div style="font-size:22px;font-weight:800;margin-bottom:12px">
+        📘 Правила по твоим ошибкам
+      </div>
+
+      ${activeRules.map(([id, rule]) => {
+        const level = Math.min(ruleStats[id] - 1, rule.levels.length - 1);
+        return `
+          <div class="card" style="margin-bottom:14px">
+            <b>${rule.title}</b>
+            <div style="margin-top:6px">${rule.levels[level]}</div>
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 }
+
 
 
 function bindDictActions() {
