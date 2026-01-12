@@ -458,51 +458,7 @@ html, body {
   justify-content: center;  /* горизонталь */
 }
 
-.center-flex {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
 
-.options {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-.panel-center {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-table {
-  table-layout: fixed;
-}
-
-th:nth-child(1), td:nth-child(1) { width: 50px; }
-th:nth-child(4), td:nth-child(4) { width: 130px; }
-th:nth-child(5), td:nth-child(5),
-th:nth-child(6), td:nth-child(6),
-th:nth-child(7), td:nth-child(7) {
-  width: 90px;
-}
-th:nth-child(8), td:nth-child(8) {
-  width: 70px;
-}
-
-th.center,
-td.center {
-  width: 90px;
-  min-width: 90px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-td.center button,
-td.center input {
-  margin: 0 auto;
-}
 
   </style>
 </head>
@@ -669,7 +625,6 @@ td.center input {
 }));
 
 
-
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
 
@@ -775,8 +730,7 @@ function renderTabs() {
     { id: 'repeat', label: 'Повтор' },
     { id: 'input', label: 'Ввод' },
     { id: 'match', label: 'Сопоставление' },
-    { id: 'dict', label: 'Словарь' },
-      { id: 'irregular', label: 'Неправильные глаголы' }
+    { id: 'dict', label: 'Словарь' }
   ];
 
   tabsEl.innerHTML = tabs.map(tab => `
@@ -796,201 +750,8 @@ function switchTab(tabId) {
   renderPanel();
 }
 
-    let currentIrregular = null;
-const IRREGULAR_VERBS = [
-  { id: 1, base: 'arise', past: 'arose', p2: 'arisen', ru: 'подниматься', streak: 0, errors: 0 },
-  { id: 2, base: 'awake', past: 'awoke', p2: 'awoken', ru: 'пробуждать', streak: 0, errors: 0 },
-  { id: 3, base: 'be', past: 'was (were)', p2: 'been', ru: 'быть', streak: 0, errors: 0 },
-  { id: 4, base: 'bear', past: 'bore', p2: 'born', ru: 'рожать, переносить', streak: 0, errors: 0 },
-  { id: 5, base: 'beat', past: 'beat', p2: 'beaten', ru: 'бить', streak: 0, errors: 0 },
-  { id: 6, base: 'become', past: 'became', p2: 'become', ru: 'становиться', streak: 0, errors: 0 },
-  { id: 7, base: 'begin', past: 'began', p2: 'begun', ru: 'начинать', streak: 0, errors: 0 },
-  { id: 8, base: 'bend', past: 'bent', p2: 'bent', ru: 'наклонять', streak: 0, errors: 0 },
-  { id: 9, base: 'bet', past: 'bet', p2: 'bet', ru: 'заключать пари', streak: 0, errors: 0 },
-  { id: 10, base: 'bind', past: 'bound', p2: 'bound', ru: 'связывать', streak: 0, errors: 0 },
-  { id: 11, base: 'bite', past: 'bit', p2: 'bitten', ru: 'кусать', streak: 0, errors: 0 },
-  { id: 12, base: 'bleed', past: 'bled', p2: 'bled', ru: 'кровоточить', streak: 0, errors: 0 },
-  { id: 13, base: 'blow', past: 'blew', p2: 'blown', ru: 'дуть', streak: 0, errors: 0 },
-  { id: 14, base: 'break', past: 'broke', p2: 'broken', ru: 'ломать', streak: 0, errors: 0 },
-  { id: 15, base: 'breed', past: 'bred', p2: 'bred', ru: 'разводить животных', streak: 0, errors: 0 },
-  { id: 16, base: 'bring', past: 'brought', p2: 'brought', ru: 'приносить', streak: 0, errors: 0 },
-  { id: 17, base: 'build', past: 'built', p2: 'built', ru: 'строить', streak: 0, errors: 0 },
-  { id: 18, base: 'buy', past: 'bought', p2: 'bought', ru: 'покупать', streak: 0, errors: 0 },
-  { id: 19, base: 'catch', past: 'caught', p2: 'caught', ru: 'ловить', streak: 0, errors: 0 },
-  { id: 20, base: 'choose', past: 'chose', p2: 'chosen', ru: 'выбирать', streak: 0, errors: 0 },
-
-  { id: 21, base: 'cling', past: 'clung', p2: 'clung', ru: 'цепляться', streak: 0, errors: 0 },
-  { id: 22, base: 'come', past: 'came', p2: 'come', ru: 'приходить', streak: 0, errors: 0 },
-  { id: 23, base: 'cost', past: 'cost', p2: 'cost', ru: 'стоить', streak: 0, errors: 0 },
-  { id: 24, base: 'cut', past: 'cut', p2: 'cut', ru: 'резать', streak: 0, errors: 0 },
-  { id: 25, base: 'deal', past: 'dealt', p2: 'dealt', ru: 'вести дела', streak: 0, errors: 0 },
-  { id: 26, base: 'dig', past: 'dug', p2: 'dug', ru: 'копать', streak: 0, errors: 0 },
-  { id: 27, base: 'do', past: 'did', p2: 'done', ru: 'делать', streak: 0, errors: 0 },
-  { id: 28, base: 'draw', past: 'drew', p2: 'drawn', ru: 'рисовать, тянуть', streak: 0, errors: 0 },
-  { id: 29, base: 'drink', past: 'drank', p2: 'drunk', ru: 'пить', streak: 0, errors: 0 },
-  { id: 30, base: 'drive', past: 'drove', p2: 'driven', ru: 'водить автомобиль', streak: 0, errors: 0 },
-
-  { id: 31, base: 'eat', past: 'ate', p2: 'eaten', ru: 'кушать', streak: 0, errors: 0 },
-  { id: 32, base: 'fall', past: 'fell', p2: 'fallen', ru: 'падать', streak: 0, errors: 0 },
-  { id: 33, base: 'feed', past: 'fed', p2: 'fed', ru: 'кормить', streak: 0, errors: 0 },
-  { id: 34, base: 'feel', past: 'felt', p2: 'felt', ru: 'чувствовать', streak: 0, errors: 0 },
-  { id: 35, base: 'fight', past: 'fought', p2: 'fought', ru: 'бороться', streak: 0, errors: 0 },
-  { id: 36, base: 'find', past: 'found', p2: 'found', ru: 'находить', streak: 0, errors: 0 },
-  { id: 37, base: 'flee', past: 'fled', p2: 'fled', ru: 'сбегать', streak: 0, errors: 0 },
-  { id: 38, base: 'fly', past: 'flew', p2: 'flown', ru: 'летать', streak: 0, errors: 0 },
-  { id: 39, base: 'forbid', past: 'forbade', p2: 'forbidden', ru: 'запрещать', streak: 0, errors: 0 },
-  { id: 40, base: 'forget', past: 'forgot', p2: 'forgotten', ru: 'забывать', streak: 0, errors: 0 },
-
-  { id: 41, base: 'forgive', past: 'forgave', p2: 'forgiven', ru: 'прощать', streak: 0, errors: 0 },
-  { id: 42, base: 'freeze', past: 'froze', p2: 'frozen', ru: 'замораживать', streak: 0, errors: 0 },
-  { id: 43, base: 'get', past: 'got', p2: 'got (gotten)', ru: 'получать', streak: 0, errors: 0 },
-  { id: 44, base: 'give', past: 'gave', p2: 'given', ru: 'давать', streak: 0, errors: 0 },
-  { id: 45, base: 'go', past: 'went', p2: 'gone', ru: 'идти', streak: 0, errors: 0 },
-  { id: 46, base: 'grow', past: 'grew', p2: 'grown', ru: 'расти', streak: 0, errors: 0 },
-  { id: 47, base: 'hang', past: 'hung', p2: 'hung', ru: 'висеть', streak: 0, errors: 0 },
-  { id: 48, base: 'have', past: 'had', p2: 'had', ru: 'иметь', streak: 0, errors: 0 },
-  { id: 49, base: 'hear', past: 'heard', p2: 'heard', ru: 'слышать', streak: 0, errors: 0 },
-  { id: 50, base: 'hide', past: 'hid', p2: 'hidden', ru: 'прятать', streak: 0, errors: 0 },
-
-  { id: 51, base: 'hit', past: 'hit', p2: 'hit', ru: 'ударять, попадать', streak: 0, errors: 0 },
-  { id: 52, base: 'hold', past: 'held', p2: 'held', ru: 'держать', streak: 0, errors: 0 },
-  { id: 53, base: 'hurt', past: 'hurt', p2: 'hurt', ru: 'причинять боль', streak: 0, errors: 0 },
-  { id: 54, base: 'keep', past: 'kept', p2: 'kept', ru: 'сохранять, соблюдать', streak: 0, errors: 0 },
-  { id: 55, base: 'know', past: 'knew', p2: 'known', ru: 'знать', streak: 0, errors: 0 },
-  { id: 56, base: 'lay', past: 'laid', p2: 'laid', ru: 'класть', streak: 0, errors: 0 },
-  { id: 57, base: 'lead', past: 'led', p2: 'led', ru: 'вести, лидировать', streak: 0, errors: 0 },
-  { id: 58, base: 'learn', past: 'learnt (learned)', p2: 'learnt (learned)', ru: 'учиться, узнавать', streak: 0, errors: 0 },
-  { id: 59, base: 'leave', past: 'left', p2: 'left', ru: 'покидать, оставлять', streak: 0, errors: 0 },
-  { id: 60, base: 'lend', past: 'lent', p2: 'lent', ru: 'давать взаймы', streak: 0, errors: 0 },
-
-  { id: 61, base: 'let', past: 'let', p2: 'let', ru: 'позволять', streak: 0, errors: 0 },
-  { id: 62, base: 'lie', past: 'lay', p2: 'lain', ru: 'лежать', streak: 0, errors: 0 },
-  { id: 63, base: 'light', past: 'lit', p2: 'lit', ru: 'зажигать, освещать', streak: 0, errors: 0 },
-  { id: 64, base: 'lose', past: 'lost', p2: 'lost', ru: 'терять', streak: 0, errors: 0 },
-  { id: 65, base: 'make', past: 'made', p2: 'made', ru: 'делать, мастерить', streak: 0, errors: 0 },
-  { id: 66, base: 'mean', past: 'meant', p2: 'meant', ru: 'значить', streak: 0, errors: 0 },
-  { id: 67, base: 'meet', past: 'met', p2: 'met', ru: 'встречать, знакомиться', streak: 0, errors: 0 },
-  { id: 68, base: 'pay', past: 'paid', p2: 'paid', ru: 'платить', streak: 0, errors: 0 },
-  { id: 69, base: 'put', past: 'put', p2: 'put', ru: 'класть, ставить', streak: 0, errors: 0 },
-  { id: 70, base: 'read', past: 'read', p2: 'read', ru: 'читать', streak: 0, errors: 0 },
-
-  { id: 71, base: 'ride', past: 'rode', p2: 'ridden', ru: 'ездить верхом', streak: 0, errors: 0 },
-  { id: 72, base: 'ring', past: 'rang', p2: 'rung', ru: 'звонить', streak: 0, errors: 0 },
-  { id: 73, base: 'rise', past: 'rose', p2: 'risen', ru: 'возрастать, подниматься', streak: 0, errors: 0 },
-  { id: 74, base: 'run', past: 'ran', p2: 'run', ru: 'бежать', streak: 0, errors: 0 },
-  { id: 75, base: 'say', past: 'said', p2: 'said', ru: 'сказать', streak: 0, errors: 0 },
-  { id: 76, base: 'see', past: 'saw', p2: 'seen', ru: 'видеть', streak: 0, errors: 0 },
-  { id: 77, base: 'seek', past: 'sought', p2: 'sought', ru: 'искать', streak: 0, errors: 0 },
-  { id: 78, base: 'sell', past: 'sold', p2: 'sold', ru: 'продавать', streak: 0, errors: 0 },
-  { id: 79, base: 'send', past: 'sent', p2: 'sent', ru: 'посылать', streak: 0, errors: 0 },
-  { id: 80, base: 'set', past: 'set', p2: 'set', ru: 'устанавливать', streak: 0, errors: 0 },
-
-  { id: 81, base: 'shake', past: 'shook', p2: 'shaken', ru: 'трясти', streak: 0, errors: 0 },
-  { id: 82, base: 'shine', past: 'shone', p2: 'shone', ru: 'светить, сиять', streak: 0, errors: 0 },
-  { id: 83, base: 'shoot', past: 'shot', p2: 'shot', ru: 'стрелять', streak: 0, errors: 0 },
-  { id: 84, base: 'show', past: 'showed', p2: 'shown', ru: 'показывать', streak: 0, errors: 0 },
-  { id: 85, base: 'shrink', past: 'shrank', p2: 'shrunk', ru: 'сжиматься', streak: 0, errors: 0 },
-  { id: 86, base: 'shut', past: 'shut', p2: 'shut', ru: 'закрывать, затворять', streak: 0, errors: 0 },
-  { id: 87, base: 'sing', past: 'sang', p2: 'sung', ru: 'петь', streak: 0, errors: 0 },
-  { id: 88, base: 'sit', past: 'sat', p2: 'sat', ru: 'сидеть', streak: 0, errors: 0 },
-  { id: 89, base: 'sleep', past: 'slept', p2: 'slept', ru: 'спать', streak: 0, errors: 0 },
-  { id: 90, base: 'slide', past: 'slid', p2: 'slid', ru: 'скользить', streak: 0, errors: 0 },
-
-  { id: 91, base: 'smell', past: 'smelt', p2: 'smelt', ru: 'пахнуть, нюхать', streak: 0, errors: 0 },
-  { id: 92, base: 'speak', past: 'spoke', p2: 'spoken', ru: 'говорить', streak: 0, errors: 0 },
-  { id: 93, base: 'spell', past: 'spelt (spelled)', p2: 'spelt (spelled)', ru: 'произносить по буквам', streak: 0, errors: 0 },
-  { id: 94, base: 'spend', past: 'spent', p2: 'spent', ru: 'тратить, проводить время', streak: 0, errors: 0 },
-  { id: 95, base: 'spill', past: 'spilt (spilled)', p2: 'spilt (spilled)', ru: 'разлить', streak: 0, errors: 0 },
-  { id: 96, base: 'spin', past: 'spun', p2: 'spun', ru: 'крутить', streak: 0, errors: 0 },
-  { id: 97, base: 'split', past: 'split', p2: 'split', ru: 'разделять, раскалывать', streak: 0, errors: 0 },
-  { id: 98, base: 'spoil', past: 'spoilt (spoiled)', p2: 'spoilt (spoiled)', ru: 'портить', streak: 0, errors: 0 },
-  { id: 99, base: 'spread', past: 'spread', p2: 'spread', ru: 'распространять', streak: 0, errors: 0 },
-  { id: 100, base: 'stand', past: 'stood', p2: 'stood', ru: 'стоять', streak: 0, errors: 0 },
-
-  { id: 101, base: 'steal', past: 'stole', p2: 'stolen', ru: 'воровать', streak: 0, errors: 0 },
-  { id: 102, base: 'sting', past: 'stung', p2: 'stung', ru: 'жалить', streak: 0, errors: 0 },
-  { id: 103, base: 'stink', past: 'stank', p2: 'stunk', ru: 'вонять', streak: 0, errors: 0 },
-  { id: 104, base: 'strike', past: 'struck', p2: 'struck', ru: 'бастовать, ударять', streak: 0, errors: 0 },
-  { id: 105, base: 'swear', past: 'swore', p2: 'sworn', ru: 'клясться, ругаться', streak: 0, errors: 0 },
-  { id: 106, base: 'sweep', past: 'swept', p2: 'swept', ru: 'подметать', streak: 0, errors: 0 },
-  { id: 107, base: 'swell', past: 'swelled', p2: 'swollen (swelled)', ru: 'опухать', streak: 0, errors: 0 },
-  { id: 108, base: 'swim', past: 'swam', p2: 'swum', ru: 'плавать', streak: 0, errors: 0 },
-  { id: 109, base: 'take', past: 'took', p2: 'taken', ru: 'брать', streak: 0, errors: 0 },
-  { id: 110, base: 'teach', past: 'taught', p2: 'taught', ru: 'обучать', streak: 0, errors: 0 },
-
-  { id: 111, base: 'tear', past: 'tore', p2: 'torn', ru: 'рвать', streak: 0, errors: 0 },
-  { id: 112, base: 'tell', past: 'told', p2: 'told', ru: 'рассказывать', streak: 0, errors: 0 },
-  { id: 113, base: 'think', past: 'thought', p2: 'thought', ru: 'думать', streak: 0, errors: 0 },
-  { id: 114, base: 'throw', past: 'threw', p2: 'thrown', ru: 'бросать', streak: 0, errors: 0 },
-  { id: 115, base: 'understand', past: 'understood', p2: 'understood', ru: 'понимать', streak: 0, errors: 0 },
-  { id: 116, base: 'wake', past: 'woke', p2: 'woken', ru: 'будить', streak: 0, errors: 0 },
-  { id: 117, base: 'wear', past: 'wore', p2: 'worn', ru: 'носить (одежду)', streak: 0, errors: 0 },
-  { id: 118, base: 'win', past: 'won', p2: 'won', ru: 'побеждать', streak: 0, errors: 0 },
-  { id: 119, base: 'wind', past: 'wound', p2: 'wound', ru: 'обматывать, изгибаться', streak: 0, errors: 0 },
-  { id: 120, base: 'write', past: 'wrote', p2: 'written', ru: 'писать', streak: 0, errors: 0 }
-];
-
-
-function renderIrregular() {
-  currentIrregular = pickRandomIrregular();
-
-  panelEl.innerHTML = `
-    <div class="panel-center">
-      <div class="card center" style="max-width:520px">
-        <h2>${currentIrregular.base}</h2>
-        <p class="muted">${currentIrregular.ru}</p>
-
-        <div class="options">
-          ${renderIrregularOptions()}
-        </div>
-
-        <div id="irregular-result" style="margin-top:12px"></div>
-      </div>
-    </div>
-  `;
-}
-
-function pickRandomIrregular() {
-  return IRREGULAR_VERBS[Math.floor(Math.random() * IRREGULAR_VERBS.length)];
-}
-function getRandomForms(n) {
-  return shuffle(
-    IRREGULAR_VERBS
-      .filter(v => v.id !== currentIrregular.id)
-      .flatMap(v => [v.past, v.p2])
-  ).slice(0, n);
-}
-
-function renderIrregularOptions() {
-  const forms = shuffle([
-    currentIrregular.past,
-    currentIrregular.p2,
-    ...getRandomForms(2)
-  ]);
-
-  return forms.map(f => `
-    <button class="option" onclick="checkIrregular('${f}')">${f}</button>
-  `).join("");
-}
-
-function checkIrregular(answer) {
-  const ok = [currentIrregular.past, currentIrregular.p2].includes(answer);
-  const result = document.getElementById("irregular-result");
-
-  if (ok) {
-    currentIrregular.streak++;
-    result.textContent = "✅ Правильно";
-  } else {
-    currentIrregular.errors++;
-    currentIrregular.streak = 0;
-    result.textContent =
-      `❌ Неверно: ${currentIrregular.past} / ${currentIrregular.p2}`;
-  }
-
-  setTimeout(renderIrregular, 900);
-}
-
-
+    
+  
 
     // ---------- Tab: Test ----------
     let testIdx = { value: -1 };
@@ -1006,18 +767,7 @@ function checkIrregular(answer) {
   </div>
 `;
  return; }
-// сильный рандом
-const shuffledPool = shuffle(pool);
-
-// 70% — случайное слово
-// 30% — следующее (чтобы всё-таки был прогресс)
-if (pickNew || !currentTestWord) {
-  if (Math.random() < 0.7) {
-    currentTestWord = shuffledPool[0];
-  } else {
-    currentTestWord = nextOf(shuffledPool, testIdx) || shuffledPool[0];
-  }
-}
+      if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
 
       const current = currentTestWord;
       const correctRu = current.ru;
@@ -1161,7 +911,7 @@ panelEl.innerHTML = `
 `;
 
 
-  document.getElementById('repKnow').onclick = () => { 
+  document.getElementById('repKnow').onclick = () => {
     current.errors = Math.max(0, current.errors - 1);
     current.streak += 1;
     saveState();
@@ -1249,156 +999,137 @@ panelEl.innerHTML = `
     // ---------- Tab: Dictionary ----------
     let dictFilter = 'all';
     let dictQuery = '';
-   function renderDictPanel() {
-  panelEl.innerHTML = `
-  <div class="row" style="margin-bottom:12px; gap:8px; flex-wrap:wrap">
-
-    <input
-      id="dict-search"
-      type="text"
-      placeholder="Поиск..."
-      style="max-width:220px"
-    />
-
-    <select id="dict-filter" style="max-width:200px">
-      <option value="all">Все слова</option>
-      <option value="learned">Выученные</option>
-      <option value="not_learned">Не выученные</option>
-    </select>
-
-    <button class="btn primary" id="openAddModal">+ Add Word</button>
-
-    <button class="btn success" id="markAllLearned">
-      Отметить всё выученным
-    </button>
-
-    <button class="btn error" id="resetAll">
-      Полный сброс
-    </button>
-
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Английское</th>
-          <th>Перевод</th>
-          <th>Транскрипция</th>
-          <th class="center">Серия</th>
-          <th class="center">Ошибки</th>
-          <th class="center">Выучено</th>
-          <th class="center">Удалить</th>
-        </tr>
-      </thead>
-      <tbody id="dict-body"></tbody>
-    </table>
-  </div>
-`;
-
-
-  document.getElementById('dict-search').oninput = (e) => {
-    dictQuery = e.target.value;
-    renderDict();
-  };
-
-  document.getElementById('dict-filter').onchange = (e) => {
-    dictFilter = e.target.value;
-    renderDict();
-  };
-
-  renderDict();
-}
-
 function renderDict() {
-  const tbody = document.getElementById("dict-body");
-  if (!tbody) return;
+  const panelEl = document.getElementById('panel');
+  if (!panelEl) return;
 
-  tbody.innerHTML = "";
+  window.dictQuery = window.dictQuery || '';
+  window.dictFilter = window.dictFilter || 'all';
 
-  const search = (document.getElementById("dict-search")?.value || "").toLowerCase();
+  let list = words.slice();
 
-  let list = [...words];
-
-  // фильтр
-  if (dictFilter === 'learned') {
-    list = list.filter(w => isLearned(w));
-  }
-  if (dictFilter === 'not_learned') {
-    list = list.filter(w => !isLearned(w));
-  }
-
-  // поиск
-  if (search) {
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
     list = list.filter(w =>
-      w.en.toLowerCase().includes(search) ||
-      w.ru.toLowerCase().includes(search)
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
     );
   }
 
-  // сортировка по алфавиту
-  list.sort((a, b) => a.en.localeCompare(b.en));
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
+  }
 
-  list.forEach((w, i) => {
-    const tr = document.createElement("tr");
-    if (isLearned(w)) tr.classList.add("learned-row");
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
 
-    tr.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${w.en}</td>
-      <td>${w.ru}</td>
-      <td>${w.tr ? `/${w.tr}/` : ""}</td>
-      <td class="center">${w.streak}</td>
-      <td class="center">${w.errors}</td>
-      <td class="center">
-        <input type="checkbox" ${w.manual ? "checked" : ""} data-id="${w.id}">
-      </td>
-      <td class="center">
-        <button class="btn btn-del" data-id="${w.id}">✖</button>
-      </td>
-    `;
+  panelEl.innerHTML = `
+    <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+      <div class="field" style="flex:2; min-width:240px">
+        <input id="dictSearch" type="text" placeholder="Поиск..." value="${window.dictQuery}">
+      </div>
 
-    tbody.appendChild(tr);
-  });
+      <div class="field" style="flex:1; min-width:200px">
+        <select id="dictFilter">
+          <option value="all" ${window.dictFilter === 'all' ? 'selected' : ''}>Все слова</option>
+          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Выученные</option>
+          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Невыученные</option>
+        </select>
+      </div>
+
+      <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn primary" id="openAddModal">+ Add Word</button>
+        <button class="btn success" id="markAll">Отметить всё</button>
+        <button class="btn error" id="resetAll">Сброс</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="center">№</th>
+            <th>Английское</th>
+            <th>Перевод</th>
+            <th class="center">Транскрипция</th>
+            <th class="center">Серия</th>
+            <th class="center">Ошибки</th>
+            <th class="center">Выучено</th>
+            <th class="center" style="width:80px">Удалить</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            list.length
+              ? list.map((w, i) => `
+                <tr class="${isLearned(w) ? 'learned-row' : ''}">
+                  <td class="center">${i + 1}</td>
+                  <td>${w.en}</td>
+                  <td>${w.ru}</td>
+                  <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+                  <td class="center">${w.streak}</td>
+                  <td class="center">${w.errors}</td>
+                  <td class="center">
+                    <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+                  </td>
+                  <td class="center">
+                    <button class="btn error btn-del" data-id="${w.id}">✕</button>
+                  </td>
+                </tr>
+              `).join('')
+              : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById('dictSearch').oninput = e => {
+    window.dictQuery = e.target.value;
+    updateDictTable();
+  };
+
+  document.getElementById('dictFilter').onchange = e => {
+    window.dictFilter = e.target.value;
+    renderDict();
+  };
+
+  document.getElementById('markAll').onclick = () => {
+    words.forEach(w => w.manual = true);
+    saveState();
+    renderDict();
+  };
+
+  document.getElementById('resetAll').onclick = () => {
+    if (!confirm('Сбросить весь прогресс?')) return;
+    words.forEach(w => {
+      w.streak = 0;
+      w.errors = 0;
+      w.manual = false;
+    });
+    saveState();
+    renderDict();
+  };
 
   bindDictActions();
 }
-// отметить всё выученным
-document.getElementById('markAllLearned').onclick = () => {
-  if (!confirm('Отметить все слова как выученные?')) return;
-  words.forEach(w => {
-    w.manual = true;
-    w.streak = 3;
-  });
-  saveState();
-  renderDict();
-};
-
-// полный сброс
-document.getElementById('resetAll').onclick = () => {
-  if (!confirm('Сбросить ВСЮ статистику?')) return;
-  words.forEach(w => {
-    w.streak = 0;
-    w.errors = 0;
-    w.manual = false;
-  });
-  saveState();
-  renderDict();
-};
 
 function bindDictActions() {
-  document.querySelectorAll('input[type="checkbox"][data-id]').forEach(ch => {
+  // чекбоксы "выучено"
+  document.querySelectorAll('.dictManual').forEach(ch => {
     ch.onchange = () => {
       const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (!w) return;
-      w.manual = ch.checked;
+      if (w) w.manual = ch.checked;
       saveState();
-      renderDict();
     };
   });
 
-
+  // кнопки удаления
   document.querySelectorAll('.btn-del').forEach(btn => {
     btn.onclick = () => {
       const id = Number(btn.dataset.id);
@@ -1409,11 +1140,57 @@ function bindDictActions() {
 
       words = words.filter(x => x.id !== id);
       saveState();
-      renderDict();
+      updateDictTable(); // ⚠️ НЕ renderDict
+      bindDictActions();
+
     };
   });
 }
 
+function updateDictTable() {
+  let list = words.slice();
+
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
+    list = list.filter(w =>
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
+  }
+
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+
+  const tbody = document.querySelector('.table-wrap tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = list.length
+    ? list.map((w, i) => `
+      <tr class="${isLearned(w) ? 'learned-row' : ''}">
+        <td class="center">${i + 1}</td>
+        <td>${w.en}</td>
+        <td>${w.ru}</td>
+        <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+        <td class="center">${w.streak}</td>
+        <td class="center">${w.errors}</td>
+        <td class="center">
+  <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+</td>
+<td class="center">
+  <button class="btn error btn-del" data-id="${w.id}">✕</button>
+</td>
+
+      </tr>
+    `).join('')
+    : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
+}
 
 
     // ---------- Tab: Match ----------
@@ -1499,10 +1276,8 @@ function bindDictActions() {
         case 'cards': renderCards(); break;
         case 'repeat': renderRepeat(); break;
         case 'input': renderInput(); break;
-case 'dict': renderDictPanel(); break;
+        case 'dict': renderDict(); break;
         case 'match': renderMatch(); break;
-          case 'irregular': renderIrregular(); break;
-
       }
     }
 const miniThemeBtn = document.getElementById('miniTheme');
