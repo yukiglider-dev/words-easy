@@ -937,42 +937,6 @@
           </td>
         </tr>
       `).join('');
-// ===== EXPORT =====
-document.getElementById('exportWords').onclick = () => {
-  const data = {
-    version: 1,
-    words: words,
-    exportedAt: new Date().toISOString()
-  };
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'words-easy-backup.json';
-  a.click();
-
-  URL.revokeObjectURL(url);
-};
-
-// ===== IMPORT =====
-document.getElementById('importWords').onclick = () => {
-  document.getElementById('importFile').click();
-};
-
-document.getElementById('importFile').onchange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-
-      if (!data.words || !Array.isArray(data.words)) {
-        alert('Неверный файл');
-        return;
       }
 
       // аккуратно маппим по en|ru
@@ -1017,6 +981,66 @@ document.getElementById('importFile').onchange = (e) => {
           </table>
         </div>
       `;
+       // ===== EXPORT =====
+document.getElementById('exportWords').onclick = () => {
+  const data = {
+    version: 1,
+    words: words,
+    exportedAt: new Date().toISOString()
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: 'application/json'
+  });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'words-easy-backup.json';
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
+
+// ===== IMPORT =====
+document.getElementById('importWords').onclick = () => {
+  document.getElementById('importFile').click();
+};
+
+document.getElementById('importFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+
+      if (!data.words || !Array.isArray(data.words)) {
+        alert('Неверный файл');
+        return;
+      }
+
+      const map = new Map(
+        data.words.map(w => [w.en + '|' + w.ru, w])
+      );
+
+      words = words.map(w => {
+        const key = w.en + '|' + w.ru;
+        return map.has(key) ? { ...w, ...map.get(key) } : w;
+      });
+
+      saveState();
+      renderDict();
+      alert('Импорт завершён ✅');
+    } catch {
+      alert('Ошибка при чтении файла');
+    }
+  };
+
+  reader.readAsText(file);
+};
+
 
       document.getElementById('resetAll').onclick = () => {
         if (!confirm('Точно сбросить весь прогресс?')) return;
@@ -1314,7 +1338,6 @@ document.getElementById('importFile').onchange = (e) => {
       saveSettings();
       updateThemeIcon();
     };
-window.switchTab = switchTab;
 
     updateThemeIcon();
     renderTabs();
