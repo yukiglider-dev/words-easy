@@ -635,61 +635,203 @@ html, body {
 }));
 
 const RULES = {
-  // ===== ГРАММАТИКА =====
+
+  // ===== PRESENT =====
+
+  present_simple: {
+    title: "Present Simple — факты и привычки",
+    levels: [
+      "Используется для фактов и того, что происходит обычно.",
+      "Мы используем Present Simple для привычек и расписаний.",
+      "Всегда / обычно / каждый день → Present Simple."
+    ],
+    markers: ["always", "usually", "often", "every day"],
+    examples: [
+      "I live in Thailand",
+      "She works every day",
+      "We usually eat at home"
+    ]
+  },
+
   present_simple_3rd: {
-    title: 'He / She / It + s',
+    title: "He / She / It + s",
     levels: [
-      'С he / she / it к глаголу добавляется -s',
-      'He likes, she works, it starts',
-      'В Present Simple с he/she/it всегда используется -s'
+      "С he, she, it к глаголу добавляется -s.",
+      "Если подлежащее — он, она или оно, глагол меняется.",
+      "ОН = +S → he works"
     ],
-    examples: ['he likes', 'she needs', 'it starts'],
-    words: ['he likes', 'she likes', 'he needs']
+    examples: [
+      "He likes coffee",
+      "She works here"
+    ]
   },
 
-  to_be_present: {
-    title: 'Глагол to be (am / is / are)',
+  present_continuous: {
+    title: "Present Continuous — сейчас",
     levels: [
-      'I am, you are, he is',
-      'Форма to be зависит от подлежащего',
-      'To be изменяется по лицам и числам'
+      "Используется для действий, которые происходят сейчас.",
+      "Если что-то происходит в момент речи — это Continuous.",
+      "Сейчас → am / is / are + ing"
     ],
-    examples: ['I am busy', 'he is rich', 'they are right'],
-    words: ['I’m busy', 'he’s rich', 'they’re right']
+    markers: ["now", "at the moment"],
+    examples: [
+      "I am working now",
+      "They are watching TV"
+    ]
   },
 
-  adjectives: {
-    title: 'Прилагательные',
+  present_perfect: {
+    title: "Present Perfect — есть результат",
     levels: [
-      'Прилагательные не изменяются',
-      'Прилагательное не зависит от лица',
-      'В английском прилагательные не склоняются'
+      "Используется, когда важен результат, а не время.",
+      "Действие произошло, и результат важен сейчас.",
+      "Have / has + V3"
     ],
-    examples: ['rich', 'busy', 'possible'],
-    words: ['rich', 'busy', 'possible']
+    markers: ["already", "just", "ever", "never"],
+    examples: [
+      "I have finished",
+      "She has already eaten"
+    ]
   },
 
-  // ===== ПРОИЗНОШЕНИЕ =====
-  ea_sound: {
-    title: 'EA читается как /иː/',
+  present_perfect_continuous: {
+    title: "Present Perfect Continuous — началось раньше и продолжается",
     levels: [
-      'Сочетание ea часто читается как /иː/',
-      'Это не «е», а длинный звук «и»',
-      'Пример: cheap — /чип/'
+      "Действие началось в прошлом и продолжается.",
+      "Важно, сколько времени длится действие.",
+      "Have / has been + ing"
     ],
-    words: ['cheap', 'speak', 'mean', 'team']
+    markers: ["for", "since"],
+    examples: [
+      "I have been working for 2 hours",
+      "She has been studying since morning"
+    ]
   },
 
-  ch_sound: {
-    title: 'CH читается как /ч/',
+  // ===== PAST =====
+
+  past_simple: {
+    title: "Past Simple — законченное прошлое",
     levels: [
-      'ch обычно читается как /ч/',
-      'Это не «к» и не «х»',
-      'Пример: cheap, chair, check'
+      "Используется для действий, которые уже закончились.",
+      "Если действие было и закончилось — Past Simple.",
+      "Вчера / в прошлом → Past Simple"
     ],
-    words: ['cheap', 'chair', 'check']
+    markers: ["yesterday", "last year", "ago"],
+    examples: [
+      "I visited Rome",
+      "She finished work"
+    ]
+  },
+
+  past_continuous: {
+    title: "Past Continuous — процесс в прошлом",
+    levels: [
+      "Используется для процесса в определённый момент прошлого.",
+      "Что-то происходило в тот момент.",
+      "Was / were + ing"
+    ],
+    examples: [
+      "I was working at 5 pm",
+      "They were watching TV"
+    ]
+  },
+
+  past_perfect: {
+    title: "Past Perfect — раньше другого прошлого",
+    levels: [
+      "Действие произошло раньше другого события в прошлом.",
+      "Сначала одно — потом другое.",
+      "Had + V3"
+    ],
+    examples: [
+      "I had finished before he came",
+      "She had left already"
+    ]
+  },
+
+  past_perfect_continuous: {
+    title: "Past Perfect Continuous — длительность до момента",
+    levels: [
+      "Действие длилось до определённого момента в прошлом.",
+      "Важно, сколько длилось действие.",
+      "Had been + ing"
+    ],
+    examples: [
+      "I had been working for hours",
+      "She had been waiting долго"
+    ]
+  },
+
+  // ===== FUTURE =====
+
+  future_simple: {
+    title: "Future Simple — решение сейчас",
+    levels: [
+      "Используется для решений, принятых в момент речи.",
+      "Если решил только что — will.",
+      "Сейчас решил → will"
+    ],
+    examples: [
+      "I will help you",
+      "She will call later"
+    ]
+  },
+
+  future_be_going_to: {
+    title: "Be going to — план",
+    levels: [
+      "Используется для планов и намерений.",
+      "Если ты уже решил — going to.",
+      "План → am / is / are going to"
+    ],
+    examples: [
+      "I am going to travel",
+      "She is going to study"
+    ]
+  },
+
+  future_continuous: {
+    title: "Future Continuous — процесс в будущем",
+    levels: [
+      "Используется для процесса в будущем.",
+      "Что-то будет происходить в определённый момент.",
+      "Will be + ing"
+    ],
+    examples: [
+      "I will be working at 6",
+      "They will be sleeping"
+    ]
+  },
+
+  future_perfect: {
+    title: "Future Perfect — будет завершено",
+    levels: [
+      "Действие завершится к определённому моменту.",
+      "Важно, что к моменту будет готово.",
+      "Will have + V3"
+    ],
+    examples: [
+      "I will have finished by 5",
+      "She will have left"
+    ]
+  },
+
+  future_perfect_continuous: {
+    title: "Future Perfect Continuous — сколько будет длиться",
+    levels: [
+      "Показывает длительность действия к моменту в будущем.",
+      "Важно, сколько времени будет длиться.",
+      "Will have been + ing"
+    ],
+    examples: [
+      "I will have been working for 5 hours",
+      "She will have been studying all day"
+    ]
   }
+
 };
+
 let ruleStats = JSON.parse(localStorage.getItem("ruleStats") || "{}");
 function saveRuleStats() {
   localStorage.setItem("ruleStats", JSON.stringify(ruleStats));
