@@ -431,10 +431,11 @@ html, body {
 .panel-center {
   min-height: 220px;
   display: flex;
-  align-items: center;   /* по вертикали */
-  justify-content: center; /* по горизонтали */
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
+
 .empty-center {
   min-height: 220px;
   display: flex;
@@ -1132,22 +1133,25 @@ function renderDict() {
 }
 function renderRules() {
   panelEl.innerHTML = `
-    <div class="card" style="max-width:720px; margin:0 auto">
-      <div style="font-size:22px; font-weight:800">
-        📘 Правила
-      </div>
+    <div class="panel-center">
+      <div class="card" style="max-width:720px">
+        <div style="font-size:22px; font-weight:800">
+          📘 Правила
+        </div>
 
-      <div class="muted" style="margin-top:12px">
-        Здесь будут показываться правила, которые помогут тебе понять
-        слова, с которыми возникают ошибки.
-      </div>
+        <div class="muted" style="margin-top:12px">
+          Здесь будут показываться правила, которые помогут тебе понять
+          слова, с которыми возникают ошибки.
+        </div>
 
-      <div class="pill" style="margin-top:16px">
-        Скоро здесь появятся персональные объяснения ✨
+        <div class="pill" style="margin-top:16px">
+          Скоро здесь появятся персональные объяснения ✨
+        </div>
       </div>
     </div>
   `;
 }
+
 
 function bindDictActions() {
   // чекбоксы "выучено"
