@@ -953,145 +953,135 @@ if (!pool.length) {
     let dictFilter = 'all';
     let dictQuery = '';
 function renderDict() {
-  const header = `
-  <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
-    <div class="field" style="flex:2; min-width:240px">
-      <input type="text" id="dictSearch"
-        placeholder="Поиск по слову, переводу или транскрипции..."
-        value="${dictQuery}">
-    </div>
+  const panelEl = document.getElementById('panel');
+  if (!panelEl) return;
 
-    <div class="field" style="flex:1; min-width:200px">
+  const prevFocus = document.activeElement?.id || null;
+  const prevCursor =
+    document.activeElement?.selectionStart ?? null;
+
+  let list = [...words];
+
+  if (dictQuery) {
+    const q = dictQuery.toLowerCase();
+    list = list.filter(w =>
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr && w.tr.toLowerCase().includes(q))
+    );
+  }
+
+  if (dictFilter === 'learned') {
+    list = list.filter(w => w.manual);
+  } else if (dictFilter === 'unlearned') {
+    list = list.filter(w => !w.manual);
+  }
+
+  panelEl.innerHTML = `
+    <div class="dict-top">
+      <input id="dictSearch" placeholder="Поиск..." value="${dictQuery}">
       <select id="dictFilter">
-        <option value="all" ${dictFilter==='all'?'selected':''}>Все слова</option>
-        <option value="learned" ${dictFilter==='learned'?'selected':''}>Только выученные</option>
-        <option value="unlearned" ${dictFilter==='unlearned'?'selected':''}>Только невыученные</option>
+        <option value="all">Все слова</option>
+        <option value="learned">Выученные</option>
+        <option value="unlearned">Не выученные</option>
       </select>
+      <button id="addWordBtn">+ Add Word</button>
+      <button id="markAll">Отметить всё выученным</button>
+      <button id="resetAll">Полный сброс</button>
     </div>
 
-   <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
-  <button class="btn primary" id="openAddModal">+ Add Word</button>
-  <button class="btn success" id="markAll">Отметить всё выученным</button>
-  <button class="btn error" id="resetAll">Полный сброс</button>
-</div>
-  </div>
-  <div class="divider"></div>
-`;
-
-      let list = words.slice();
-list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
-      if (dictQuery.trim()) {
-        const q = dictQuery.toLowerCase();
-        list = list.filter(w =>
-          w.en.toLowerCase().includes(q) ||
-          w.ru.toLowerCase().includes(q) ||
-          (w.tr || '').toLowerCase().includes(q)
-        );
-      }
-      if (dictFilter === 'learned') list = list.filter(isLearned);
-      if (dictFilter === 'unlearned') list = list.filter(w => !isLearned(w));
-
-      const rows = list.map((w, idx) => `
-        <tr class="${isLearned(w)?'learned-row':''}">
-          <td class="center">${idx+1}</td>
-          <td>${w.en}</td>
-          <td>${w.ru}</td>
-          <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
-          <td class="center" style="width:100px">${w.streak}</td>
-          <td class="center" style="width:100px">${w.errors}</td>
-          <td class="center" style="width:100px">
-            <input type="checkbox" ${w.manual?'checked':''} data-id="${w.id}" class="dictManual">
-          </td>
+    <table class="dict-table">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Английское</th>
+          <th>Перевод</th>
+          <th>Транскрипция</th>
+          <th>Правильно подряд</th>
+          <th>Ошибки</th>
+          <th>Выучено</th>
         </tr>
-      `).join('');
-}
-
-      panelEl.innerHTML = header + `
-        <div class="table-wrap">
-          <table>
-            <thead>
+      </thead>
+      <tbody>
+        ${
+          list.length
+            ? list.map((w, i) => `
               <tr>
-                <th class="center" style="width:70px">№</th>
-                <th>Английское</th>
-                <th>Перевод</th>
-                <th class="center" style="width:160px">Транскрипция</th>
-                <th class="center" style="width:120px">Правильно подряд</th>
-                <th class="center" style="width:120px">Ошибки</th>
-                <th class="center" style="width:140px">Выучено</th>
+                <td>${i + 1}</td>
+                <td>${w.en}</td>
+                <td>${w.ru}</td>
+                <td>${w.tr || ''}</td>
+                <td>${w.streak || 0}</td>
+                <td>${w.errors || 0}</td>
+                <td>
+                  <input
+                    type="checkbox"
+                    class="dictManual"
+                    data-id="${w.id}"
+                    ${w.manual ? 'checked' : ''}
+                  >
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              ${rows || `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`}
-            </tbody>
-          </table>
-        </div>
-      `;
+            `).join('')
+            : `<tr><td colspan="7" style="text-align:center;padding:20px;">
+                Ничего не найдено
+              </td></tr>`
+        }
+      </tbody>
+    </table>
+  `;
+
   const searchInput = document.getElementById('dictSearch');
-if (searchInput) {
+  const filterSelect = document.getElementById('dictFilter');
+
+  filterSelect.value = dictFilter;
+
   searchInput.oninput = () => {
     dictQuery = searchInput.value;
-    renderDict(true);
+    renderDict();
   };
-}
-const searchInput = document.getElementById('dictSearch');
-const filterSelect = document.getElementById('dictFilter');
 
-searchInput.oninput = () => {
-  dictQuery = searchInput.value;
-  renderDict();
-};
+  filterSelect.onchange = () => {
+    dictFilter = filterSelect.value;
+    renderDict();
+  };
 
-filterSelect.onchange = () => {
-  dictFilter = filterSelect.value;
-  renderDict();
-};
-
-document.getElementById('resetAll').onclick = () => {
-  if (!confirm('Точно сбросить весь прогресс?')) return;
-  words.forEach(w => {
-    w.streak = 0;
-    w.errors = 0;
-    w.manual = false;
-  });
-  saveState();
-  renderDict();
-};
-
-document.getElementById('markAll').onclick = () => {
-  words.forEach(w => w.manual = true);
-  saveState();
-  renderDict();
-};
-
-panelEl.querySelectorAll('.dictManual').forEach(ch => {
-  ch.onchange = () => {
-    const w = words.find(x => x.id === Number(ch.dataset.id));
-    if (w) w.manual = ch.checked;
+  document.getElementById('resetAll').onclick = () => {
+    if (!confirm('Точно сбросить весь прогресс?')) return;
+    words.forEach(w => {
+      w.streak = 0;
+      w.errors = 0;
+      w.manual = false;
+    });
     saveState();
     renderDict();
   };
-});
 
+  document.getElementById('markAll').onclick = () => {
+    words.forEach(w => (w.manual = true));
+    saveState();
+    renderDict();
+  };
 
-document.getElementById('dictFilter').onchange = (e) => {
-  dictFilter = e.target.value;
-  renderDict();
-};
-      panelEl.querySelectorAll('.dictManual').forEach(ch => {
-        ch.onchange = () => {
-          const id = Number(ch.dataset.id);
-          const w = words.find(x => x.id === id);
-          w.manual = ch.checked;
-          saveState();
-          renderDict();
-        };
-      });
-      document.getElementById('markAll').onclick = () => {
-        words.forEach(w => { w.manual = true; });
-        saveState();
-        renderDict();
-      };
+  panelEl.querySelectorAll('.dictManual').forEach(ch => {
+    ch.onchange = () => {
+      const w = words.find(x => x.id === Number(ch.dataset.id));
+      if (w) w.manual = ch.checked;
+      saveState();
+    };
+  });
+
+  if (prevFocus) {
+    const el = document.getElementById(prevFocus);
+    if (el) {
+      el.focus();
+      if (prevCursor !== null && el.setSelectionRange) {
+        el.setSelectionRange(prevCursor, prevCursor);
+      }
     }
+  }
+}
+
 
     // ---------- Tab: Match ----------
     let matchSet = [];
