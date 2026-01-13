@@ -1396,17 +1396,8 @@ function bindDictActions() {
   document.querySelectorAll('.dictManual').forEach(ch => {
     ch.onchange = () => {
       const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (!w) return;
-
-      w.manual = ch.checked;
-
-      // фиксируем навсегда
-      if (w.manual) {
-        w.streak = Math.max(w.streak, 3);
-      }
-
+      if (w) w.manual = ch.checked;
       saveState();
-      renderDict(); // 🔥 ОБЯЗАТЕЛЬНО
     };
   });
 
@@ -1421,11 +1412,12 @@ function bindDictActions() {
 
       words = words.filter(x => x.id !== id);
       saveState();
-      renderDict(); // 🔥 ТОЛЬКО renderDict
+      updateDictTable(); //⚠️ НЕ renderDict
+      bindDictActions();
+
     };
   });
 }
-
 function recalcIrregulars() {
   let changed = false;
 
