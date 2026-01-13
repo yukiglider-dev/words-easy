@@ -1061,7 +1061,9 @@ if (wordEl && trEl) {
           } else {
             opt.classList.add('wrong', 'selected');
             current.errors = (current.errors || 0) + 1;
-            current.streak = 0;
+if (!current.manual) {
+  current.streak = 0;
+}
             panelEl.querySelectorAll('.option').forEach(o => {
               if (o.dataset.val === correctRu) o.classList.add('correct');
             });
@@ -1115,7 +1117,9 @@ if (wordEl && trEl) {
       };
       document.getElementById('cardDontKnow').onclick = () => {
         current.errors += 1;
-        current.streak = 0;
+if (!current.manual) {
+  current.streak = 0;
+}
         saveState();
         flipped = false;
         setTimeout(renderCards, 400);
@@ -1258,8 +1262,10 @@ panelEl.innerHTML = `
         } else {
           fbEl.innerHTML = `<span style="color: var(--error)">Неверно. Правильно: ${current.en}</span>`;
           current.errors += 1;
-          current.streak = 0;
-        }
+         if (!current.manual) {
+  current.streak = 0;
+}
+
         saveState();
         setTimeout(renderInput, 2000);
       }
@@ -1400,6 +1406,22 @@ function bindDictActions() {
       saveState();
     };
   });
+document.querySelectorAll('.dictManual').forEach(cb => {
+  cb.onchange = () => {
+    const id = Number(cb.dataset.id);
+    const w = words.find(x => x.id === id);
+    if (!w) return;
+
+    w.manual = cb.checked;
+
+    if (cb.checked) {
+      w.streak = Math.max(w.streak, 3); // 🔒 фикс
+    }
+
+    saveState();
+    renderDict();
+  };
+});
 
   // кнопки удаления
   document.querySelectorAll('.btn-del').forEach(btn => {
@@ -1462,7 +1484,7 @@ function updateDictTable() {
 
   tbody.innerHTML = list.length
     ? list.map((w, i) => `
-      <tr class="${isLearned(w) ? 'learned-row' : ''}">
+<tr class="${(w.manual || w.streak >= 3) ? 'learned-row' : ''}">
         <td class="center">${i + 1}</td>
         <td>${w.en}</td>
         <td>${w.ru}</td>
@@ -1991,7 +2013,9 @@ if (current.streak >= 3) {
       }
 } else {
   current.errors = (current.errors || 0) + 1;
+if (!current.manual) {
   current.streak = 0;
+}
 
   // 🚨 ОТПРАВЛЯЕМ В ПОВТОР
   current.needRepeat = true;
