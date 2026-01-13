@@ -897,6 +897,21 @@ function saveIrregulars() {
   updateProgress(); // 🔥 ОБЯЗАТЕЛЬНО
 }
 
+function markIrregularWrong(v) {
+  v.errors = (v.errors || 0) + 1;
+  v.streak = 0;
+  v.needRepeat = true;
+  saveIrregulars();
+}
+
+function markIrregularCorrect(v) {
+  v.streak = (v.streak || 0) + 1;
+  if (v.streak >= 3) {
+    v.learned = true;
+    v.needRepeat = false;
+  }
+  saveIrregulars();
+}
 
 
     function saveState() {
@@ -1046,28 +1061,34 @@ if (wordEl && trEl) {
 }
 
 
-      let answered = false;
-      panelEl.querySelectorAll('.option').forEach(opt => {
-        opt.onclick = () => {
-          if (answered) return;
-          answered = true;
-          const val = opt.dataset.val;
-          const isCorrect = val === correctRu;
-          if (isCorrect) {
-            opt.classList.add('correct', 'selected');
-            current.streak = (current.streak || 0) + 1;
-          } else {
-            opt.classList.add('wrong', 'selected');
-            current.errors = (current.errors || 0) + 1;
-            current.streak = 0;
-            panelEl.querySelectorAll('.option').forEach(o => {
-              if (o.dataset.val === correctRu) o.classList.add('correct');
-            });
-          }
-          saveState();
-          setTimeout(() => { currentTestWord = null; renderTest(true); }, 700);
-        };
+let answered = false;
+
+panelEl.querySelectorAll('.option').forEach(opt => {
+  opt.onclick = () => {
+    if (answered) return;
+    answered = true;
+
+    const val = opt.dataset.val;
+    const isCorrect = val === correctAnswer; // correctAnswer у тебя уже есть
+
+    if (isCorrect) {
+      opt.classList.add('correct');
+      markIrregularCorrect(currentVerb);
+    } else {
+      opt.classList.add('wrong');
+      markIrregularWrong(currentVerb);
+
+      panelEl.querySelectorAll('.option').forEach(o => {
+        if (o.dataset.val === correctAnswer) {
+          o.classList.add('correct');
+        }
       });
+    }
+
+    setTimeout(renderIrregularTest, 700);
+  };
+});
+
     }
 
     // ---------- Tab: Cards ----------
