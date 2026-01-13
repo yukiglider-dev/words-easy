@@ -1390,11 +1390,13 @@ document.getElementById('resetAll').onclick = () => {
     w.streak = 0;
     w.errors = 0;
     w.manual = false;
+    w.needRepeat = false;
   });
 
   saveState();
   renderDict();
 };
+
 
 
   bindDictActions();
