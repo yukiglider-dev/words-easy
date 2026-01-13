@@ -1383,16 +1383,19 @@ function renderDict() {
     renderDict();
   };
 
-  document.getElementById('resetAll').onclick = () => {
-    if (!confirm('Сбросить весь прогресс?')) return;
-    words.forEach(w => {
-      w.streak = 0;
-      w.errors = 0;
-      w.manual = false;
-    });
-    saveState();
-    renderDict();
-  };
+document.getElementById('resetAll').onclick = () => {
+  if (!confirm('Сбросить весь прогресс?')) return;
+
+  words.forEach(w => {
+    w.streak = 0;
+    w.errors = 0;
+    w.manual = false;
+  });
+
+  saveState();
+  renderDict();
+};
+
 
   bindDictActions();
 }
