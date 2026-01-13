@@ -605,24 +605,18 @@ input::placeholder {
       { en: 'take', ru: 'брать', tr: 'тэйк' },
       { en: 'arrive', ru: 'прибывать', tr: 'эрайв' },
       { en: 'interrupt', ru: 'перебивать', tr: 'интерапт' },
-{ en: 'listen to', ru: 'слушать', tr: 'лисэн ту' },
-{ en: 'on weekdays', ru: 'по будням', tr: 'он уикдэйз' },
-{ en: 'polite', ru: 'вежливый', tr: 'полайт' },
-
       { en: 'I need', ru: 'мне нужно', tr: 'ай нид' },
       { en: 'you need', ru: 'тебе / вам нужно', tr: 'ю нид' },
       { en: 'we need', ru: 'нам нужно', tr: 'ви нид' },
       { en: 'they need', ru: 'им нужно', tr: 'зэй нид' },
       { en: 'he needs', ru: 'ему нужно', tr: 'хи нидз' },
       { en: 'she needs', ru: 'ей нужно', tr: 'ши нидз' },
-
       { en: 'I like', ru: 'мне нравится', tr: 'ай лайк' },
       { en: 'you like', ru: 'тебе / вам нравится', tr: 'ю лайк' },
       { en: 'we like', ru: 'нам нравится', tr: 'ви лайк' },
       { en: 'they like', ru: 'им нравится', tr: 'зэй лайк' },
       { en: 'he likes', ru: 'ему нравится', tr: 'хи лайкс' },
       { en: 'she likes', ru: 'ей нравится', tr: 'ши лайкс' },
-
       { en: 'use', ru: 'пользоваться', tr: 'юз' },
       { en: 'collect', ru: 'коллекционировать', tr: 'колэкт' },
       { en: 'confuse', ru: 'путать', tr: 'конфьюз' },
@@ -635,7 +629,6 @@ input::placeholder {
       { en: 'begin', ru: 'начинать', tr: 'бигин' },
       { en: 'continue', ru: 'продолжать', tr: 'континью' },
       { en: 'finish', ru: 'заканчивать', tr: 'финиш' },
-
       { en: 'busy', ru: 'занятый', tr: 'бизи' },
       { en: 'cosy', ru: 'уютный', tr: 'кози' },
       { en: 'enough', ru: 'достаточно', tr: 'инаф' },
@@ -643,7 +636,6 @@ input::placeholder {
       { en: 'poor', ru: 'бедный', tr: 'пур' },
       { en: 'possible', ru: 'возможно', tr: 'поссибл' },
       { en: 'impossible', ru: 'невозможно', tr: 'импоссибл' },
-
       { en: 'I’m busy', ru: 'я занят', tr: 'айм бизи' },
       { en: 'it’s cosy', ru: 'это уютно', tr: 'итс кози' },
       { en: 'it’s enough', ru: 'этого достаточно', tr: 'итс инаф' },
@@ -651,11 +643,9 @@ input::placeholder {
       { en: 'she’s poor', ru: 'она бедная', tr: 'шиз пур' },
       { en: 'it’s possible', ru: 'это возможно', tr: 'итс поссибл' },
       { en: 'it’s impossible', ru: 'это невозможно', tr: 'итс импоссибл' },
-
       { en: 'you’re right', ru: 'ты / вы правы', tr: 'юр райт' },
       { en: 'we’re right', ru: 'мы правы', tr: 'вир райт' },
       { en: 'they’re right', ru: 'они правы', tr: 'зэйр райт' },
-
       { en: 'why', ru: 'почему', tr: 'уай' },
       { en: 'who', ru: 'кто / кого', tr: 'ху' },
       { en: 'where', ru: 'где / куда', tr: 'вэа' },
@@ -665,13 +655,11 @@ input::placeholder {
       { en: 'how regularly', ru: 'как регулярно', tr: 'хау рэгьюлэли' },
       { en: 'how many', ru: 'сколько', tr: 'хау мэни' },
       { en: 'how much', ru: 'сколько', tr: 'хау мач' },
-
       { en: 'get to', ru: 'добираться до', tr: 'гет ту' },
       { en: 'get home', ru: 'добираться домой', tr: 'гет хоум' },
       { en: 'get there', ru: 'добираться туда', tr: 'гет зэа' },
       { en: 'get here', ru: 'добираться сюда', tr: 'гет хиа' },
       { en: 'get back', ru: 'добираться обратно', tr: 'гет бэк' },
-
       { en: 'expensive', ru: 'дорого', tr: 'экспэнсив' },
       { en: 'cheap', ru: 'дёшево', tr: 'чип' },
       { en: 'strong', ru: 'сильный', tr: 'стронг' },
@@ -1061,9 +1049,7 @@ if (wordEl && trEl) {
           } else {
             opt.classList.add('wrong', 'selected');
             current.errors = (current.errors || 0) + 1;
-if (!current.manual) {
-  current.streak = 0;
-}
+            current.streak = 0;
             panelEl.querySelectorAll('.option').forEach(o => {
               if (o.dataset.val === correctRu) o.classList.add('correct');
             });
@@ -1117,9 +1103,7 @@ if (!current.manual) {
       };
       document.getElementById('cardDontKnow').onclick = () => {
         current.errors += 1;
-if (!current.manual) {
-  current.streak = 0;
-}
+        current.streak = 0;
         saveState();
         flipped = false;
         setTimeout(renderCards, 400);
@@ -1262,10 +1246,8 @@ panelEl.innerHTML = `
         } else {
           fbEl.innerHTML = `<span style="color: var(--error)">Неверно. Правильно: ${current.en}</span>`;
           current.errors += 1;
-         if (!current.manual) {
-  current.streak = 0;
-}
-
+          current.streak = 0;
+        }
         saveState();
         setTimeout(renderInput, 2000);
       }
@@ -1383,21 +1365,16 @@ function renderDict() {
     renderDict();
   };
 
-document.getElementById('resetAll').onclick = () => {
-  if (!confirm('Сбросить весь прогресс?')) return;
-
-  words.forEach(w => {
-    w.streak = 0;
-    w.errors = 0;
-    w.manual = false;
-    w.needRepeat = false;
-  });
-
-  saveState();
-  renderDict();
-};
-
-
+  document.getElementById('resetAll').onclick = () => {
+    if (!confirm('Сбросить весь прогресс?')) return;
+    words.forEach(w => {
+      w.streak = 0;
+      w.errors = 0;
+      w.manual = false;
+    });
+    saveState();
+    renderDict();
+  };
 
   bindDictActions();
 }
@@ -1411,22 +1388,6 @@ function bindDictActions() {
       saveState();
     };
   });
-document.querySelectorAll('.dictManual').forEach(cb => {
-  cb.onchange = () => {
-    const id = Number(cb.dataset.id);
-    const w = words.find(x => x.id === id);
-    if (!w) return;
-
-    w.manual = cb.checked;
-
-    if (cb.checked) {
-      w.streak = Math.max(w.streak, 3); // 🔒 фикс
-    }
-
-    saveState();
-    renderDict();
-  };
-});
 
   // кнопки удаления
   document.querySelectorAll('.btn-del').forEach(btn => {
@@ -1439,7 +1400,7 @@ document.querySelectorAll('.dictManual').forEach(cb => {
 
       words = words.filter(x => x.id !== id);
       saveState();
-      updateDictTable(); // ⚠️ НЕ renderDict
+      updateDictTable(); //⚠️ НЕ renderDict
       bindDictActions();
 
     };
@@ -1489,7 +1450,7 @@ function updateDictTable() {
 
   tbody.innerHTML = list.length
     ? list.map((w, i) => `
-<tr class="${(w.manual || w.streak >= 3) ? 'learned-row' : ''}">
+      <tr class="${isLearned(w) ? 'learned-row' : ''}">
         <td class="center">${i + 1}</td>
         <td>${w.en}</td>
         <td>${w.ru}</td>
@@ -2018,9 +1979,7 @@ if (current.streak >= 3) {
       }
 } else {
   current.errors = (current.errors || 0) + 1;
-if (!current.manual) {
   current.streak = 0;
-}
 
   // 🚨 ОТПРАВЛЯЕМ В ПОВТОР
   current.needRepeat = true;
