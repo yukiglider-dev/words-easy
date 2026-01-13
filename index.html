@@ -815,8 +815,7 @@ const initialIrregulars  = [
   ...v,
   streak: 0,
   errors: 0,
-  learned: false,
-  needRepeat: false // 👈 ВАЖНО
+  learned: false
 }));
 
 
@@ -1135,12 +1134,7 @@ function renderRepeat() {
     }
   });
 
-  // неправильные глаголы
-  irregulars.forEach(v => {
-    if (v.needRepeat) {
-      repeatList.push({ type: 'ir', item: v });
-    }
-  });
+
 
   // если повтор пуст
   if (!repeatList.length) {
