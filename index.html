@@ -894,11 +894,10 @@ function loadState() {
 
 
 function saveIrregulars() {
+ recalcIrregulars(); // 🔥 ДО сохранения
   localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
-  updateProgress(); // 🔥 ОБЯЗАТЕЛЬНО
+  updateProgress();
 }
-
-
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
@@ -1409,30 +1408,23 @@ function renderDict() {
 function bindDictActions() {
   // чекбоксы "выучено"
   document.querySelectorAll('.dictManual').forEach(ch => {
-    ch.onchange = () => {
-      const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (w) w.manual = ch.checked;
-      saveState();
-    };
-  });
+ch.onchange = () => {
+  const w = words.find(x => x.id === Number(ch.dataset.id));
+  if (!w) return;
 
-  // кнопки удаления
-  document.querySelectorAll('.btn-del').forEach(btn => {
-    btn.onclick = () => {
-      const id = Number(btn.dataset.id);
-      const w = words.find(x => x.id === id);
-      if (!w) return;
+  w.manual = ch.checked;
 
-      if (!confirm(`Удалить слово "${w.en}"?`)) return;
+  // 🔥 СИНХРОНИЗАЦИЯ
+  if (w.manual) {
+    w.streak = Math.max(w.streak, 3);
+  } else if (w.streak >= 3) {
+    w.streak = 0;
+  }
 
-      words = words.filter(x => x.id !== id);
-      saveState();
-      updateDictTable(); //⚠️ НЕ renderDict
-      bindDictActions();
+  saveState();
+  updateDictTable(); // 🔥 ВАЖНО
+};
 
-    };
-  });
-}
 function recalcIrregulars() {
   let changed = false;
 
@@ -1743,7 +1735,7 @@ function renderIrregulars() {
   window.irFilter = window.irFilter ?? 'all';
 
   // ===== РАЗМЕТКА (ОДИН РАЗ) =====
-  panel.innerHTML = `
+ panelEl.innerHTML =
     <div class="row" style="gap:12px; flex-wrap:wrap; align-items:center">
 
       <input
