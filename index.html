@@ -1470,16 +1470,24 @@ function updateDictTable() {
         <td class="center">${w.streak}</td>
         <td class="center">${w.errors}</td>
         <td class="center">
-  <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
-</td>
-<td class="center">
-  <button class="btn error btn-del" data-id="${w.id}">✕</button>
-</td>
-
+          <input
+            type="checkbox"
+            class="dictManual"
+            data-id="${w.id}"
+            ${w.manual ? 'checked' : ''}
+          >
+        </td>
+        <td class="center">
+          <button class="btn error btn-del" data-id="${w.id}">✕</button>
+        </td>
       </tr>
     `).join('')
-    : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
+    : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`;
+
+  // 🔥 КРИТИЧЕСКИ ВАЖНО
+  bindDictActions();
 }
+
 
 
     // ---------- Tab: Match ----------
