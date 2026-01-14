@@ -1149,9 +1149,6 @@ if (wordEl && trEl) {
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
 function renderRepeat() {
-  const panel = document.getElementById('panel');
-
-  // собираем всё, что попало в repeat
   const repeatList = [];
 
   // обычные слова
@@ -1161,66 +1158,61 @@ function renderRepeat() {
     }
   });
 
+  // неправильные глаголы
+  irregulars.forEach(v => {
+    if (v.needRepeat) {
+      repeatList.push({ type: 'ir', item: v });
+    }
+  });
 
-
-  // если повтор пуст
   if (!repeatList.length) {
-panelEl.innerHTML = `
-  <div class="repeat-center">
-    <div class="repeat-empty-card">
-      🎉 <div class="repeat-title">Повтор пуст</div>
-      <div class="repeat-sub">Ошибок нет — так держать</div>
-    </div>
-  </div>
-`;
-
+    panelEl.innerHTML = `
+      <div class="repeat-center">
+        <div class="repeat-empty-card">
+          🎉 <div class="repeat-title">Повтор пуст</div>
+          <div class="repeat-sub">Ошибок нет — так держать</div>
+        </div>
+      </div>
+    `;
     return;
   }
 
-  // берём первый (ВАЖНО: всегда первый, без зацикливания)
   const current = repeatList[0];
   const data = current.item;
 
-  // отображаем
-  panel.innerHTML = `
-    <div class="card center">
-      <h2>
+  panelEl.innerHTML = `
+    <div class="card">
+      <div style="font-size:22px;font-weight:700">
         ${current.type === 'ir'
           ? `${data.base} — ${data.ru}`
           : `${data.en} — ${data.ru}`}
-      </h2>
-
-      <div class="actions">
-        <button class="btn success" id="repKnow">Знаю</button>
-        <button class="btn error" id="repDontKnow">Не знаю</button>
       </div>
 
-      <div class="muted">
-        Ошибок: ${data.errors || 0},
-        Серия: ${data.streak || 0}
+      <div class="row" style="margin-top:16px; justify-content:center">
+        <button class="btn success" id="repKnow">Знаю</button>
+        <button class="btn error" id="repDontKnow">Не знаю</button>
       </div>
     </div>
   `;
 
-  // ===== ЗНАЮ =====
   document.getElementById('repKnow').onclick = () => {
- data.streak = (data.streak || 0) + 1;
-data.needRepeat = false;
-
-recalcIrregulars();
-renderRepeat();
+    data.streak++;
+    data.needRepeat = false;
+    saveIrregulars();
+    saveState();
+    renderRepeat();
   };
 
-  // ===== НЕ ЗНАЮ =====
   document.getElementById('repDontKnow').onclick = () => {
-data.errors = (data.errors || 0) + 1;
-data.streak = 0;
-data.needRepeat = false;
-
-recalcIrregulars();
-renderRepeat();
+    data.errors++;
+    data.streak = 0;
+    data.needRepeat = false;
+    saveIrregulars();
+    saveState();
+    renderRepeat();
   };
 }
+
 
     // ---------- Tab: Input ----------
     let inputIdx = { value: -1 };
@@ -1797,12 +1789,7 @@ function renderIrregulars() {
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
-function normalizeIrregulars() {
-  irregulars.forEach(v => {
-    if (v.streak >= 3) v.learned = true;
-  });
-  saveIrregulars();
-}
+
 
   // ===== ОТРИСОВКА ТАБЛИЦЫ =====
   function updateTable() {
