@@ -182,6 +182,7 @@ html, body {
    .test-transcription {
   margin-top: 6px; /* было 10 — уменьшили */
 }
+
     /* Тест: одна колонка — 4 строки */
     .options {
       display: flex;
@@ -852,6 +853,7 @@ function normalizeIrregulars() {
 }
 
 // ВАЖНО: вызываем сразу после загрузки
+normalizeIrregulars();
 
 
 function loadState() {
@@ -893,10 +895,11 @@ function loadState() {
 
 
 function saveIrregulars() {
- recalcIrregulars(); // 🔥 ДО сохранения
   localStorage.setItem(IRREGULARS_KEY, JSON.stringify(irregulars));
-  updateProgress();
+  updateProgress(); // 🔥 ОБЯЗАТЕЛЬНО
 }
+
+
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
@@ -915,33 +918,9 @@ function saveIrregulars() {
       updateProgress();
     }
 
-let words = loadState();
-let settings = loadSettings();
-
-/* ===== FIX: уникальные id у всех слов ===== */
-let maxId = 0;
-
-// находим максимальный id
-words.forEach(w => {
-  if (typeof w.id === 'number' && w.id > maxId) {
-    maxId = w.id;
-  }
-});
-
-// добавляем id тем, у кого его нет
-words.forEach(w => {
-  if (w.id == null) {
-    maxId += 1;
-    w.id = maxId;
-  }
-});
-
-// сохраняем обратно
-localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-/* ===== END FIX ===== */
-
-document.documentElement.setAttribute('data-theme', settings.theme);
-;
+    let words = loadState();
+    let settings = loadSettings();
+    document.documentElement.setAttribute('data-theme', settings.theme);
 
     // ---------- Helpers ---------- 
     let activeTab = 'test';
@@ -964,76 +943,6 @@ function updateProgress() {
   const miniIr = document.getElementById('miniIrCounter');
   if (miniIr) miniIr.textContent = `${learnedIr} / ${totalIr}`;
 }
-function recalcIrregulars() {
-  let changed = false;
-
-  irregulars.forEach(v => {
-    const shouldLearn = v.streak >= 3 || v.manual;
-    if (shouldLearn !== v.learned) {
-      v.learned = shouldLearn;
-      changed = true;
-    }
-  });
-
-  if (changed) {
-    saveIrregulars();
-  }
-
-  updateProgress();
-}
-
-function updateDictTable() {
-  let list = words.slice();
-
-  if (window.dictQuery.trim()) {
-    const q = window.dictQuery.toLowerCase();
-    list = list.filter(w =>
-      w.en.toLowerCase().includes(q) ||
-      w.ru.toLowerCase().includes(q) ||
-      (w.tr || '').toLowerCase().includes(q)
-    );
-  }
-
-  if (window.dictFilter === 'learned') {
-    list = list.filter(w => isLearned(w));
-  }
-  if (window.dictFilter === 'unlearned') {
-    list = list.filter(w => !isLearned(w));
-  }
-
-  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
-
-  const tbody = document.querySelector('.table-wrap tbody');
-  if (!tbody) return;
-
-  tbody.innerHTML = list.length
-    ? list.map((w, i) => `
-      <tr class="${isLearned(w) ? 'learned-row' : ''}">
-        <td class="center">${i + 1}</td>
-        <td>${w.en}</td>
-        <td>${w.ru}</td>
-        <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
-        <td class="center">${w.streak}</td>
-        <td class="center">${w.errors}</td>
-        <td class="center">
-          <input
-            type="checkbox"
-            class="dictManual"
-            data-id="${w.id}"
-            ${w.manual ? 'checked' : ''}
-          >
-        </td>
-        <td class="center">
-          <button class="btn error btn-del" data-id="${w.id}">✕</button>
-        </td>
-      </tr>
-    `).join('')
-    : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`;
-
-  // 🔥 КРИТИЧЕСКИ ВАЖНО
-  bindDictActions();
-}
-
 
 
     function shuffle(arr) {
@@ -1216,6 +1125,9 @@ if (wordEl && trEl) {
     // ---------- Tab: Repeat ----------
     let repeatIdx = { value: -1 };
 function renderRepeat() {
+  const panel = document.getElementById('panel');
+
+  // собираем всё, что попало в repeat
   const repeatList = [];
 
   // обычные слова
@@ -1225,61 +1137,66 @@ function renderRepeat() {
     }
   });
 
-  // неправильные глаголы
-  irregulars.forEach(v => {
-    if (v.needRepeat) {
-      repeatList.push({ type: 'ir', item: v });
-    }
-  });
 
+
+  // если повтор пуст
   if (!repeatList.length) {
-    panelEl.innerHTML = `
-      <div class="repeat-center">
-        <div class="repeat-empty-card">
-          🎉 <div class="repeat-title">Повтор пуст</div>
-          <div class="repeat-sub">Ошибок нет — так держать</div>
-        </div>
-      </div>
-    `;
+panelEl.innerHTML = `
+  <div class="repeat-center">
+    <div class="repeat-empty-card">
+      🎉 <div class="repeat-title">Повтор пуст</div>
+      <div class="repeat-sub">Ошибок нет — так держать</div>
+    </div>
+  </div>
+`;
+
     return;
   }
 
+  // берём первый (ВАЖНО: всегда первый, без зацикливания)
   const current = repeatList[0];
   const data = current.item;
 
-  panelEl.innerHTML = `
-    <div class="card">
-      <div style="font-size:22px;font-weight:700">
+  // отображаем
+  panel.innerHTML = `
+    <div class="card center">
+      <h2>
         ${current.type === 'ir'
           ? `${data.base} — ${data.ru}`
           : `${data.en} — ${data.ru}`}
-      </div>
+      </h2>
 
-      <div class="row" style="margin-top:16px; justify-content:center">
+      <div class="actions">
         <button class="btn success" id="repKnow">Знаю</button>
         <button class="btn error" id="repDontKnow">Не знаю</button>
+      </div>
+
+      <div class="muted">
+        Ошибок: ${data.errors || 0},
+        Серия: ${data.streak || 0}
       </div>
     </div>
   `;
 
+  // ===== ЗНАЮ =====
   document.getElementById('repKnow').onclick = () => {
-    data.streak++;
-    data.needRepeat = false;
-    saveIrregulars();
-    saveState();
-    renderRepeat();
+ data.streak = (data.streak || 0) + 1;
+data.needRepeat = false;
+
+recalcIrregulars();
+renderRepeat();
   };
 
+  // ===== НЕ ЗНАЮ =====
   document.getElementById('repDontKnow').onclick = () => {
-    data.errors++;
-    data.streak = 0;
-    data.needRepeat = false;
-    saveIrregulars();
-    saveState();
-    renderRepeat();
+data.errors = (data.errors || 0) + 1;
+data.streak = 0;
+data.needRepeat = false;
+
+recalcIrregulars();
+renderRepeat();
   };
 }
-
 
     // ---------- Tab: Input ----------
     let inputIdx = { value: -1 };
@@ -1355,129 +1272,214 @@ panelEl.innerHTML = `
     let dictFilter = 'all';
     let dictQuery = '';
 function renderDict() {
-  const panel = document.getElementById('panel');
-  if (!panel) return;
+  const panelEl = document.getElementById('panel');
+  if (!panelEl) return;
 
-  // 🔢 сортировка по алфавиту
-  const list = [...words].sort((a, b) =>
-    a.en.localeCompare(b.en, 'en')
-  );
+  window.dictQuery = window.dictQuery || '';
+  window.dictFilter = window.dictFilter || 'all';
 
-  // 🧱 РЕНДЕР HTML
-  panel.innerHTML = `
+  let list = words.slice();
+
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
+    list = list.filter(w =>
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
+  }
+
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+
+  panelEl.innerHTML = `
+    <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+      <div class="field" style="flex:2; min-width:240px">
+        <input id="dictSearch" type="text" placeholder="Поиск..." value="${window.dictQuery}">
+      </div>
+
+      <div class="field" style="flex:1; min-width:200px">
+        <select id="dictFilter">
+          <option value="all" ${window.dictFilter === 'all' ? 'selected' : ''}>Все слова</option>
+          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Выученные</option>
+          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Невыученные</option>
+        </select>
+      </div>
+
+      <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn primary" id="openAddModal">+ Add Word</button>
+        <button class="btn success" id="markAll">Отметить всё</button>
+        <button class="btn error" id="resetAll">Сброс</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>№</th>
-            <th>English</th>
+            <th class="center">№</th>
+            <th>Английское</th>
             <th>Перевод</th>
-            <th>Транскрипция</th>
+            <th class="center">Транскрипция</th>
             <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
-            <th class="center">Удалить</th>
+            <th class="center" style="width:80px">Удалить</th>
           </tr>
         </thead>
         <tbody>
           ${
-            list.map((w, i) => `
-              <tr class="${w.manual ? 'learned-row' : ''}">
-                <td>${i + 1}</td>
-                <td>${w.en}</td>
-                <td>${w.ru}</td>
-                <td>${w.tr || ''}</td>
-                <td class="center">${w.streak || 0}</td>
-                <td class="center">${w.errors || 0}</td>
-                <td class="center">
-                  <input
-                    type="checkbox"
-                    class="dictManual"
-                    data-id="${w.id}"
-                    ${w.manual ? 'checked' : ''}
-                  >
-                </td>
-                <td class="center">
-                  <button
-                    class="btn error dictDel"
-                    data-id="${w.id}"
-                  >✕</button>
-                </td>
-              </tr>
-            `).join('')
+            list.length
+              ? list.map((w, i) => `
+                <tr class="${isLearned(w) ? 'learned-row' : ''}">
+                  <td class="center">${i + 1}</td>
+                  <td>${w.en}</td>
+                  <td>${w.ru}</td>
+                  <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+                  <td class="center">${w.streak}</td>
+                  <td class="center">${w.errors}</td>
+                  <td class="center">
+                    <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+                  </td>
+                  <td class="center">
+                    <button class="btn error btn-del" data-id="${w.id}">✕</button>
+                  </td>
+                </tr>
+              `).join('')
+              : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`
           }
         </tbody>
       </table>
     </div>
   `;
 
-  // ===============================
-  // ✅ ОБРАБОТЧИКИ (ОБЯЗАТЕЛЬНО ЗДЕСЬ)
-  // ===============================
+  document.getElementById('dictSearch').oninput = e => {
+    window.dictQuery = e.target.value;
+    updateDictTable();
+  };
 
-  // ☑ ручная отметка "выучено"
-  panel.querySelectorAll('.dictManual').forEach(ch => {
-    ch.onchange = () => {
-      const id = Number(ch.dataset.id);
-      const word = words.find(w => w.id === id);
-      if (!word) return;
+  document.getElementById('dictFilter').onchange = e => {
+    window.dictFilter = e.target.value;
+    renderDict();
+  };
 
-      word.manual = ch.checked;
+  document.getElementById('markAll').onclick = () => {
+    words.forEach(w => w.manual = true);
+    saveState();
+    renderDict();
+  };
 
-      // если отметили вручную — считаем выученным
-      if (word.manual) {
-        word.streak = Math.max(word.streak || 0, 3);
-      } else {
-        word.streak = 0;
-      }
+  document.getElementById('resetAll').onclick = () => {
+    if (!confirm('Сбросить весь прогресс?')) return;
+    words.forEach(w => {
+      w.streak = 0;
+      w.errors = 0;
+      w.manual = false;
+    });
+    saveState();
+    renderDict();
+  };
 
-      saveState();
-      renderDict();
-      updateCounters?.();
-    };
-  });
-
-  // ❌ удаление слова
-  panel.querySelectorAll('.dictDel').forEach(btn => {
-    btn.onclick = () => {
-      const id = Number(btn.dataset.id);
-      if (!confirm('Удалить слово?')) return;
-
-      words = words.filter(w => w.id !== id);
-      saveState();
-      renderDict();
-      updateCounters?.();
-    };
-  });
+  bindDictActions();
 }
 
-
 function bindDictActions() {
+  // чекбоксы "выучено"
   document.querySelectorAll('.dictManual').forEach(ch => {
     ch.onchange = () => {
       const w = words.find(x => x.id === Number(ch.dataset.id));
-      if (!w) return;
-
-      w.manual = ch.checked;
-      w.streak = w.manual ? Math.max(w.streak, 3) : 0;
-
+      if (w) w.manual = ch.checked;
       saveState();
-      updateDictTable();
     };
   });
 
+  // кнопки удаления
   document.querySelectorAll('.btn-del').forEach(btn => {
     btn.onclick = () => {
       const id = Number(btn.dataset.id);
-      if (!confirm('Удалить слово?')) return;
+      const w = words.find(x => x.id === id);
+      if (!w) return;
 
-      words = words.filter(w => w.id !== id);
+      if (!confirm(`Удалить слово "${w.en}"?`)) return;
+
+      words = words.filter(x => x.id !== id);
       saveState();
-      updateDictTable();
+      updateDictTable(); //⚠️ НЕ renderDict
+      bindDictActions();
+
     };
   });
 }
+function recalcIrregulars() {
+  let changed = false;
 
+  irregulars.forEach(v => {
+    const shouldLearn = v.streak >= 3 || v.manual;
+    if (shouldLearn !== v.learned) {
+      v.learned = shouldLearn;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveIrregulars();
+  }
+
+  updateProgress();
+}
+
+function updateDictTable() {
+  let list = words.slice();
+
+  if (window.dictQuery.trim()) {
+    const q = window.dictQuery.toLowerCase();
+    list = list.filter(w =>
+      w.en.toLowerCase().includes(q) ||
+      w.ru.toLowerCase().includes(q) ||
+      (w.tr || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (window.dictFilter === 'learned') {
+    list = list.filter(w => isLearned(w));
+  }
+  if (window.dictFilter === 'unlearned') {
+    list = list.filter(w => !isLearned(w));
+  }
+
+  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
+
+  const tbody = document.querySelector('.table-wrap tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = list.length
+    ? list.map((w, i) => `
+      <tr class="${isLearned(w) ? 'learned-row' : ''}">
+        <td class="center">${i + 1}</td>
+        <td>${w.en}</td>
+        <td>${w.ru}</td>
+        <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
+        <td class="center">${w.streak}</td>
+        <td class="center">${w.errors}</td>
+        <td class="center">
+  <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
+</td>
+<td class="center">
+  <button class="btn error btn-del" data-id="${w.id}">✕</button>
+</td>
+
+      </tr>
+    `).join('')
+    : `<tr><td colspan="7" class="center muted">Ничего не найдено</td></tr>`;
+}
 
 
     // ---------- Tab: Match ----------
@@ -1718,7 +1720,7 @@ function renderIrregulars() {
   window.irFilter = window.irFilter ?? 'all';
 
   // ===== РАЗМЕТКА (ОДИН РАЗ) =====
-panelEl.innerHTML = `
+  panel.innerHTML = `
     <div class="row" style="gap:12px; flex-wrap:wrap; align-items:center">
 
       <input
@@ -1763,7 +1765,12 @@ panelEl.innerHTML = `
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
-
+function normalizeIrregulars() {
+  irregulars.forEach(v => {
+    if (v.streak >= 3) v.learned = true;
+  });
+  saveIrregulars();
+}
 
   // ===== ОТРИСОВКА ТАБЛИЦЫ =====
   function updateTable() {
@@ -1804,13 +1811,7 @@ panelEl.innerHTML = `
             <td class="center">${v.streak ?? 0}</td>
             <td class="center">${v.errors ?? 0}</td>
             <td class="center">
-<input
-  type="checkbox"
-  class="irLearned"
-  data-id="${v.id}"
-  ${v.learned ? 'checked' : ''}
-/>
-
+              <input type="checkbox" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
             </td>
             <td class="center">
               <button class="btn error btn-del" data-id="${v.id}">✕</button>
