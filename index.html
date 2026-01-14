@@ -1353,9 +1353,11 @@ function renderDict() {
        ${w.manual ? 'checked' : ''}>
                   </td>
                   <td class="center">
-<button class="btn error btn-del"
-        data-key="${w.en}|${w.ru}">
-                  </td>
+  <button class="btn error btn-del"
+          data-key="${w.en}|${w.ru}">
+    ✕
+  </button>
+</td>          
                 </tr>
               `).join('')
               : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`
