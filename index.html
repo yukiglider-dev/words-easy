@@ -1483,18 +1483,16 @@ ch.onchange = () => {
 
   w.manual = ch.checked;
 
-  // 🔥 СИНХРОНИЗАЦИЯ
   if (w.manual) {
     w.streak = Math.max(w.streak, 3);
-  } else if (w.streak >= 3) {
+  } else {
     w.streak = 0;
   }
 
   saveState();
-  updateDictTable(); // 🔥 ВАЖНО
- };
-  });
-}
+  updateDictTable();
+};
+
 
     // ---------- Tab: Match ----------
     let matchSet = [];
