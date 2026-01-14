@@ -1403,17 +1403,22 @@ document.querySelectorAll('.dictManual').forEach(ch => {
     const w = words.find(x => x.en + '|' + x.ru === key);
     if (!w) return;
 
-    w.manual = ch.checked;
-
-    if (w.manual) {
-      w.streak = Math.max(w.streak, 3);
+    if (ch.checked) {
+      // ✅ вручную отметили
+      w.manual = true;
+      w.streak = 3;
       w.needRepeat = false;
+    } else {
+      // ❌ сняли галочку
+      w.manual = false;
+      w.streak = 0;        // 🔥 ВАЖНО
     }
 
     saveState();
-    renderDict();   // ← 🔥 ВАЖНЕЙШАЯ СТРОКА
+    renderDict();
   };
 });
+
 
 
   // кнопки удаления
