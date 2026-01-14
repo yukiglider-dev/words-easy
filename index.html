@@ -918,9 +918,33 @@ function saveIrregulars() {
       updateProgress();
     }
 
-    let words = loadState();
-    let settings = loadSettings();
-    document.documentElement.setAttribute('data-theme', settings.theme);
+let words = loadState();
+let settings = loadSettings();
+
+/* ===== FIX: уникальные id у всех слов ===== */
+let maxId = 0;
+
+// находим максимальный id
+words.forEach(w => {
+  if (typeof w.id === 'number' && w.id > maxId) {
+    maxId = w.id;
+  }
+});
+
+// добавляем id тем, у кого его нет
+words.forEach(w => {
+  if (w.id == null) {
+    maxId += 1;
+    w.id = maxId;
+  }
+});
+
+// сохраняем обратно
+localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+/* ===== END FIX ===== */
+
+document.documentElement.setAttribute('data-theme', settings.theme);
+;
 
     // ---------- Helpers ---------- 
     let activeTab = 'test';
