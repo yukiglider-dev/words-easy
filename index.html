@@ -2059,34 +2059,37 @@ function renderIrAssembly() {
       selected.past === current.past &&
       selected.pp === current.pp;
 
+    let timeDurtion = 1500;
+    
     if (ok) {
       current.streak = (current.streak || 0) + 1;
 
-if (current.streak >= 3) {
-  current.learned = true;
-  current.needRepeat = false; // ✅ УБРАЛИ ИЗ ПОВТОРА
-  resultEl.innerHTML = '🎉 Выучено!';
-} else {
-        resultEl.innerHTML = `✅ Верно (${current.streak}/3)`;
-      }
-} else {
-  current.errors = (current.errors || 0) + 1;
-  current.streak = 0;
-
-  // 🚨 ОТПРАВЛЯЕМ В ПОВТОР
-  current.needRepeat = true;
-  current.learned = false;
-
-  resultEl.innerHTML = `
-    ❌ Ошибка<br>
-    <span class="muted">Past:</span> <b>${current.past}</b>,
-    <span class="muted">PP:</span> <b>${current.pp}</b>
-  `;
+      if (current.streak >= 3) {
+        current.learned = true;
+        current.needRepeat = false; // ✅ УБРАЛИ ИЗ ПОВТОРА
+        resultEl.innerHTML = '🎉 Выучено!';
+      } else {
+              resultEl.innerHTML = `✅ Верно (${current.streak}/3)`;
+            }
+  } else {
+    current.errors = (current.errors || 0) + 1;
+    current.streak = 0;
+  
+    // 🚨 ОТПРАВЛЯЕМ В ПОВТОР
+    current.needRepeat = true;
+    current.learned = false;
+  
+    resultEl.innerHTML = `
+      ❌ Ошибка<br>
+      <span class="muted">Past:</span> <b>${current.past}</b>,
+      <span class="muted">PP:</span> <b>${current.pp}</b>
+    `;
+      timeDurtion = 3000;
 }
 
 
     saveIrregulars();
-    setTimeout(renderIrAssembly, 3000);
+    setTimeout(renderIrAssembly, timeDurtion);
   }
 }
 
