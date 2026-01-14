@@ -1355,124 +1355,102 @@ panelEl.innerHTML = `
     let dictFilter = 'all';
     let dictQuery = '';
 function renderDict() {
-  const panelEl = document.getElementById('panel');
-  if (!panelEl) return;
+  const panel = document.getElementById('panel');
+  if (!panel) return;
 
-  window.dictQuery = window.dictQuery || '';
-  window.dictFilter = window.dictFilter || 'all';
+  // 🔢 сортировка по алфавиту
+  const list = [...words].sort((a, b) =>
+    a.en.localeCompare(b.en, 'en')
+  );
 
-  let list = words.slice();
-
-  if (window.dictQuery.trim()) {
-    const q = window.dictQuery.toLowerCase();
-    list = list.filter(w =>
-      w.en.toLowerCase().includes(q) ||
-      w.ru.toLowerCase().includes(q) ||
-      (w.tr || '').toLowerCase().includes(q)
-    );
-  }
-
-  if (window.dictFilter === 'learned') {
-    list = list.filter(w => isLearned(w));
-  }
-  if (window.dictFilter === 'unlearned') {
-    list = list.filter(w => !isLearned(w));
-  }
-
-  list.sort((a, b) => a.en.localeCompare(b.en, 'en'));
-
-  panelEl.innerHTML = `
-    <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
-      <div class="field" style="flex:2; min-width:240px">
-        <input id="dictSearch" type="text" placeholder="Поиск..." value="${window.dictQuery}">
-      </div>
-
-      <div class="field" style="flex:1; min-width:200px">
-        <select id="dictFilter">
-          <option value="all" ${window.dictFilter === 'all' ? 'selected' : ''}>Все слова</option>
-          <option value="learned" ${window.dictFilter === 'learned' ? 'selected' : ''}>Выученные</option>
-          <option value="unlearned" ${window.dictFilter === 'unlearned' ? 'selected' : ''}>Невыученные</option>
-        </select>
-      </div>
-
-      <div class="field" style="display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn primary" id="openAddModal">+ Add Word</button>
-        <button class="btn success" id="markAll">Отметить всё</button>
-        <button class="btn error" id="resetAll">Сброс</button>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
+  // 🧱 РЕНДЕР HTML
+  panel.innerHTML = `
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th class="center">№</th>
-            <th>Английское</th>
+            <th>№</th>
+            <th>English</th>
             <th>Перевод</th>
-            <th class="center">Транскрипция</th>
+            <th>Транскрипция</th>
             <th class="center">Серия</th>
             <th class="center">Ошибки</th>
             <th class="center">Выучено</th>
-            <th class="center" style="width:80px">Удалить</th>
+            <th class="center">Удалить</th>
           </tr>
         </thead>
         <tbody>
           ${
-            list.length
-              ? list.map((w, i) => `
-                <tr class="${isLearned(w) ? 'learned-row' : ''}">
-                  <td class="center">${i + 1}</td>
-                  <td>${w.en}</td>
-                  <td>${w.ru}</td>
-                  <td class="center">${w.tr ? `/${w.tr}/` : ''}</td>
-                  <td class="center">${w.streak}</td>
-                  <td class="center">${w.errors}</td>
-                  <td class="center">
-                    <input type="checkbox" class="dictManual" data-id="${w.id}" ${w.manual ? 'checked' : ''}>
-                  </td>
-                  <td class="center">
-                    <button class="btn error btn-del" data-id="${w.id}">✕</button>
-                  </td>
-                </tr>
-              `).join('')
-              : `<tr><td colspan="8" class="center muted">Ничего не найдено</td></tr>`
+            list.map((w, i) => `
+              <tr class="${w.manual ? 'learned-row' : ''}">
+                <td>${i + 1}</td>
+                <td>${w.en}</td>
+                <td>${w.ru}</td>
+                <td>${w.tr || ''}</td>
+                <td class="center">${w.streak || 0}</td>
+                <td class="center">${w.errors || 0}</td>
+                <td class="center">
+                  <input
+                    type="checkbox"
+                    class="dictManual"
+                    data-id="${w.id}"
+                    ${w.manual ? 'checked' : ''}
+                  >
+                </td>
+                <td class="center">
+                  <button
+                    class="btn error dictDel"
+                    data-id="${w.id}"
+                  >✕</button>
+                </td>
+              </tr>
+            `).join('')
           }
         </tbody>
       </table>
     </div>
   `;
 
-  document.getElementById('dictSearch').oninput = e => {
-    window.dictQuery = e.target.value;
-    updateDictTable();
-  };
+  // ===============================
+  // ✅ ОБРАБОТЧИКИ (ОБЯЗАТЕЛЬНО ЗДЕСЬ)
+  // ===============================
 
-  document.getElementById('dictFilter').onchange = e => {
-    window.dictFilter = e.target.value;
-    renderDict();
-  };
+  // ☑ ручная отметка "выучено"
+  panel.querySelectorAll('.dictManual').forEach(ch => {
+    ch.onchange = () => {
+      const id = Number(ch.dataset.id);
+      const word = words.find(w => w.id === id);
+      if (!word) return;
 
-  document.getElementById('markAll').onclick = () => {
-    words.forEach(w => w.manual = true);
-    saveState();
-    renderDict();
-  };
+      word.manual = ch.checked;
 
-  document.getElementById('resetAll').onclick = () => {
-    if (!confirm('Сбросить весь прогресс?')) return;
-    words.forEach(w => {
-      w.streak = 0;
-      w.errors = 0;
-      w.manual = false;
-    });
-    saveState();
-    renderDict();
-  };
+      // если отметили вручную — считаем выученным
+      if (word.manual) {
+        word.streak = Math.max(word.streak || 0, 3);
+      } else {
+        word.streak = 0;
+      }
 
-  bindDictActions();
+      saveState();
+      renderDict();
+      updateCounters?.();
+    };
+  });
+
+  // ❌ удаление слова
+  panel.querySelectorAll('.dictDel').forEach(btn => {
+    btn.onclick = () => {
+      const id = Number(btn.dataset.id);
+      if (!confirm('Удалить слово?')) return;
+
+      words = words.filter(w => w.id !== id);
+      saveState();
+      renderDict();
+      updateCounters?.();
+    };
+  });
 }
+
 
 function bindDictActions() {
   // чекбоксы "выучено"
@@ -1818,7 +1796,12 @@ panelEl.innerHTML = `
             <td class="center">${v.streak ?? 0}</td>
             <td class="center">${v.errors ?? 0}</td>
             <td class="center">
-              <input type="checkbox" data-id="${v.id}" ${v.learned ? 'checked' : ''}>
+<input
+  type="checkbox"
+  class="dictManual"
+  data-id="${w.id}"
+  ${w.manual ? 'checked' : ''}
+/>
             </td>
             <td class="center">
               <button class="btn error btn-del" data-id="${v.id}">✕</button>
