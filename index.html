@@ -1397,14 +1397,24 @@ function renderDict() {
 
 function bindDictActions() {
   // чекбоксы "выучено"
-  document.querySelectorAll('.dictManual').forEach(ch => {
-    ch.onchange = () => {
-const key = ch.dataset.key;
-const w = words.find(x => x.en + '|' + x.ru === key);
-      if (w) w.manual = ch.checked;
-      saveState();
-    };
-  });
+document.querySelectorAll('.dictManual').forEach(ch => {
+  ch.onchange = () => {
+    const key = ch.dataset.key;
+    const w = words.find(x => x.en + '|' + x.ru === key);
+    if (!w) return;
+
+    w.manual = ch.checked;
+
+    if (w.manual) {
+      w.streak = Math.max(w.streak, 3);
+      w.needRepeat = false;
+    }
+
+    saveState();
+    renderDict();   // ← 🔥 ВАЖНЕЙШАЯ СТРОКА
+  };
+});
+
 
   // кнопки удаления
   document.querySelectorAll('.btn-del').forEach(btn => {
