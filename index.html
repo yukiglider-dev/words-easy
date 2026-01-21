@@ -1464,7 +1464,6 @@ function renderDict() {
 
 function bindDictActions() {
 
-  // ===== ЧЕКБОКСЫ =====
   document.querySelectorAll('.dictManual').forEach(ch => {
     ch.onchange = () => {
 
@@ -1486,7 +1485,6 @@ function bindDictActions() {
     };
   });
 
-  // ===== УДАЛЕНИЕ =====
   document.querySelectorAll('.btn-del').forEach(btn => {
     btn.onclick = () => {
 
@@ -1507,25 +1505,6 @@ function bindDictActions() {
 }
 
 
-
-
-  // кнопки удаления
-  document.querySelectorAll('.btn-del').forEach(btn => {
-    btn.onclick = () => {
-const key = btn.dataset.key;
-words = words.filter(x => x.en + '|' + x.ru !== key);
-      if (!w) return;
-
-      if (!confirm(`Удалить слово "${w.en}"?`)) return;
-
-      words = words.filter(x => x.id !== id);
-      saveState();
-      updateDictTable(); //⚠️ НЕ renderDict
-      bindDictActions();
-
-    };
-  });
-}
 function recalcIrregulars() {
   let changed = false;
 
