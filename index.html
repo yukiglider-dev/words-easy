@@ -1414,14 +1414,14 @@ function renderDict() {
                   <td class="center">
 <input type="checkbox"
        class="dictManual"
-       data-key="${w.en}|${w.ru}"
+       data-id="${w.id}"
        ${w.manual ? 'checked' : ''}>
                   </td>
                   <td class="center">
-  <button class="btn error btn-del"
-          data-key="${w.en}|${w.ru}">
-    ✕
-  </button>
+<button class="btn error btn-del"
+        data-id="${w.id}">
+  ✕
+</button>
 </td>          
                 </tr>
               `).join('')
@@ -1463,28 +1463,49 @@ function renderDict() {
 }
 
 function bindDictActions() {
-  // чекбоксы "выучено"
-document.querySelectorAll('.dictManual').forEach(ch => {
-  ch.onchange = () => {
-    const key = ch.dataset.key;
-    const w = words.find(x => x.en + '|' + x.ru === key);
-    if (!w) return;
 
-    if (ch.checked) {
-      // ✅ вручную отметили
-      w.manual = true;
-      w.streak = 3;
-      w.needRepeat = false;
-    } else {
-      // ❌ сняли галочку
-      w.manual = false;
-      w.streak = 0;        // 🔥 ВАЖНО
-    }
+  // ===== ЧЕКБОКСЫ =====
+  document.querySelectorAll('.dictManual').forEach(ch => {
+    ch.onchange = () => {
 
-    saveState();
-    renderDict();
-  };
-});
+      const id = Number(ch.dataset.id);
+      const w = words.find(x => x.id === id);
+      if (!w) return;
+
+      if (ch.checked) {
+        w.manual = true;
+        w.streak = 3;
+        w.needRepeat = false;
+      } else {
+        w.manual = false;
+        w.streak = 0;
+      }
+
+      saveState();
+      renderDict();
+    };
+  });
+
+  // ===== УДАЛЕНИЕ =====
+  document.querySelectorAll('.btn-del').forEach(btn => {
+    btn.onclick = () => {
+
+      const id = Number(btn.dataset.id);
+      const w = words.find(x => x.id === id);
+
+      if (!w) return;
+
+      if (!confirm(`Удалить слово "${w.en}"?`)) return;
+
+      words = words.filter(x => x.id !== id);
+
+      saveState();
+      renderDict();
+    };
+  });
+
+}
+
 
 
 
