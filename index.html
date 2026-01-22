@@ -879,41 +879,33 @@ normalizeIrregulars();
 
 
 function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
 
-  // если localStorage пуст — просто берём initialWords
-  if (!raw) return initialWords.slice();
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-  try {
-    const saved = JSON.parse(raw);
+  const base = buildInitial();
 
-    // карта сохранённых слов
-    const savedMap = new Map(
-      saved.map(w => [w.en + '|' + w.ru, w])
+  if (!saved.length) return base;
+
+  const baseKeys = new Set(
+    base.map(w => w.en + '|' + w.ru)
+  );
+
+  // 🔥 удаляем слова которых больше нет в initialWords
+  const filtered = saved.filter(w =>
+    baseKeys.has(w.en + '|' + w.ru)
+  );
+
+  // 🔁 добавляем новые слова из initialWords
+  base.forEach(b => {
+    const exists = filtered.find(
+      w => w.en === b.en && w.ru === b.ru
     );
+    if (!exists) filtered.push(b);
+  });
 
-    // 1. обновляем initialWords сохранёнными данными
-    const merged = initialWords.map(w => {
-      const key = w.en + '|' + w.ru;
-      return savedMap.has(key)
-        ? { ...w, ...savedMap.get(key) }
-        : w;
-    });
-
-    // 2. добавляем слова, которых НЕТ в initialWords (ручной ввод)
-    saved.forEach(w => {
-      const key = w.en + '|' + w.ru;
-      if (!merged.some(x => x.en + '|' + x.ru === key)) {
-        merged.push(w);
-      }
-    });
-
-    return merged;
-  } catch (e) {
-    console.error('Ошибка загрузки слов:', e);
-    return initialWords.slice();
-  }
+  return filtered;
 }
+
 
 
 function saveIrregulars() {
