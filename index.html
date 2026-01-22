@@ -712,6 +712,12 @@ const STORAGE_KEY = 'words_easy_final_v2';
   errors: 0,
   manual: false
 }));
+    function buildInitial() {
+  return initialWords.map(w => ({
+    ...w
+  }));
+}
+
 const IRREGULARS_KEY = 'words_easy_irregulars_v1';
 
 const initialIrregulars  = [
@@ -1801,12 +1807,6 @@ function renderIrregulars() {
   `;
 
   document.getElementById('irFilter').value = window.irFilter;
-function normalizeIrregulars() {
-  irregulars.forEach(v => {
-    if (v.streak >= 3) v.learned = true;
-  });
-  saveIrregulars();
-}
 
   // ===== ОТРИСОВКА ТАБЛИЦЫ =====
   function updateTable() {
