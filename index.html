@@ -1021,7 +1021,6 @@ function switchTab(tabId) {
   
 
     // ---------- Tab: Test ----------
-    let testIdx = { value: -1 };
     let currentTestWord = null;
 
     function renderTest(pickNew = true) {
@@ -1034,7 +1033,9 @@ function switchTab(tabId) {
   </div>
 `;
  return; }
-      if (pickNew || !currentTestWord) currentTestWord = nextOf(pool, testIdx) || pool[0];
+if (pickNew || !currentTestWord) {
+  currentTestWord = pool[Math.floor(Math.random() * pool.length)];
+}
 
       const current = currentTestWord;
       const correctRu = current.ru;
