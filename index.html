@@ -50,8 +50,6 @@
   --shadow: 0 12px 36px rgba(0,0,0,0.45);
 }
 
-
-
 html, body {
   height: 100%;
   background: var(--bg);
@@ -796,7 +794,7 @@ const initialIrregulars  = [
   { base: 'lose', past: 'lost', pp: 'lost', ru: 'терять' },
   { base: 'make', past: 'made', pp: 'made', ru: 'делать, мастерить' },
   { base: 'mean', past: 'meant', pp: 'meant', ru: 'значить' },
-  { base: 'meet', past: 'met', pp: 'met', ru: 'встречать, знакомиться' },
+  { base: 'meet', past: 'met', pp: 'met', ru: 'встречать, знакоиться' },
   { base: 'pay', past: 'paid', pp: 'paid', ru: 'платить' },
   { base: 'put', past: 'put', pp: 'put', ru: 'класть' },
   { base: 'read', past: 'read', pp: 'read', ru: 'читать' },
@@ -828,10 +826,15 @@ const initialIrregulars  = [
   { base: 'wear', past: 'wore', pp: 'worn', ru: 'носить' },
   { base: 'write', past: 'wrote', pp: 'written', ru: 'писать' }
 ];
+ru: 'писать' }
+].map((v, i) => ({
+  id: i + 1,
+  ...v,
+  streak: 0,
+  errors: 0,
+  learned: false
+}));
 
-  </script>
-</body>
-</html>
 
 
 
