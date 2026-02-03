@@ -104,316 +104,477 @@ html, body {
       display: flex;
       gap: 8px;
       align-items: center;
-      diff --git a/index.html b/index.html
-index b8f50f7db2ff7edeffaf00a91a5ab645ecf9bf9c..675296a01b0ba7cd58abb60f5e8bd42394376365 100644
---- a/index.html
-+++ b/index.html
-@@ -107,104 +107,93 @@ html, body {
-       justify-content: center;
-       margin-top: 8px;
-     }
-     button, .btn {
-       border: 1px solid var(--border);
-       background: var(--surface);
-       color: var(--text);
-       padding: 10px 14px;
-       border-radius: var(--btn-radius);
-       cursor: pointer;
-       transition: transform 0.05s ease, background 0.2s ease, border-color 0.2s ease;
-       box-shadow: var(--shadow);
-       font-weight: 600;
-     }
-     button:hover, .btn:hover { transform: translateY(-1px); }
-     button.primary { background: var(--primary); color: #fff; border-color: transparent; }
-     button.success { background: var(--success); color: #fff; border-color: transparent; }
-     button.error { background: var(--error); color: #fff; border-color: transparent; }
- .container {
-   background: var(--surface);
-   border-radius: var(--card-radius);
-   box-shadow: var(--shadow);
-   border: 1px solid var(--border);
- }
- 
--    .tabs {
--      display: flex;
--      justify-content: center; /* вкладки по центру */
--      gap: 8px;
--      flex-wrap: wrap;
--      margin: 12px 0;
--    }
-     .tab-btn {
-       background: var(--surface);
-       border: 1px solid var(--border);
-       color: var(--text);
-     }
-     .tab-btn.active {
-       background: var(--primary);
-       color: #fff;
-       border-color: transparent;
-     }
- 
-     .panel {
-       background: var(--surface);
-       border: 1px solid var(--border);
-       border-radius: var(--card-radius);
-       box-shadow: var(--shadow);
-       padding: 16px;
-       min-height: 220px;
-     }
- 
-     .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-     .muted { color: var(--muted); }
-     .divider { height: 1px; background: var(--border); margin: 12px 0; }
- 
-    .card {
-   border: 1px solid var(--border);
-   border-radius: 16px;
-   background: var(--surface);
-   box-shadow: var(--shadow);
-   min-width: 260px;
-   min-height: 120px;
-   display: grid;
-   place-items: center;
-   text-align: center;
-   position: relative;
-   width: 100%;
-   box-sizing: border-box;
- }
- 
- .card .empty {
-   align-content: center;
- }
- 
--   .test-transcription {
--  margin-top: 6px; /* было 10 — уменьшили */
--}
--
-     /* Тест: одна колонка — 4 строки */
-     .options {
-       display: flex;
-       flex-direction: column;
-       gap: 8px;
-       margin-top: 12px;
-     }
-     .option {
-       padding: 10px;
-       border-radius: 12px;
-       border: 1px solid var(--border);
-       background: var(--surface);
-       cursor: pointer;
-       text-align: center;
-       box-shadow: var(--shadow);
-       user-select: none;
-     }
-     .option.correct { background: var(--accent-2); border-color: var(--success); }
-     .option.wrong { background: var(--accent-3); border-color: var(--error); }
-     .option.selected { outline: 2px solid var(--primary); }
- 
-     /* Карточки: flip */
-     .flip {
-       perspective: 800px;
-       width: 100%;
-@@ -266,115 +255,100 @@ html, body {
-       background: var(--accent-1);
-       border: 1px solid var(--border);
-       border-radius: 999px;
-       padding: 4px 8px;
-     }
-     .empty { text-align: center; color: var(--muted); padding: 20px; }
-     
-     @media (max-width: 640px) {
-       .match-columns { grid-template-columns: 1fr; }
-       .progress { flex-direction: column; align-items: center; }
-     }
-     /* ===== MINI UI ===== */
- 
- 
- .mini-counter {
-   font-size: 12px;
-   padding: 6px 10px;
-   border-radius: 999px;
-   background: var(--surface);
-   border: 1px solid var(--border);
-   box-shadow: var(--shadow);
-   font-weight: 700;
-   color: var(--muted);
- }
- 
--.mini-theme {
--  width: 32px;
--  height: 32px;
--  border-radius: 50%;
--  border: 1px solid var(--border);
--  background: var(--surface);
--  cursor: pointer;
--  box-shadow: var(--shadow);
--
--  display: flex;
--  align-items: center;
--  justify-content: center;
--
--  padding: 0;
--  font-size: 14px;
--  line-height: 1;
--}
- .mini-theme {
-   width: 34px;
-   height: 34px;
-   border-radius: 50%;
-   border: 1px solid var(--border);
-   background: var(--surface);
-   cursor: pointer;
-+  box-shadow: var(--shadow);
-   font-size: 16px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-+  padding: 0;
-+  line-height: 1;
- }
- .test-transcription {
-+  margin-top: 6px;
-   margin-bottom: 10px;
-   font-size: 18px;
-   opacity: 0;
-   pointer-events: none;
-   transition: opacity 0.2s ease;
- }
- 
- .test-transcription.show {
-   opacity: 1;
-   pointer-events: auto;
- }
- 
- .test-word {
-   cursor: pointer;
-   padding: 40px 0px 20px 0px;
- }
- 
--.card {
--  box-sizing: border-box;
--}
- .tabs-bar {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   gap: 12px;
-   margin: 12px 0;
- }
- 
- /* вкладки по центру */
- .tabs {
-   flex: 1;
-   display: flex;
-   justify-content: center;
-   gap: 8px;
-   flex-wrap: wrap;
-+  margin: 12px 0;
- }
- 
- /* mini ui теперь не fixed */
- 
- @media (max-width: 640px) {
-   .tabs-bar {
-     flex-direction: column;
-     align-items: center;
-   }
- }
- .mini-ui.inline {
-   display: flex;
-   flex-direction: row;      /* ВАЖНО */
-   align-items: center;      /* выравнивание по вертикали */
-   gap: 8px;
- }
- /* ===== MODAL ===== */
- .modal-backdrop {
-   position: fixed;
-   inset: 0;
-   background: rgba(0,0,0,0.55);
-   display: none;
-   align-items: center;
-   justify-content: center;
-   z-index: 1000;
-@@ -502,76 +476,64 @@ input::placeholder {
-   height: 100%;
-   min-height: 300px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
- }
- 
- .repeat-empty-card {
-   text-align: center;
-   padding: 32px 40px;
-   border-radius: 18px;
-   background: rgba(255,255,255,0.04);
-   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
- }
- 
- .repeat-title {
-   font-size: 22px;
-   font-weight: 600;
-   margin-top: 8px;
- }
- 
- .repeat-sub {
-   margin-top: 10px;
-   opacity: 0.7;
- }
--/* ===== LIGHT THEME INPUT FIX ===== */
--html[data-theme="light"] input,
--html[data-theme="light"] textarea,
--html[data-theme="light"] select {
--  background: #ffffff;
--  color: #111827;
--  border: 1px solid #d1d5db;
--}
--
--html[data-theme="light"] input::placeholder,
--html[data-theme="light"] textarea::placeholder {
--  color: #9ca3af;
--}
- /* ===== FORCE LIGHT THEME INPUTS ===== */
- html[data-theme="light"] input,
- html[data-theme="light"] textarea,
- html[data-theme="light"] select {
-   background-color: #ffffff !important;
-   color: #111827 !important;
-   border: 1px solid #d1d5db !important;
- }
- 
- html[data-theme="light"] input::placeholder,
- html[data-theme="light"] textarea::placeholder {
-   color: #9ca3af !important;
--}/* ===== LIGHT THEME INPUT FOCUS FIX ===== */
-+}
-+/* ===== LIGHT THEME INPUT FOCUS FIX ===== */
- html[data-theme="light"] input:focus,
- html[data-theme="light"] textarea:focus,
- html[data-theme="light"] select:focus {
-   background-color: #ffffff !important;
-   color: #111827 !important;
-   border-color: #93c5fd !important;
-   outline: none;
- }
- 
-   </style>
- </head>
- <body>
- 
- <div class="modal-backdrop" id="addModal">
-   <div class="modal">
-     <div class="modal-header">
-       <div class="modal-title">Add New Word</div>
-       <button class="modal-close" id="closeAddModal">✕</button>
-     </div>
- 
-     <div class="modal-desc">
-       Expand your vocabulary by adding a new word.
-     </div>
- 
-     <div class="field">
+      justify-content: center;
+      margin-top: 8px;
+    }
+    button, .btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: var(--btn-radius);
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.2s ease, border-color 0.2s ease;
+      box-shadow: var(--shadow);
+      font-weight: 600;
+    }
+    button:hover, .btn:hover { transform: translateY(-1px); }
+    button.primary { background: var(--primary); color: #fff; border-color: transparent; }
+    button.success { background: var(--success); color: #fff; border-color: transparent; }
+    button.error { background: var(--error); color: #fff; border-color: transparent; }
+.container {
+  background: var(--surface);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
 
+    .tabs {
+      display: flex;
+      justify-content: center; /* вкладки по центру */
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      min-height: 220px;
+    }
+
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .muted { color: var(--muted); }
+    .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+   .card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  min-width: 260px;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card .empty {
+  align-content: center;
+}
+
+   .test-transcription {
+  margin-top: 6px; /* было 10 — уменьшили */
+}
+
+    /* Тест: одна колонка — 4 строки */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .option {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--shadow);
+      user-select: none;
+    }
+    .option.correct { background: var(--accent-2); border-color: var(--success); }
+    .option.wrong { background: var(--accent-3); border-color: var(--error); }
+    .option.selected { outline: 2px solid var(--primary); }
+
+    /* Карточки: flip */
+    .flip {
+      perspective: 800px;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .flip-inner {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    .flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      width: 100%;
+      backface-visibility: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      box-shadow: var(--shadow);
+      min-height: 140px;
+      display: grid;
+      place-items: center;
+    }
+    .flip-back { transform: rotateY(180deg); background: var(--accent-1); }
+
+    /* Сопоставление: две колонки списков */
+    .match-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .field { display: flex; gap: 8px; align-items: center; }
+    input[type="text"], select {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 10px; text-align: left; }
+    th.center, td.center { text-align: center; }
+    tr.learned-row { background: rgba(52,199,89,0.10); }
+
+    .pill {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--accent-1);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+    .empty { text-align: center; color: var(--muted); padding: 20px; }
+    
+    @media (max-width: 640px) {
+      .match-columns { grid-template-columns: 1fr; }
+      .progress { flex-direction: column; align-items: center; }
+    }
+    /* ===== MINI UI ===== */
+
+
+.mini-counter {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.mini-theme {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+.mini-theme {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.test-transcription {
+  margin-bottom: 10px;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.test-transcription.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.test-word {
+  cursor: pointer;
+  padding: 40px 0px 20px 0px;
+}
+
+.card {
+  box-sizing: border-box;
+}
+.tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+/* вкладки по центру */
+.tabs {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* mini ui теперь не fixed */
+
+@media (max-width: 640px) {
+  .tabs-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.mini-ui.inline {
+  display: flex;
+  flex-direction: row;      /* ВАЖНО */
+  align-items: center;      /* выравнивание по вертикали */
+  gap: 8px;
+}
+/* ===== MODAL ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-backdrop.show {
+  display: flex;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.modal-desc {
+  margin: 6px 0 16px;
+  color: var(--muted);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.panel-center {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty-center {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+}
+.btn-del {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+    /* Контейнер вкладки */
+.content.rules {
+  display: flex;
+  align-items: center;      /* вертикаль */
+  justify-content: center;  /* горизонталь */
+}
+
+.assembly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.options.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option.active {
+  background: var(--primary);
+  color: #fff;
+}
+/* ===== INPUT (поиск неправильных глаголов) ===== */
+input,
+.input {
+  background: #0f1b2d !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+/* при фокусе */
+input:focus,
+.input:focus {
+  background: #0f1b2d !important;
+  color: #fff !important;
+  border-color: #5da9ff;
+  box-shadow: 0 0 0 2px rgba(93,169,255,0.25);
+  outline: none;
+}
+
+/* убираем браузерные приколы */
+input::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.5);
+}
+input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+.repeat-center {
+  height: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.repeat-empty-card {
+  text-align: center;
+  padding: 32px 40px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.repeat-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.repeat-sub {
+  margin-top: 10px;
+  opacity: 0.7;
+}
+/* ===== LIGHT THEME INPUT FIX ===== */
+html[data-theme="light"] input,
+html[data-theme="light"] textarea,
+html[data-theme="light"] select {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #9ca3af;
+}
+/* ===== FORCE LIGHT THEME INPUTS ===== */
+html[data-theme="light"] input,
+html[data-theme="light"] textarea,
+html[data-theme="light"] select {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #9ca3af !important;
+}/* ===== LIGHT THEME INPUT FOCUS FIX ===== */
+html[data-theme="light"] input:focus,
+html[data-theme="light"] textarea:focus,
+html[data-theme="light"] select:focus {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #93c5fd !important;
+  outline: none;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Word</div>
+      <button class="modal-close" id="closeAddModal">✕</button>
+    </div>
+
+    <div class="modal-desc">
+      Expand your vocabulary by adding a new word.
+    </div>
+
+    <div class="field">
       <input type="text" id="modalEn" placeholder="English word (e.g. Magnificent)">
     </div>
 
@@ -637,65 +798,41 @@ const initialIrregulars  = [
   { base: 'mean', past: 'meant', pp: 'meant', ru: 'значить' },
   { base: 'meet', past: 'met', pp: 'met', ru: 'встречать, знакомиться' },
   { base: 'pay', past: 'paid', pp: 'paid', ru: 'платить' },
-  { base: 'put', past: 'put', pp: 'put', ru: 'класть, ставить' },
+  { base: 'put', past: 'put', pp: 'put', ru: 'класть' },
   { base: 'read', past: 'read', pp: 'read', ru: 'читать' },
   { base: 'ride', past: 'rode', pp: 'ridden', ru: 'ездить верхом' },
   { base: 'ring', past: 'rang', pp: 'rung', ru: 'звонить' },
-  { base: 'rise', past: 'rose', pp: 'risen', ru: 'возрастать, подниматься' },
-  { base: 'run', past: 'ran', pp: 'run', ru: 'бежать' },
-  { base: 'say', past: 'said', pp: 'said', ru: 'сказать' },
+  { base: 'rise', past: 'rose', pp: 'risen', ru: 'подниматься' },
+  { base: 'run', past: 'ran', pp: 'run', ru: 'бегать' },
+  { base: 'say', past: 'said', pp: 'said', ru: 'говорить' },
   { base: 'see', past: 'saw', pp: 'seen', ru: 'видеть' },
   { base: 'seek', past: 'sought', pp: 'sought', ru: 'искать' },
   { base: 'sell', past: 'sold', pp: 'sold', ru: 'продавать' },
-  { base: 'send', past: 'sent', pp: 'sent', ru: 'посылать' },
+  { base: 'send', past: 'sent', pp: 'sent', ru: 'отправлять' },
   { base: 'set', past: 'set', pp: 'set', ru: 'устанавливать' },
-  { base: 'shake', past: 'shook', pp: 'shaken', ru: 'трясти' },
-  { base: 'shine', past: 'shone', pp: 'shone', ru: 'светить, сиять' },
-  { base: 'shoot', past: 'shot', pp: 'shot', ru: 'стрелять' },
-  { base: 'show', past: 'showed', pp: 'shown', ru: 'показывать' },
-  { base: 'shrink', past: 'shrank', pp: 'shrunk', ru: 'сжиматься' },
+  { base: 'shine', past: 'shone', pp: 'shone', ru: 'сиять' },
   { base: 'shut', past: 'shut', pp: 'shut', ru: 'закрывать' },
   { base: 'sing', past: 'sang', pp: 'sung', ru: 'петь' },
   { base: 'sit', past: 'sat', pp: 'sat', ru: 'сидеть' },
   { base: 'sleep', past: 'slept', pp: 'slept', ru: 'спать' },
-  { base: 'slide', past: 'slid', pp: 'slid', ru: 'скользить' },
-  { base: 'smell', past: 'smelt', pp: 'smelt', ru: 'пахнуть, нюхать' },
   { base: 'speak', past: 'spoke', pp: 'spoken', ru: 'говорить' },
-  { base: 'spell', past: 'spelt (spelled)', pp: 'spelt (spelled)', ru: 'произносить по буквам' },
-  { base: 'spend', past: 'spent', pp: 'spent', ru: 'тратить, проводить время' },
-  { base: 'spill', past: 'spilt (spilled)', pp: 'spilt (spilled)', ru: 'разлить' },
-  { base: 'spin', past: 'spun', pp: 'spun', ru: 'крутить' },
-  { base: 'split', past: 'split', pp: 'split', ru: 'разделять, раскалывать' },
-  { base: 'spoil', past: 'spoilt (spoiled)', pp: 'spoilt (spoiled)', ru: 'портить' },
-  { base: 'spread', past: 'spread', pp: 'spread', ru: 'распространять' },
+  { base: 'spend', past: 'spent', pp: 'spent', ru: 'тратить' },
   { base: 'stand', past: 'stood', pp: 'stood', ru: 'стоять' },
-  { base: 'steal', past: 'stole', pp: 'stolen', ru: 'воровать' },
-  { base: 'sting', past: 'stung', pp: 'stung', ru: 'жалить' },
-  { base: 'stink', past: 'stank', pp: 'stunk', ru: 'вонять' },
-  { base: 'strike', past: 'struck', pp: 'struck', ru: 'бастовать, ударять' },
-  { base: 'swear', past: 'swore', pp: 'sworn', ru: 'клясться, ругаться' },
-  { base: 'sweep', past: 'swept', pp: 'swept', ru: 'подметать' },
-  { base: 'swell', past: 'swelled', pp: 'swollen (swelled)', ru: 'опухать' },
   { base: 'swim', past: 'swam', pp: 'swum', ru: 'плавать' },
   { base: 'take', past: 'took', pp: 'taken', ru: 'брать' },
-  { base: 'teach', past: 'taught', pp: 'taught', ru: 'обучать' },
-  { base: 'tear', past: 'tore', pp: 'torn', ru: 'рвать' },
+  { base: 'teach', past: 'taught', pp: 'taught', ru: 'учить' },
   { base: 'tell', past: 'told', pp: 'told', ru: 'рассказывать' },
   { base: 'think', past: 'thought', pp: 'thought', ru: 'думать' },
   { base: 'throw', past: 'threw', pp: 'thrown', ru: 'бросать' },
   { base: 'understand', past: 'understood', pp: 'understood', ru: 'понимать' },
-  { base: 'wake', past: 'woke', pp: 'woken', ru: 'будить' },
-  { base: 'wear', past: 'wore', pp: 'worn', ru: 'носить (одежду)' },
-  { base: 'win', past: 'won', pp: 'won', ru: 'побеждать' },
-  { base: 'wind', past: 'wound', pp: 'wound', ru: 'обматывать, изгибаться' },
+  { base: 'wear', past: 'wore', pp: 'worn', ru: 'носить' },
   { base: 'write', past: 'wrote', pp: 'written', ru: 'писать' }
-].map((v, i) => ({
-  id: i + 1,
-  ...v,
-  streak: 0,
-  errors: 0,
-  learned: false
-}));
+];
+
+  </script>
+</body>
+</html>
+
 
 
 function loadIrregulars() {
