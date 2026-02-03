@@ -50,6 +50,8 @@
   --shadow: 0 12px 36px rgba(0,0,0,0.45);
 }
 
+
+
 html, body {
   height: 100%;
   background: var(--bg);
@@ -609,7 +611,7 @@ html[data-theme="light"] select:focus {
 
   <script>
     // ---------- Data & Storage ----------
-const STORAGE_KEY = 'words_easy_final_v3';
+const STORAGE_KEY = 'words_easy_final_v2';
     const SETTINGS_KEY = 'words_easy_settings_final_v1';
     const initialWords = [
       { en: 'at school', ru: 'в школе', tr: 'эт скул' },
@@ -645,7 +647,6 @@ const STORAGE_KEY = 'words_easy_final_v3';
       { en: 'forget', ru: 'забывать', tr: 'фогет' },
 { en: 'bark', ru: 'лаять', tr: 'барк' },
 { en: 'satisfied', ru: 'удовлетворённый', tr: 'сэтисфайд' },
-      { en: 'habit', ru: 'привычка', tr: 'хэбит' },
       { en: 'start', ru: 'начинать', tr: 'старт' },
       { en: 'begin', ru: 'начинать', tr: 'бигин' },
       { en: 'continue', ru: 'продолжать', tr: 'континью' },
@@ -661,26 +662,6 @@ const STORAGE_KEY = 'words_easy_final_v3';
       { en: 'how regularly', ru: 'как регулярно', tr: 'хау рэгьюлэли' },
       { en: 'get to', ru: 'добираться до', tr: 'гет ту' },
   { en: 'tomorrow', ru: 'завтра', tr: 'тумороу' },
-  { en: 'beat', ru: 'бить', tr: 'бит' },
-  { en: 'kick', ru: 'ударить / пинать', tr: 'кик' },
-  { en: 'ride', ru: 'кататься / ездить', tr: 'райд' },
-  { en: 'delete', ru: 'удалять', tr: 'дилит' },
-  { en: 'lose', ru: 'терять / проигрывать', tr: 'луз' },
-  { en: 'hurt', ru: 'ранить / болеть', tr: 'хёрт' },
-  { en: 'decrease', ru: 'снижать / уменьшать', tr: 'дикрис' },
-  { en: 'forget', ru: 'забывать', tr: 'фогет' },
-  { en: 'argue', ru: 'спорить', tr: 'аргью' },
-  { en: 'appear', ru: 'появляться', tr: 'эпиа' },
-  { en: 'disappear', ru: 'исчезать', tr: 'дисэпиа' },
-  { en: 'borrow', ru: 'брать в долг', tr: 'бороу' },
-  { en: 'lend', ru: 'давать в долг', tr: 'ленд' },
-  { en: 'mean', ru: 'означать / иметь в виду', tr: 'мин' },
-  { en: 'enter', ru: 'входить', tr: 'энтэ' },
-  { en: 'enter', ru: 'поступать (в)', tr: 'энтэ' },
-  { en: 'climb up', ru: 'залезать', tr: 'клайм ап' },
-  { en: 'notice', ru: 'замечать', tr: 'ноутис' },
-  { en: 'measure', ru: 'измерять', tr: 'мэжэ' },
-  { en: 'depend on', ru: 'зависеть от', tr: 'дипэнд он' },
   { en: 'the day after tomorrow', ru: 'послезавтра', tr: 'зэ дэй афтэ тумороу' },
   { en: 'tonight', ru: 'сегодня вечером', tr: 'тунайт' },
   { en: 'soon', ru: 'скоро', tr: 'сун' },
@@ -794,39 +775,60 @@ const initialIrregulars  = [
   { base: 'lose', past: 'lost', pp: 'lost', ru: 'терять' },
   { base: 'make', past: 'made', pp: 'made', ru: 'делать, мастерить' },
   { base: 'mean', past: 'meant', pp: 'meant', ru: 'значить' },
-  { base: 'meet', past: 'met', pp: 'met', ru: 'встречать, знакоиться' },
+  { base: 'meet', past: 'met', pp: 'met', ru: 'встречать, знакомиться' },
   { base: 'pay', past: 'paid', pp: 'paid', ru: 'платить' },
-  { base: 'put', past: 'put', pp: 'put', ru: 'класть' },
+  { base: 'put', past: 'put', pp: 'put', ru: 'класть, ставить' },
   { base: 'read', past: 'read', pp: 'read', ru: 'читать' },
   { base: 'ride', past: 'rode', pp: 'ridden', ru: 'ездить верхом' },
   { base: 'ring', past: 'rang', pp: 'rung', ru: 'звонить' },
-  { base: 'rise', past: 'rose', pp: 'risen', ru: 'подниматься' },
-  { base: 'run', past: 'ran', pp: 'run', ru: 'бегать' },
-  { base: 'say', past: 'said', pp: 'said', ru: 'говорить' },
+  { base: 'rise', past: 'rose', pp: 'risen', ru: 'возрастать, подниматься' },
+  { base: 'run', past: 'ran', pp: 'run', ru: 'бежать' },
+  { base: 'say', past: 'said', pp: 'said', ru: 'сказать' },
   { base: 'see', past: 'saw', pp: 'seen', ru: 'видеть' },
   { base: 'seek', past: 'sought', pp: 'sought', ru: 'искать' },
   { base: 'sell', past: 'sold', pp: 'sold', ru: 'продавать' },
-  { base: 'send', past: 'sent', pp: 'sent', ru: 'отправлять' },
+  { base: 'send', past: 'sent', pp: 'sent', ru: 'посылать' },
   { base: 'set', past: 'set', pp: 'set', ru: 'устанавливать' },
-  { base: 'shine', past: 'shone', pp: 'shone', ru: 'сиять' },
+  { base: 'shake', past: 'shook', pp: 'shaken', ru: 'трясти' },
+  { base: 'shine', past: 'shone', pp: 'shone', ru: 'светить, сиять' },
+  { base: 'shoot', past: 'shot', pp: 'shot', ru: 'стрелять' },
+  { base: 'show', past: 'showed', pp: 'shown', ru: 'показывать' },
+  { base: 'shrink', past: 'shrank', pp: 'shrunk', ru: 'сжиматься' },
   { base: 'shut', past: 'shut', pp: 'shut', ru: 'закрывать' },
   { base: 'sing', past: 'sang', pp: 'sung', ru: 'петь' },
   { base: 'sit', past: 'sat', pp: 'sat', ru: 'сидеть' },
   { base: 'sleep', past: 'slept', pp: 'slept', ru: 'спать' },
+  { base: 'slide', past: 'slid', pp: 'slid', ru: 'скользить' },
+  { base: 'smell', past: 'smelt', pp: 'smelt', ru: 'пахнуть, нюхать' },
   { base: 'speak', past: 'spoke', pp: 'spoken', ru: 'говорить' },
-  { base: 'spend', past: 'spent', pp: 'spent', ru: 'тратить' },
+  { base: 'spell', past: 'spelt (spelled)', pp: 'spelt (spelled)', ru: 'произносить по буквам' },
+  { base: 'spend', past: 'spent', pp: 'spent', ru: 'тратить, проводить время' },
+  { base: 'spill', past: 'spilt (spilled)', pp: 'spilt (spilled)', ru: 'разлить' },
+  { base: 'spin', past: 'spun', pp: 'spun', ru: 'крутить' },
+  { base: 'split', past: 'split', pp: 'split', ru: 'разделять, раскалывать' },
+  { base: 'spoil', past: 'spoilt (spoiled)', pp: 'spoilt (spoiled)', ru: 'портить' },
+  { base: 'spread', past: 'spread', pp: 'spread', ru: 'распространять' },
   { base: 'stand', past: 'stood', pp: 'stood', ru: 'стоять' },
+  { base: 'steal', past: 'stole', pp: 'stolen', ru: 'воровать' },
+  { base: 'sting', past: 'stung', pp: 'stung', ru: 'жалить' },
+  { base: 'stink', past: 'stank', pp: 'stunk', ru: 'вонять' },
+  { base: 'strike', past: 'struck', pp: 'struck', ru: 'бастовать, ударять' },
+  { base: 'swear', past: 'swore', pp: 'sworn', ru: 'клясться, ругаться' },
+  { base: 'sweep', past: 'swept', pp: 'swept', ru: 'подметать' },
+  { base: 'swell', past: 'swelled', pp: 'swollen (swelled)', ru: 'опухать' },
   { base: 'swim', past: 'swam', pp: 'swum', ru: 'плавать' },
   { base: 'take', past: 'took', pp: 'taken', ru: 'брать' },
-  { base: 'teach', past: 'taught', pp: 'taught', ru: 'учить' },
+  { base: 'teach', past: 'taught', pp: 'taught', ru: 'обучать' },
+  { base: 'tear', past: 'tore', pp: 'torn', ru: 'рвать' },
   { base: 'tell', past: 'told', pp: 'told', ru: 'рассказывать' },
   { base: 'think', past: 'thought', pp: 'thought', ru: 'думать' },
   { base: 'throw', past: 'threw', pp: 'thrown', ru: 'бросать' },
   { base: 'understand', past: 'understood', pp: 'understood', ru: 'понимать' },
-  { base: 'wear', past: 'wore', pp: 'worn', ru: 'носить' },
+  { base: 'wake', past: 'woke', pp: 'woken', ru: 'будить' },
+  { base: 'wear', past: 'wore', pp: 'worn', ru: 'носить (одежду)' },
+  { base: 'win', past: 'won', pp: 'won', ru: 'побеждать' },
+  { base: 'wind', past: 'wound', pp: 'wound', ru: 'обматывать, изгибаться' },
   { base: 'write', past: 'wrote', pp: 'written', ru: 'писать' }
-];
-ru: 'писать' }
 ].map((v, i) => ({
   id: i + 1,
   ...v,
@@ -834,8 +836,6 @@ ru: 'писать' }
   errors: 0,
   learned: false
 }));
-
-
 
 
 function loadIrregulars() {
